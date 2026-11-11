@@ -705,7 +705,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .chip{font-size:13px;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);padding:5px 11px;cursor:pointer;border-radius:999px;line-height:1.3}
 .bx .chip:hover{border-color:var(--teal)}
 .bx .chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--surface)}
-.bx select,.bx input[type=text]{width:100%;padding:8px 9px;border:1px solid var(--line2);border-radius:0;background:var(--surface);color:var(--ink);font-size:14px;height:auto}
+.bx select,.bx input[type=text],.bx input[type=email],.bx input[type=tel]{width:100%;padding:8px 9px;border:1px solid var(--line2);border-radius:0;background:var(--surface);color:var(--ink);font-size:14px;height:auto}
 .bx .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line2)}
 .bx .seg button{font-size:13px;background:var(--surface);color:var(--ink2);border:0;border-radius:0;padding:8px 4px;cursor:pointer}
 .bx .seg button+button{border-left:1px solid var(--line2)}
@@ -892,6 +892,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .fine b{color:var(--ink2)}
 .bx .card{cursor:pointer}
 .bx .card:hover{border-color:var(--line2)}
+.bx .gate{position:fixed;inset:0;z-index:2147483002;background:rgba(11,11,11,.72);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.bx .gbox{background:var(--surface);max-width:520px;width:100%;padding:28px 28px 24px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.bx .gbox h3{font-family:var(--serif);font-weight:400;font-size:28px;color:var(--ink);line-height:1.15}
+.bx .gbox p{font-size:14px;line-height:1.6;color:var(--ink2)}
+.bx .gbox .terms{background:var(--sunk);border:1px solid var(--line);padding:12px 14px;font-size:13px;line-height:1.6;max-height:150px;overflow-y:auto}
+.bx .gbox .row2{gap:10px}
+.bx .gbox label.f{display:grid;gap:5px;font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .gbox .check{font-size:12.5px;line-height:1.5;color:var(--ink2)}
+.bx .gbox .check a{color:var(--teal)}
+.bx .gbox .err{color:var(--amber);font-size:13px;font-weight:700;min-height:1em}
+.bx .gbox .btn{justify-self:start;padding:13px 22px}
+@media (max-width:480px){.bx .gbox{padding:20px 18px}
+.bx .gbox .row2{grid-template-columns:minmax(0,1fr)}}
 .bx .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2147483000}
 .bx .drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--surface);z-index:2147483001;overflow-y:auto;box-shadow:-12px 0 40px rgba(0,0,0,.25);display:grid;align-content:start}
 .bx .dhead{position:sticky;top:0;background:var(--dark);color:rgba(255,255,255,.8);padding:22px 24px 20px;display:grid;gap:6px;z-index:2}
@@ -921,7 +934,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 </style>
 
-<div class="bx" id="bx" data-src="https://lederer-team.github.io/school-data/explorer/" data-gkey="AIzaSyDUZsgq9-NRvNonNNHMRMWaPkTkogfv5Q8" data-share="" data-hero="https://images.unsplash.com/photo-1550399105-05c4a7641b02?auto=format&fit=crop&w=1920&q=75">
+<div class="bx" id="bx" data-src="https://lederer-team.github.io/school-data/explorer/" data-gkey="AIzaSyDUZsgq9-NRvNonNNHMRMWaPkTkogfv5Q8" data-share="" data-hero="https://images.unsplash.com/photo-1550399105-05c4a7641b02?auto=format&fit=crop&w=1920&q=75" data-gate="1">
 <div class="band dark hero"><div class="in">
   <div class="eyebrow">The Lederer Team · Alameda and Contra Costa counties</div>
   <h2 class="title">Bay Area School Explorer</h2>
@@ -1071,6 +1084,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <p><b>Your family link</b> stores your settings, including any address and children's names you typed, in the link itself. Nothing is saved on our servers. Share it only with people you choose.</p>
   <p>The Lederer Team at Red Oak Realty is committed to fair housing and Equal Housing Opportunity. We serve every client without regard to race, color, religion, sex, disability, familial status, national origin or any other protected class.</p>
 </div></div></div>
+<div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gtitle"><form class="gbox" id="gform" novalidate>
+  <div class="eyebrow">The Lederer Team</div>
+  <h3 id="gtitle">Before you start</h3>
+  <p>The Bay Area School Explorer is free. Tell us who you are and agree to the terms of use to open it.</p>
+  <div class="row2"><label class="f">Name<input type="text" id="gname" autocomplete="name" required></label><label class="f">Email<input type="email" id="gemail" autocomplete="email" required></label></div>
+  <label class="f">Phone (optional)<input type="tel" id="gphone" autocomplete="tel"></label>
+  <div class="terms"><b>Terms of use.</b> The Explorer is for research only. Attendance areas, district boundaries, programs, tuition and scores change, and the information here can be incomplete or wrong. Do not act on anything here, including buying, selling or renting a home, without first confirming school assignment and eligibility directly with the school district and the city. The Lederer Team does not guarantee school assignment, admission or enrollment, and does not recommend specific schools. Scores are our own calculation from public data. See the full <a href="/terms-and-conditions" target="_blank" rel="noopener">terms and conditions</a>.</div>
+  <label class="check"><input type="checkbox" id="gterms" required><span>I agree to the terms of use, and I’ll confirm school information with the district and city before acting on it.</span></label>
+  <label class="check"><input type="checkbox" id="gconsent" required><span>I agree to be contacted by The Lederer Team via call, email, and text for real estate services. To opt out, reply ‘stop’ at any time or click the unsubscribe link in emails. Message and data rates may apply. Message frequency may vary. <a href="/terms-and-conditions" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
+  <div class="err" id="gerr" aria-live="polite"></div>
+  <button type="submit" class="btn">Open the Explorer</button>
+</form></div>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" hidden></aside>
 </div>
@@ -1081,7 +1106,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 const root=document.getElementById('bx');if(!root)return;
 const $=id=>root.querySelector('#'+id);
 const attr=(n,d)=>{const v=root.getAttribute(n);return v&&!v.startsWith('__')?v:d};
-const CFG={src:attr('data-src','https://lederer-team.github.io/school-data/explorer/'),gkey:attr('data-gkey',''),share:attr('data-share',''),hero:attr('data-hero','')};
+const CFG={src:attr('data-src','https://lederer-team.github.io/school-data/explorer/'),gkey:attr('data-gkey',''),share:attr('data-share',''),hero:attr('data-hero',''),gate:attr('data-gate','')==='1'};
 if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,encodeURIComponent)+'")');
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
@@ -1703,8 +1728,35 @@ $('sugg').addEventListener('mousedown',e=>{const li=e.target.closest('[data-sg]'
 $('placeIn').addEventListener('blur',()=>setTimeout(()=>{$('sugg').hidden=true},150));
 $('tokbox').addEventListener('click',e=>{if(e.target.id==='tokbox')$('placeIn').focus()});
 
+/* ---------- sign-in gate (live site only): name, email, terms. Logged to a Google Sheet; with a phone number, also sent through the site's own contact form ---------- */
+const GF='https://docs.google.com/forms/d/e/1FAIpQLScoldxLPgwedCdD8pPlMi38hiPjs_R74ConLYphjwRbOxgTWQ/formResponse';
+const GE={name:'entry.1829188186',email:'entry.1868695182',phone:'entry.1624231566',terms:'entry.915905887',consent:'entry.1326937585',places:'entry.1983400583',page:'entry.308060020'};
+const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+function teamBypass(){if(/[?&#]team=lederer\b/.test(location.search+location.hash)){lsSet('bx_team','1');return true}return lsGet('bx_team')==='1'}
+function lpLead(name,email,phone,places){try{
+  const f=[...document.querySelectorAll('form')].find(x=>!root.contains(x)&&x.querySelector('[name=phoneNumber]')&&x.querySelector('[name=message]')&&x.querySelector('[name=email]'));if(!f)return;
+  const set=(el,v)=>{if(!el)return;const P=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(P,'value').set.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};
+  set(f.querySelector('[name=name]'),name);set(f.querySelector('[name=email]'),email);set(f.querySelector('[name=phoneNumber]'),phone);
+  set(f.querySelector('[name=message]'),'Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.');
+  const t=f.querySelector('[name=termsAccepted]');if(t&&!t.checked)t.click();
+  setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
+function gate(){
+  if(!CFG.gate||teamBypass()||lsGet('bx_signed'))return;
+  const g=$('gate');g.hidden=false;document.documentElement.style.overflow='hidden';setTimeout(()=>$('gname').focus(),50);
+  $('gform').addEventListener('submit',e=>{e.preventDefault();
+    const name=$('gname').value.trim(),email=$('gemail').value.trim(),phone=$('gphone').value.trim();
+    const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':(phone&&phone.replace(/\D/g,'').length<10)?'Please check the phone number, or leave it blank.':!$('gterms').checked?'Please agree to the terms of use.':!$('gconsent').checked?'Please agree to be contacted to use the Explorer.':'';
+    $('gerr').textContent=err;if(err)return;
+    const places=st.places.map(p=>p.label).join('; ');
+    const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:places,[GE.page]:location.origin+location.pathname});
+    try{fetch(GF,{method:'POST',mode:'no-cors',body})}catch(_){}
+    if(phone)lpLead(name,email,phone,places);
+    lsSet('bx_signed',new Date().toISOString());g.hidden=true;document.documentElement.style.overflow=''})}
+root.addEventListener('keydown',e=>{if(e.key==='Tab'&&!$('gate').hidden){const f=[...$('gform').querySelectorAll('input,button,a')];const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
+
 loadGoogle();
 fromHash();
+gate();
 initMap();
 if(/(^|[#&])method\b/.test(location.hash))setView('method');
 render();
