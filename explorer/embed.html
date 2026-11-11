@@ -1452,7 +1452,7 @@ async function fetchBox(box,c){const[s0,w0,n0,e0]=box;
   const tc=t=>/[a-z]/.test(t)?t:t.toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase());
   // One disclaimer per MLS: the text repeats per listing with only the "last updated" time changing
   const txt=h=>{try{return new DOMParser().parseFromString(h,'text/html').body.textContent.replace(/\s+/g,' ').trim()}catch(e){return h.replace(/<[^>]+>/g,' ')}};
-  for(const x of it){const d=(x.mlsProvider||{}).searchResultsDisclaimer;if(!d)continue;const t=txt(d).replace(/\s*Data last updated at [^.]*?UTC\.?/i,'').replace(/\s+\./g,'.');LST.discs[t.slice(0,160)]=t}
+  for(const x of it){const d=(x.mlsProvider||{}).searchResultsDisclaimer;if(!d)continue;const t=txt(d).replace(/\s*Data last updated at [^.]*?UTC\.?/i,' ').replace(/\.(?=[A-Z])/g,'. ').replace(/\s+/g,' ').trim();if(t)LST.discs[t.slice(0,160)]=t}
   return it.filter(x=>x.lpShowAddress!==false).map(x=>{
     const ph=[x.lpPrimaryPhoto&&x.lpPrimaryPhoto.photoUrl,...(x.lpPhotos||[]).map(q=>q.photoUrl)].filter(Boolean);
     return{href:'/home-search/listings/'+x.lpListingSlug,price:x.listPrice,bd:x.bedroomsTotal,ba:x.lpTotalDecimalBath,sf:x.lpSqft,lot:x.lpLotSqft,yr:x.lpYearBuilt,
