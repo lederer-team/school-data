@@ -953,7 +953,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="fld"><label class="lab" for="radius">Search radius</label><select id="radius"><option value="5">5 miles</option><option value="10">10 miles</option><option value="20">20 miles</option><option value="99">Any distance</option></select><span class="sub" id="radNote">Private and charter schools</span></div>
     <div class="fld"><label class="lab" for="pub">Public schools</label><select id="pub"><option value="zone">Zoned for my locations</option><option value="dist">Anywhere in my district</option><option value="radius">Anywhere in radius</option></select><span class="sub" id="pubNote"></span></div>
     <div class="fld"><label class="lab" for="budget">Private tuition budget</label><select id="budget"><option value="0">No limit</option><option value="30000">Up to $30k a year</option><option value="60000">Up to $60k a year</option><option value="100000">Up to $100k a year</option><option value="150000">Up to $150k a year</option></select><span class="sub">Total for all children</span></div>
-    <div class="fld"><div class="lab">Family plans favor</div><div class="seg" id="mode"><button type="button" data-v="protect" aria-pressed="true">Every child</button><button type="button" data-v="avg" aria-pressed="false">Best average</button></div><span class="sub" id="modeNote"></span><label class="check" style="font-size:13px"><input type="checkbox" id="together"><span>Prefer one campus for siblings</span></label></div>
+    <div class="fld"><div class="lab">Family plans favor</div><div class="seg" id="mode"><button type="button" data-v="each" aria-pressed="false">Best per child</button><button type="button" data-v="campus" aria-pressed="true">One campus</button></div><span class="sub" id="modeNote"></span></div>
     <div class="tbar">
       <button type="button" class="tlink strong" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Copy family link</button>
       <span class="ok" id="shareOk" aria-live="polite"></span>
@@ -1023,9 +1023,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
     </ul>
    </section>
    <section id="m-family"><h3>Family plans</h3>
-    <p>With two or more children, the Explorer builds family plans: the best combination of schools for each location you entered. Each plan's family score blends the children's fit with the morning drive, plus a small bonus when children share a campus. The drive counts for 15% when the children's Short commute sliders sit at 3, more when they're higher (up to 30%) and not at all when they're at 0. Turn off "Prefer one campus for siblings" and each plan shows every child's own best school for that location instead, with the approximate drive to each drop-off. Tuition is approximate, shown per child and as a family total.</p>
+    <p>With two or more children, the Explorer builds family plans: the best combination of schools for each location you entered. Each plan's family score blends the children's fit with the morning drive, plus a small bonus when children share a campus. The drive counts for 15% when the children's Short commute sliders sit at 3, more when they're higher (up to 30%) and not at all when they're at 0. Choose <b>Best per child</b> and each plan shows every child’s own top school for that location instead, with the approximate drive to each drop-off. Tuition is approximate, shown per child and as a family total.</p>
     <ul>
-     <li><b>Every child</b> (the default) blends 60% the weakest child's fit with 40% the average, so no child is sacrificed for another. <b>Best average</b> uses the plain average.</li>
+     <li><b>One campus</b> (the default) favors a shared school when the fits are close. The family score blends 60% the weakest child’s fit with 40% the average, so no child is sacrificed for another.</li>
      <li><b>Logistics</b> is the estimated morning drive from home through each school, nearest first.</li>
      <li>Public schools are paired only with a location they’re zoned for. Charter and private schools are open to all.</li>
      <li>Plans over your tuition budget are hidden. The five-year view shows each child's school year by year, including the move to high school.</li>
@@ -1190,7 +1190,7 @@ const kname=(k,i)=>k.name||'Child '+(i+1);
 const pl=n=>{const p=PLACES.find(x=>x.n===n);return{...p,kind:'city',label:p.n}};
 function mk(name,grade,preset,ints,sector){return{name,grade,preset,w:{...PRESETS[preset],interest:ints.length?7:0},ints:new Set(ints),sector,sizePref:'any',support:false}}
 const fresh=()=>({places:[],radius:10,pub:'zone',budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,kids:[mk('',9,'Balanced',[],'all')]});
-const example=()=>({places:[pl('Orinda'),pl('Moraga'),pl('Lafayette'),pl('Montclair, Oakland')],radius:10,budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,
+const example=()=>({...fresh(),places:[pl('Orinda'),pl('Moraga'),pl('Lafayette'),pl('Montclair, Oakland')],radius:10,budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,
  kids:[mk('Maya',10,'Athlete',['waterpolo'],'all'),mk('Leo',6,'STEM kid',['robotics','coding'],'all')]});
 let st=fresh();
 
@@ -1332,7 +1332,7 @@ function plans(){
   return res}
 function evalPlan(home,hp,picks){
   const fits=picks.map(r=>r.score);const mn=Math.min(...fits),av=fits.reduce((a,b)=>a+b,0)/fits.length;
-  const fam=st.mode==='protect'?0.6*mn+0.4*av:av;
+  const fam=0.6*mn+0.4*av; // the weaker child counts more, so no child is sacrificed for another
   const uniq=[];for(const r of picks){const key=r.s.org||r.s.id;if(!uniq.some(u=>(u.org||u.id)===key))uniq.push(r.s)}
   let route=0,cur=null,left=[...uniq],legs=[];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);legs.push(nx);cur=nx}
   const logi=Math.max(0,Math.min(10,(60-route)/45*10));
@@ -1534,11 +1534,11 @@ function renderFamily(){
   $('placeIn').placeholder=st.places.length?'Add another city':'Type an address or a city';
   $('placeNote').textContent=st.places.some(p=>p.approx)?'This address was placed at its city center because the exact location could not be looked up.':(st.places.length?'Add more cities to compare them, or use one address.':'One address, one city, or several cities to compare.');
   $('radius').value=st.radius;$('budget').value=st.budget;
-  root.querySelectorAll('#mode button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===st.mode));
-  $('together').checked=st.together;$('pub').value=st.pub;
+  root.querySelectorAll('#mode button').forEach(b=>b.setAttribute('aria-pressed',String((b.dataset.v==='campus')===st.together)));
+  $('pub').value=st.pub;
   $('pubNote').textContent=st.pub==='zone'?'Schools whose attendance areas cover each location, no transfer needed':st.pub==='dist'?'Includes schools you\u2019d need an intradistrict transfer for':'Same radius as private and charter schools';
   $('radNote').textContent=st.pub==='radius'?'All schools':'Private and charter schools';
-  $('modeNote').textContent=st.mode==='protect'?'Plans are held back by the weakest fit':'Plans use the simple average of fits';
+  $('modeNote').textContent=st.together?'Siblings share a school when the fits are close, with one drop-off':'Every child gets their own top school, even if that means separate drop-offs';
 }
 function renderKidControls(){
   const K=st.kids;
@@ -1646,7 +1646,7 @@ root.addEventListener('click',e=>{
   const cd=e.target.closest('.card');if(cd&&!e.target.closest('button,a')){openDetail(cd.id.slice(2));return}
   const t=e.target.closest('button');if(!t)return;const k=st.kids[st.active];
   if(t.dataset.unplace){st.places.splice(+t.dataset.unplace,1);st.mapPlan=null;render();$('placeIn').focus()}
-  else if(t.dataset.v&&t.closest('#mode')){st.mode=t.dataset.v;render()}
+  else if(t.dataset.v&&t.closest('#mode')){st.together=t.dataset.v==='campus';st.mapPlan=null;render()}
   else if(t.dataset.tab){st.active=+t.dataset.tab;st.mapPlan=null;soft()}
   else if(t.dataset.add){const i=st.kids.length;st.kids.push(mk('',2,'Balanced',[],'all'));st.active=i;st.mapPlan=null;soft();$('kname').focus()}
   else if(t.dataset.remove){st.kids.splice(+t.dataset.remove,1);st.active=0;st.mapPlan=null;soft()}
@@ -1678,7 +1678,6 @@ root.addEventListener('change',e=>{const k=st.kids[st.active];
   if(e.target.id==='ksupport'){k.support=e.target.checked;renderList();renderMap();syncHash()}
   if(e.target.id==='radius'){st.radius=+e.target.value;soft()}
   if(e.target.id==='pub'){st.pub=e.target.value;st.mapPlan=null;render();syncHash()}
-  if(e.target.id==='together'){st.together=e.target.checked;renderPlans();renderMap();syncHash()}
   if(e.target.id==='budget'){st.budget=+e.target.value;renderPlans();renderMap();syncHash()}});
 root.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('drawer').hidden){closeDetail();return}if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.kx!=null){e.preventDefault();e.target.click()}});
 
