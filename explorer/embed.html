@@ -841,23 +841,28 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .note b{color:var(--ink2)}
 .bx .grphead{display:grid;gap:2px;margin:10px 0 2px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
 .bx .grphead h4{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink);font-weight:700;margin:0}
-.bx .spath{display:flex;flex-wrap:wrap;align-items:stretch;gap:4px 0;margin-top:2px}
-.bx .sp-step{border:1px solid var(--line2);background:var(--surface);padding:6px 10px 7px;display:grid;gap:1px;align-content:start;min-width:0;max-width:240px}
-.bx .sp-step.cur{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--kc,var(--ink))}
-.bx .sp-gr{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);font-weight:700}
-.bx .sp-n{font-size:13px;color:var(--ink);font-weight:700;line-height:1.3}
-.bx .sp-n small{font-weight:400;color:var(--muted);font-size:12px}
-.bx .sp-y{font-size:11px;color:var(--muted)}
-.bx .sp-arr{align-self:center;width:22px;height:2px;background:var(--line2);position:relative;flex:none}
-.bx .sp-arr::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left:6px solid var(--line2);border-right:0}
-.bx .sp-end{align-self:center;font-size:11px;letter-spacing:.8px;text-transform:uppercase;font-weight:700;padding:6px 10px;border:1px solid}
-.bx .sp-end.good{background:var(--teal-soft);color:var(--teal);border-color:var(--teal)}
-.bx .sp-end.warn{background:var(--amber-soft);color:var(--amber);border-style:dashed;border-color:var(--amber)}
-.bx .sp-end.plain{background:var(--sunk);color:var(--muted);border-color:var(--line2)}
-.bx .sp-note{flex-basis:100%;font-size:12px;color:var(--muted);margin-top:4px}
-.bx .sp-lab{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
-.bx .drawer .sp-step{max-width:none;padding:9px 12px}
-.bx .drawer .sp-n{font-size:14px}
+.bx .sp-lab{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
+.bx{--rt-e:#1597C4;--rt-m:#E0A100;--rt-h:#D63A7A;--rt-x:#8A8A84}
+.bx .route{display:flex;align-items:flex-start;min-width:0;padding-top:4px}
+.bx .stop{flex:1 1 0;min-width:0;display:grid;position:relative}
+.bx .stop .trk{height:4px;margin-top:8px;position:relative}
+.bx .stop .dot{position:absolute;left:0;top:-7px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:4px solid currentColor;box-sizing:border-box}
+.bx .stop.cur .dot{background:currentColor;box-shadow:0 0 0 3px var(--surface) inset}
+.bx .stop .t{padding:12px 12px 0 0;display:grid;gap:1px}
+.bx .stop .t b{color:var(--ink);font-size:13px;line-height:1.3}
+.bx .stop .t b small{font-weight:400;color:var(--muted);font-size:12px}
+.bx .stop .t span{font-size:11.5px;color:var(--muted)}
+.bx .stop.alt .trk{background:repeating-linear-gradient(90deg,var(--rt-x) 0 6px,transparent 6px 11px)!important}
+.bx .stop.alt .dot{border-style:dashed}
+.bx .term{flex:0 0 auto;align-self:flex-start;font-size:10.5px;letter-spacing:.9px;text-transform:uppercase;font-weight:900;padding:4px 10px;border-radius:999px;white-space:nowrap;border:1px solid var(--line2);color:var(--ink2);background:var(--surface)}
+.bx .term.ok{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+@media (max-width:560px){.bx .route{flex-direction:column}
+.bx .stop{flex:none;padding-left:28px;min-height:44px}
+.bx .stop .trk{position:absolute;left:7px;top:0;bottom:0;width:4px;height:auto;margin:0}
+.bx .stop .dot{left:-7px;top:0}
+.bx .stop .t{padding-top:0}
+.bx .stop.alt .trk{background:repeating-linear-gradient(180deg,var(--rt-x) 0 6px,transparent 6px 11px)!important}
+.bx .term{margin-left:28px;margin-top:4px}}
 .bx .tbadge{display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:900;padding:3px 7px;margin-right:6px;vertical-align:1px}
 .bx .t-zone{background:var(--teal);color:#fff}
 .bx .t-pub{background:var(--ink2);color:#fff}
@@ -1342,19 +1347,31 @@ function pathYears(s,kid){const p=schoolPath(s);const out=[];let g=kid.grade;
 const tbadge=s=>{if(s.sec==='Charter')return'<span class="tbadge t-ch">Charter \u00b7 lottery</span>';if(s.sec==='Private')return'<span class="tbadge t-pr">Private \u00b7 apply</span>';const b=zoneBest(s);return b&&b.z.k==='zone'?'<span class="tbadge t-zone">Zoned public</span>':b&&b.z.k==='prog'?'<span class="tbadge t-pub">District program</span>':'<span class="tbadge t-pub">Public</span>'};
 const shortN=n=>n.replace(/\b(Elementary|Middle|High|Intermediate|School|Academy|Senior)\b/g,'').replace(/\s+/g,' ').replace(/[\s,]+$/,'').trim()||n;
 // The school path as a row of steps: grades, school, school year the child starts there, and how it ends
-function pathView(s,kid){const p=schoolPath(s);const H=[];let g=kid?kid.grade:null;
-  const yr=lo=>{if(g==null)return'';const st=Math.max(lo,kid.grade);if(st>12)return'';const y=YEAR+(st-kid.grade);return`${st<=kid.grade?'Starts':'From'} ${y}-${String(y+1).slice(2)}`};
-  p.steps.forEach((opts,i)=>{const x=opts[0][0];const lo=i===0?Math.max(x.lo,0):Math.max(x.lo,p.steps[i-1][0][0].hi+1);
-    if(i)H.push('<span class="sp-arr" aria-hidden="true"></span>');
-    const nm=opts.length===1?esc(x!==s&&x.n===s.n?'Upper school, '+x.c:shortN(x.n)):opts.map(([z,w])=>`${esc(shortN(z.n))} <small>${Math.round(w*100)}%</small>`).join('<br>');
-    H.push(`<div class="sp-step${i===0?' cur':''}"><span class="sp-gr">Grades ${lo===0?'K':lo}-${x.hi}</span><span class="sp-n">${nm}</span>${g!=null&&kid.grade<=x.hi?`<span class="sp-y">${yr(lo)}</span>`:''}${opts.length>1?'<span class="sp-y">Depends on address</span>':''}</div>`)});
-  const last=p.steps[p.steps.length-1][0][0];let note='';
-  if(p.kind==='k12')H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end good">Through 12th · one admission</span>');
-  else if(p.kind==='continue')H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end good">No reapplying</span>');
-  else if(p.kind==='apply'){H.push(`<span class="sp-arr" aria-hidden="true"></span><span class="sp-end warn">Apply for ${GRADES[s.hi+1]||'next'} grade</span>`);if(p.to.length)note=`Graduates often go to ${esc(p.to.slice(0,3).map(x=>shortN(x.n)).join(', '))}.`}
-  else if(last.hi<12)H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end plain">High school assigned by district</span>');
-  else H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end plain">Assigned by district</span>');
-  return`<div class="spath">${H.join('')}${note?`<div class="sp-note">${note}</div>`:''}</div>`}
+// For a school that ends before 12th grade: the public school at the next level for the family's location
+function publicNext(s){const g=s.hi+1;if(g>12)return null;const lv=g>=9?'H':'M';const hb=homeFor(s);const p=hb?hb.p:st.places[0];if(!p)return null;
+  const fits=x=>x&&x.sec==='Public'&&x.lo<=g&&x.hi>=g&&(lv==='H'?x.lo>=9:x.lo>=5&&x.lo<=7);
+  let opts=[];
+  if(isCity(p)&&G.cityZ&&G.cityZ[p.n])opts=Object.entries(G.cityZ[p.n]).filter(([i,w])=>fits(BY[i])).sort((a,b)=>b[1]-a[1]).map(([i,w])=>[BY[i],w]);
+  else{const h=zoneHits(p);opts=[...h.ids].map(i=>BY[i]).filter(fits).map(x=>[x,1])}
+  if(!opts.length){const ds=placeDists(p);const c=S.filter(x=>fits(x)&&ds.has(x.dist)&&(x.e||0)>=300);if(c.length)opts=c.length===1?[[c[0],1]]:c.slice(0,3).map(x=>[x,0])}
+  return opts.length?{g,lv,opts,where:p.city||p.label}:null}
+// The school path as a route map: one stop per school, the grades and the year your child starts there
+function pathView(s,kid){const p=schoolPath(s);const H=[];const C={E:'var(--rt-e)',M:'var(--rt-m)',H:'var(--rt-h)'};
+  const lvOf=x=>x.lo>=9?'H':x.lo>=5&&x.lo<=7&&x.hi<=8?'M':'E';
+  const yr=lo=>{if(!kid||kid.grade>12)return'';const st=Math.max(lo,kid.grade);const y=YEAR+(st-kid.grade);return`${st<=kid.grade?'starts':'from'} ${y}-${String(y+1).slice(2)}`};
+  const label=(x,sh)=>esc(x!==s&&x.n===s.n?'Upper school, '+x.c:sh?shortN(x.n):x.n);
+  p.steps.forEach((opts,i)=>{const x=opts[0][0];const lo=i===0?x.lo:p.steps[i-1][0][0].hi+1;
+    const one=p.kind==='k12'&&i===0;const col=one?'var(--rt-e)':C[lvOf(x)];
+    const trk=one?`background:linear-gradient(90deg,var(--rt-e) 0 46%,var(--rt-m) 46% 69%,var(--rt-h) 69%)`:`background:${col}`;
+    const nm=opts.length===1?label(x,false):opts.map(([z,w])=>`${esc(shortN(z.n))} <small>${Math.round(w*100)}%</small>`).join(' or ');
+    H.push(`<div class="stop${i===0?' cur':''}" style="color:${col};${one?'flex-grow:2':''}"><div class="trk" style="${trk}"><span class="dot"></span></div><div class="t"><b>${nm}</b><span>Grades ${lo===0?'K':lo}-${x.hi}${opts.length>1?' · depends on address':kid&&kid.grade<=x.hi?' · '+yr(lo):''}</span></div></div>`)});
+  if(p.kind==='apply'){const pn=publicNext(s);const g=s.hi+1;
+    const pub=pn?(pn.opts.length===1||pn.opts[0][1]>=0.95?`or public: <b>${esc(pn.opts[0][0].n)}</b>`:`or public: ${pn.opts.slice(0,3).map(([z,w])=>`<b>${esc(z.n)}</b>${w?` <small>${Math.round(w*100)}%</small>`:''}`).join(' or ')}`):'or a public school';
+    H.push(`<div class="stop alt" style="color:var(--rt-x)"><div class="trk"><span class="dot"></span></div><div class="t"><b>Apply to private schools ${pub}</b><span>Grades ${g}-12${kid&&kid.grade<g?' · '+yr(g):''}${p.to.length?` · graduates often go to ${esc(p.to.slice(0,3).map(x=>shortN(x.n)).join(', '))}`:''}</span></div></div>`)}
+  else if(p.kind==='k12')H.push('<span class="term ok">✓ One admission</span>');
+  else if(p.kind==='continue')H.push('<span class="term ok">✓ No reapplying</span>');
+  else H.push(`<span class="term">${p.end?'Assigned by district':'High school assigned by district'}</span>`);
+  return`<div class="route">${H.join('')}</div>`}
 function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
   for(const[d,lv,ids]of G.zones)if(lv==='H'&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids[0]}return null}
 function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;for(const p of st.places){if(lim&&!pubOk(s,p))continue;const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}
@@ -1717,9 +1734,9 @@ function renderList(){
      <div><div class="nm">${tbadge(s)}${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
      <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
      <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
-      <div class="reason">Strongest here: ${esc(top.join(', '))}</div>${spv}<div class="tags">${tags.join('')}</div>
+      <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
       ${flags.length?`<div class="flag">${flags.map(esc).join(' · ')}</div>`:''}
-      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button>${s.sec==='Public'&&ZB[s.id]&&zoneBest(s)?.z.k==='zone'?homesLink(homesUrl(zoneBox(s)),'Homes for sale near this attendance area'):''}</div></div></article>`})()).join('')+
+      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button>${s.sec==='Public'&&ZB[s.id]&&zoneBest(s)?.z.k==='zone'?homesLink(homesUrl(zoneBox(s)),'Homes for sale near this attendance area'):''}</div>${spv}</div></article>`})()).join('')+
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
    (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
 }
