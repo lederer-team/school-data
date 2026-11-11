@@ -839,6 +839,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .empty b{color:var(--ink)}
 .bx .note{background:var(--surface);border:1px solid var(--line);padding:16px 18px;display:grid;gap:8px;font-size:13px;color:var(--muted)}
 .bx .note b{color:var(--ink2)}
+.bx .grphead{display:grid;gap:2px;margin:10px 0 2px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
+.bx .grphead h4{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink);font-weight:700;margin:0}
 .bx .znote{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:var(--ink2)}
 .bx .znote b{color:var(--ink)}
 .bx .znote .warn{color:var(--amber);font-weight:700}
@@ -1267,8 +1269,7 @@ function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;
   if(!best)for(const p of st.places){const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}return best}
 function baseOk(s,kid){
   if(kid.grade<s.lo||kid.grade>s.hi)return false;
-  if(kid.sector==='Public'&&s.sec==='Private')return false;
-  if(kid.sector==='Private'&&s.sec!=='Private')return false;return true}
+  if(kid.sector!=='all'&&s.sec!==kid.sector)return false;return true}
 function eligible(s,kid){if(!baseOk(s,kid)||!st.places.length)return false;if(s.sec==='Public'&&st.pub!=='radius')return st.places.some(p=>pubOk(s,p));return homeFor(s).d<=st.radius}
 function scoreFor(s,kid,home){
   const v={...s.s};if(level(kid.grade)!=='H'){delete v.college;const x=s.k8||{};for(const c of ['sports','arts','stem','clubs','lang','care','small'])v[c]=x[c]??null}
@@ -1360,7 +1361,7 @@ function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
   n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g!==0;n.pub=['zone','dist','radius'][o.u|0]||'zone';
   n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
-    w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Private'].includes(sector)?sector:'all',
+    w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
     sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup}));
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
@@ -1442,7 +1443,7 @@ function renderMap(){
     $('mapBack').hidden=false;$('mapBack').textContent=`Back to ${kname(st.kids[st.active],st.active)}'s schools`;
     $('mapKey').innerHTML=st.kids.map((k,i)=>`<span><i class="pin" style="width:12px;height:12px;border:0;background:${css(KC[i])}"></i>${esc(kname(k,i))}</span>`).join('')+'<span><i class="pin" style="width:12px;height:12px;border:0"></i>Shared campus</span><span>Dashed line: estimated morning route</span>';
   }else{
-    const k=st.kids[st.active],n=Math.min(st.showN[st.active]||10,lastList.scored.length);
+    const k=st.kids[st.active],n=Math.min(lastList.n||st.showN[st.active]||10,lastList.scored.length);
     $('mapBack').hidden=true;
     if(!st.places.length){
       S.filter(s=>baseOk(s,k)).forEach(s=>map.dot([s.lat,s.lng],{r:3,fill:'#1A1A1A',op:.35,popup:popup(s)}));
@@ -1549,7 +1550,7 @@ function renderKidControls(){
    <div class="row2"><div class="sec"><label class="lab" for="kname">Name (optional)</label><input type="text" id="kname" value="${esc(k.name)}" maxlength="20" placeholder="Child ${st.active+1}"></div>
    <div class="sec"><label class="lab" for="kgrade">Grade next fall</label><select id="kgrade">${GRADES.map((g,i)=>`<option value="${i}" ${i===k.grade?'selected':''}>${g}  \u00B7  age ${i+5}-${i+6}</option>`).join('')}</select><span class="sub">Most ${GRADES[k.grade]==='K'?'kindergartners':GRADES[k.grade]+' graders'} are ${k.grade+5} or ${k.grade+6} in fall ${YEAR}</span></div></div>
    <label class="check support"><input type="checkbox" id="ksupport" ${k.support?'checked':''}><span>Needs learning support<br><span class="sub">Autism, ADHD, dyslexia or another learning difference. Shows specialized schools first without changing other rankings.</span></span></label>
-   <div class="sec"><div class="lab">School type</div><div class="seg" id="ksector">${['all','Public','Private'].map(v=>`<button type="button" data-sec="${v}" aria-pressed="${k.sector===v}">${v==='all'?'Both':v}</button>`).join('')}</div></div>
+   <div class="sec"><div class="lab">School type</div><div class="seg" id="ksector">${['all','Public','Charter','Private'].map(v=>`<button type="button" data-sec="${v}" aria-pressed="${k.sector===v}">${v==='all'?'All':v}</button>`).join('')}</div></div>
    <div class="sec"><div class="lab"><span>How much each matters</span><span>share</span></div>
      <div class="prow"><label for="kpreset">Start from</label><select id="kpreset">${k.preset?'':'<option value="" selected>Custom</option>'}${Object.keys(PRESETS).map(p=>`<option value="${p}" ${k.preset===p?'selected':''}>${p}</option>`).join('')}</select></div>
      <div class="mix">${show.filter(c=>w[c]).map(c=>`<span style="width:${w[c]/tot*100}%;background:${css(CATS[c][1])}"></span>`).join('')}</div>
@@ -1586,8 +1587,11 @@ function renderList(){
   if(!st.places.length){lastList={scored:[],un:[]};$('ksub').textContent='';$('special').innerHTML='';$('znote').innerHTML='';
     $('list').innerHTML=`<div class="empty"><b>Start with where you might live.</b><span>Type an address or a city in the box above. Add several cities to compare them. Each child gets a ranked list, and with two or more children you'll also see family plans.</span><button type="button" class="btn line" data-example="1">See an example family</button></div>`;return}
   const R=rankKid(k);
-  const scored=order(R),un=R.filter(r=>r.score==null);lastList={scored,un};
-  $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi')}`;
+  // Zoned (or district) public schools first, then charter and private schools by radius, each ranked on its own
+  const grp=st.pub!=='radius';const pubs=grp?order(R.filter(r=>r.s.sec==='Public')):[];
+  const rest=grp?order(R.filter(r=>r.s.sec!=='Public')):order(R);
+  const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
+  $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
     $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
      ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.</div>`}
@@ -1597,8 +1601,11 @@ function renderList(){
      <div class="reshead"><h3 class="h2">All schools for ${esc(nm)}</h3></div>`;
   }else $('special').innerHTML='';
   lastSpec=k.support?specList(k,'ld'):[];renderZoneNote(k);
-  const n=st.showN[st.active]||10;
-  $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>{
+  const n=pubs.length+(st.showN[st.active]||10);lastList={scored,un,n};
+  const mi_=st.radius>50?'at any distance':`within ${st.radius} miles`;
+  const head=i=>!grp?'':(i===0&&pubs.length?`<div class="grphead"><h4>Public schools ${st.pub==='zone'?'zoned for your locations':'in your districts'}</h4><span class="sub">${pubs.length} school${pubs.length===1?'':'s'}. Assigned by the district.</span></div>`:'')+
+    (i===pubs.length&&rest.length?`<div class="grphead"><h4>Charter and private schools ${mi_}</h4><span class="sub">Open to families anywhere: charters admit by lottery, private schools by application. Not tied to your address.</span></div>`:'');
+  $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>head(i)+(()=>{
     const s=r.s,top=[...r.parts].sort((a,b)=>b.share-a.share).slice(0,2).map(p=>`${CATS[p.c][0].toLowerCase()} ${p.v.toFixed(1)}`);
     const tags=[];
     if(r.path)tags.push(`<span class="tag ${r.path.cert==='Uncertain'||r.path.cert==='Depends on address'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
@@ -1616,7 +1623,7 @@ function renderList(){
      <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
       <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
       ${flags.length?`<div class="flag">${flags.map(esc).join(' · ')}</div>`:''}
-      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`}).join('')+
+      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`})()).join('')+
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
    (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
 }
