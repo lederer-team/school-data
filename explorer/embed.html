@@ -1377,7 +1377,7 @@ function renderHomes(){const el=$('homes');if(!el)return;const p=st.places.find(
   if(LST.state==='offsite'){el.innerHTML=`<div class="homes">${head}<p class="sub">Active listings appear here on theledererteam.com. ${homesLink(all,'Open the home search for this area')}</p></div>`;return}
   const key=addrKey(p.label);const me=LST.items.find(x=>key&&addrKey(x.ad)===key);
   let others=LST.items.filter(x=>x!==me);
-  if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd&&x.bd)d+=Math.abs(x.bd-me.bd)*0.5;if(me.sf&&x.sf)d+=Math.abs(Math.log(x.sf/me.sf))*2;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
+  if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd)d+=x.bd?Math.abs(x.bd-me.bd)*0.5:0.6;if(me.sf)d+=x.sf?Math.abs(Math.log(x.sf/me.sf))*2:0.6;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
   const card=(x,cls)=>`<a class="hcard${cls?' '+cls:''}" href="${esc(x.href)}" target="_blank" rel="noopener"><div class="ph"${x.img?` style="background-image:url('${esc(x.img)}')"`:''}></div><div class="bd">${cls?'<span class="fl">This home is listed for sale</span>':''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span><span class="sp">${[x.bd&&x.bd+' bd',x.ba&&x.ba+' ba',x.sf&&x.sf.toLocaleString()+' sqft'].filter(Boolean).join(' · ')}</span><span class="ad">${esc(x.ad)}</span>${x.mls?`<span class="ml">MLS® ${esc(x.mls)}</span>`:''}</div></a>`;
   const list=others.slice(0,6);
   el.innerHTML=`<div class="homes">${head}
