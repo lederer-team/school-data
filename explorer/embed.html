@@ -1332,13 +1332,15 @@ function placeBox(p){const r=isCity(p)?0.022:0.011;const k=1/Math.cos(p.lat*Math
 const homesLink=(url,txt)=>`<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener" title="Opens our home search for this map area. Check each home's assigned school with the district.">${txt}</a>`;
 // Where a school leads as a child grows: public feeder chain, private continuation, or a new application
 function schoolPath(s){
-  if(s.sec==='Public'){const steps=[[[s,1]]];
+  if(s.sec==='Public'){const steps=[[[s,1]]];let mx=[];
     if(s.hi<9){
       if(s.hi<=6&&s.feedm&&s.feedm.length){const a=atHome(s,'M');steps.push(a&&BY[a]?[[BY[a],1]]:s.feedm.map(([i,w])=>[BY[i],w]).filter(x=>x[0]))}
+      // Districts that assign by application also run district-wide middle schools with no attendance area (Berkeley: Longfellow)
+      if(DPOL[s.dist]&&steps.length>1){const zoned=new Set(steps[1].map(x=>x[0].id));mx=S.filter(x=>x.sec==='Public'&&x.dist===s.dist&&x.lo>=6&&x.lo<=7&&x.hi===8&&!ZB[x.id]&&!zoned.has(x.id))}
       let hs=null;const ah=atHome(s,'H');if(ah&&BY[ah])hs=[[BY[ah],1]];else if(s.feedw&&s.feedw.length)hs=s.feedw.map(([i,w])=>[BY[i],w]).filter(x=>x[0]);else if(s.feed&&BY[s.feed])hs=[[BY[s.feed],1]];
       if(!hs&&steps.length>1){const m=steps[1][0][0];if(m.feedw)hs=m.feedw.map(([i,w])=>[BY[i],w]).filter(x=>x[0]);else if(m.feed&&BY[m.feed])hs=[[BY[m.feed],1]]}
       if(hs&&hs.length)steps.push(hs)}
-    return{kind:'public',steps,end:steps[steps.length-1][0][0].hi>=12}}
+    return{kind:'public',steps,end:steps[steps.length-1][0][0].hi>=12,mx,app:!!DPOL[s.dist]}}
   if(s.hi>=12)return{kind:'k12',steps:[[[s,1]]]};
   if(s.next&&s.next.to&&BY[s.next.to])return{kind:'continue',steps:[[[s,1]],[[BY[s.next.to],1]]]};
   return{kind:'apply',steps:[[[s,1]]],to:s.next&&s.next.list?s.next.list.map(i=>BY[i]).filter(Boolean):[]}}
@@ -1375,13 +1377,14 @@ function pathView(s,kid){const p=schoolPath(s);const H=[];const C={E:'var(--rt-e
     const one=p.kind==='k12'&&i===0;const col=one?'var(--rt-e)':C[lvOf(x)];
     const trk=one?`background:linear-gradient(90deg,var(--rt-e) 0 46%,var(--rt-m) 46% 69%,var(--rt-h) 69%)`:`background:${col}`;
     const nm=opts.length===1?label(x,false):opts.map(([z,w])=>`${esc(shortN(z.n))} <small>${Math.round(w*100)}%</small>`).join(' or ');
-    H.push(`<div class="stop${i===0?' cur':''}" style="color:${col};${one?'flex-grow:2':''}"><div class="trk" style="${trk}"><span class="dot"></span></div><div class="t"><b>${nm}</b><span>Grades ${lo===0?'K':lo}-${x.hi}${opts.length>1?' · depends on address':kid&&kid.grade<=x.hi?' · '+yr(lo):''}</span></div></div>`)});
+    const mxs=i===1&&p.mx&&p.mx.length?` <small>or</small> ${p.mx.map(z=>`${esc(shortN(z.n))} <small>(district-wide)</small>`).join(' or ')}`:'';
+    H.push(`<div class="stop${i===0?' cur':''}" style="color:${col};${one?'flex-grow:2':''}"><div class="trk" style="${trk}"><span class="dot"></span></div><div class="t"><b>${nm}${mxs}</b><span>Grades ${lo===0?'K':lo}-${x.hi}${p.app&&i>0?' · by district application':opts.length>1?' · depends on address':kid&&kid.grade<=x.hi?' · '+yr(lo):''}</span></div></div>`)});
   if(p.kind==='apply'){const pn=publicNext(s);const g=s.hi+1;
     const pub=pn?(pn.opts.length===1||pn.opts[0][1]>=0.95?`or public: <b>${esc(pn.opts[0][0].n)}</b>`:`or public: ${pn.opts.slice(0,3).map(([z,w])=>`<b>${esc(z.n)}</b>${w?` <small>${Math.round(w*100)}%</small>`:''}`).join(' or ')}`):'or a public school';
     H.push(`<div class="stop alt" style="color:var(--rt-x)"><div class="trk"><span class="dot"></span></div><div class="t"><b>Apply to private schools ${pub}</b><span>Grades ${g}-12${kid&&kid.grade<g?' · '+yr(g):''}${p.to.length?` · graduates often go to ${esc(p.to.slice(0,3).map(x=>shortN(x.n)).join(', '))}`:''}</span></div></div>`)}
   else if(p.kind==='k12')H.push('<span class="term ok">✓ One admission</span>');
   else if(p.kind==='continue')H.push('<span class="term ok">✓ No reapplying</span>');
-  else H.push(`<span class="term">${p.end?'Assigned by district':'High school assigned by district'}</span>`);
+  else H.push(`<span class="term">${p.app?'By district application':p.end?'Assigned by district':'High school assigned by district'}</span>`);
   return`<div class="route">${H.join('')}</div>`}
 function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
   for(const[d,lv,ids]of G.zones)if(lv==='H'&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids[0]}return null}
