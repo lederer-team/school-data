@@ -1741,7 +1741,7 @@ function lpLead(name,email,phone,places){try{
   const t=f.querySelector('[name=termsAccepted]');if(t&&!t.checked)t.click();
   setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
 function gate(){
-  if(!CFG.gate||teamBypass()||lsGet('bx_signed'))return;
+  if(!CFG.gate||/luxurypresence|localhost/.test(location.hostname)||teamBypass()||lsGet('bx_signed'))return;
   const g=$('gate');g.hidden=false;document.documentElement.style.overflow='hidden';setTimeout(()=>$('gname').focus(),50);
   $('gform').addEventListener('submit',e=>{e.preventDefault();
     const name=$('gname').value.trim(),email=$('gemail').value.trim(),phone=$('gphone').value.trim();
