@@ -875,6 +875,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .t-pub{background:var(--ink2);color:#fff}
 .bx .t-ch{background:#2F5D8A;color:#fff}
 .bx .t-pr{background:#8A4F7D;color:#fff}
+.bx .homes{background:var(--surface);border:1px solid var(--line);padding:18px;display:grid;gap:14px}
+.bx .homes h3{font-family:var(--serif);font-weight:400;font-size:24px;color:var(--ink);margin:0;line-height:1.2}
+.bx .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.bx .hcard{border:1px solid var(--line);display:grid;grid-template-rows:auto 1fr;text-decoration:none;color:inherit;background:var(--surface);min-width:0}
+.bx .hcard:hover{border-color:var(--ink)}
+.bx .hcard .ph{aspect-ratio:3/2;background:var(--sunk) center/cover no-repeat;max-width:100%}
+.bx .hcard .bd{padding:10px 12px;display:grid;gap:2px}
+.bx .hcard .pr{font-family:var(--serif);font-size:22px;color:var(--ink);line-height:1.1}
+.bx .hcard .sp{font-size:13px;color:var(--ink2)}
+.bx .hcard .ad{font-size:13px;color:var(--ink);font-weight:700}
+.bx .hcard .ml{font-size:11px;color:var(--muted)}
+.bx .hcard.this{border:2px solid var(--teal)}
+.bx .hcard .fl{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:900;color:var(--teal)}
 .bx .znote{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:var(--ink2)}
 .bx .znote b{color:var(--ink)}
 .bx .znote .warn{color:var(--amber);font-weight:700}
@@ -1014,6 +1027,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <div id="znote"></div>
       <div id="special"></div>
       <div id="list" class="res"><div class="empty">Loading East Bay schools…</div></div>
+      <div id="homes"></div>
       <p class="sub">Scores are The Lederer Team's own calculation from public data. See <a href="#method" data-view="method">how we score schools</a>. Public school attendance depends on district boundaries, which can change: confirm eligibility with the district before choosing a home.</p>
     </section>
   </div>
@@ -1336,6 +1350,40 @@ function homesUrl(b){const[s0,w0,n0,e0]=b;const c={lat:+((s0+n0)/2).toFixed(5),l
 function zoneBox(s){const P=ZB[s.id];if(!P)return null;let b=[90,180,-90,-180];
   for(const polys of P)for(const poly of polys)for(const[x,y]of poly[0]){b=[Math.min(b[0],y),Math.min(b[1],x),Math.max(b[2],y),Math.max(b[3],x)]}return b}
 function placeBox(p){const r=isCity(p)?0.022:0.011;const k=1/Math.cos(p.lat*Math.PI/180);return[+p.lat-r,+p.lng-r*k,+p.lat+r,+p.lng+r*k]}
+// Active listings near an address, read from the site's own home search (same site, so the Explorer can load it out of view)
+let LST={key:null,state:'idle',items:[],home:null};
+const normAddr=a=>String(a||'').toLowerCase().replace(/[.,#]/g,' ').replace(/\b(street|st|avenue|ave|road|rd|drive|dr|way|court|ct|lane|ln|place|pl|boulevard|blvd|terrace|ter|circle|cir)\b/g,'').replace(/\s+/g,' ').trim();
+const addrKey=a=>{const m=normAddr(a).match(/^(\d+)\s+([a-z0-9]+(?:\s[a-z0-9]+)?)/);return m?m[1]+' '+m[2]:null};
+function parseListings(doc){const seen=new Set(),out=[];
+  for(const a of doc.querySelectorAll('a[href*="/home-search/listings/"]')){const href=a.getAttribute('href').split('?')[0];if(seen.has(href))continue;
+    let c=a;for(let i=0;i<6&&c&&!/\$[\d,]{5,}/.test(c.innerText||'');i++)c=c.parentElement;if(!c)continue;seen.add(href);
+    const t=c.innerText||'';const num=re=>{const m=t.match(re);return m?+m[1].replace(/,/g,''):null};
+    const ad=(t.split('\n').find(l=>/,\s*[A-Za-z .]+ CA,?\s*\d{5}/.test(l))||'').trim();
+    out.push({href,price:num(/\$([\d,]+)/),bd:num(/(\d+)\s*bd/),ba:num(/([\d.]+)\s*ba/),sf:num(/([\d,]+)\s*sqft/),ad,mls:(t.match(/MLS\D{0,3}\s*([A-Z0-9-]+)/)||[])[1]||'',st:t.split('\n')[0].trim(),img:(c.querySelector('img')||{}).src||''})}
+  return out}
+function listingsFor(p){const k=p.lat+','+p.lng;if(LST.key===k)return;LST={key:k,state:'loading',items:[],home:p};renderHomes();
+  if(!/theledererteam\.com$/.test(location.hostname)){LST.state='offsite';renderHomes();return}
+  const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.tabIndex=-1;f.style.cssText='position:fixed;left:-4000px;top:0;width:1200px;height:900px;border:0;visibility:hidden';
+  f.src=homesUrl(placeBox(p));document.body.appendChild(f);let n=0,last=-1,same=0;
+  const poll=()=>{if(LST.key!==k){f.remove();return}let items=[];try{items=parseListings(f.contentDocument)}catch(e){}
+    if(items.length&&items.length===last)same++;else same=0;last=items.length;
+    if((items.length&&same>=2)||++n>22){LST.items=items;LST.state='done';f.remove();renderHomes()}else setTimeout(poll,700)};
+  f.addEventListener('load',()=>setTimeout(poll,1500))}
+function renderHomes(){const el=$('homes');if(!el)return;const p=st.places.find(x=>x.kind==='address');
+  if(!p){el.innerHTML='';return}if(LST.key!==p.lat+','+p.lng){listingsFor(p);return}
+  const all=homesUrl(placeBox(p));
+  const head=`<div class="reshead"><h3>Homes for sale near ${esc(p.label)}</h3></div>`;
+  if(LST.state==='loading'){el.innerHTML=`<div class="homes">${head}<p class="sub">Checking active listings near this address…</p></div>`;return}
+  if(LST.state==='offsite'){el.innerHTML=`<div class="homes">${head}<p class="sub">Active listings appear here on theledererteam.com. ${homesLink(all,'Open the home search for this area')}</p></div>`;return}
+  const key=addrKey(p.label);const me=LST.items.find(x=>key&&addrKey(x.ad)===key);
+  let others=LST.items.filter(x=>x!==me);
+  if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd&&x.bd)d+=Math.abs(x.bd-me.bd)*0.5;if(me.sf&&x.sf)d+=Math.abs(Math.log(x.sf/me.sf))*2;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
+  const card=(x,cls)=>`<a class="hcard${cls?' '+cls:''}" href="${esc(x.href)}" target="_blank" rel="noopener"><div class="ph"${x.img?` style="background-image:url('${esc(x.img)}')"`:''}></div><div class="bd">${cls?'<span class="fl">This home is listed for sale</span>':''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span><span class="sp">${[x.bd&&x.bd+' bd',x.ba&&x.ba+' ba',x.sf&&x.sf.toLocaleString()+' sqft'].filter(Boolean).join(' · ')}</span><span class="ad">${esc(x.ad)}</span>${x.mls?`<span class="ml">MLS® ${esc(x.mls)}</span>`:''}</div></a>`;
+  const list=others.slice(0,6);
+  el.innerHTML=`<div class="homes">${head}
+    ${me?`<div class="hgrid">${card(me,'this')}</div><h4 class="sp-lab" style="border:0;padding:0">Similar homes nearby${me.price?`: closest in price${me.bd?', bedrooms':''}${me.sf?' and size':''}`:''}</h4>`:`<p class="sub">${LST.items.length?'This address isn’t an active listing on our search right now. Homes for sale nearby:':'No active listings found near this address right now.'}</p>`}
+    ${list.length?`<div class="hgrid">${list.map(x=>card(x)).join('')}</div>`:''}
+    <p class="sub">${homesLink(all,'See every home for sale in this area')} · Listings come from the MLS through our home search and can change at any time. Schools shown above are for the address you entered; check each home’s assigned schools with the district.</p></div>`}
 const homesLink=(url,txt)=>`<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener" title="Opens our home search for this map area. Check each home's assigned school with the district.">${txt}</a>`;
 // Where a school leads as a child grows: public feeder chain, private continuation, or a new application
 function schoolPath(s){
@@ -1763,7 +1811,7 @@ function renderList(){
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
    (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
 }
-function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();syncHash()}
+function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();renderHomes();syncHash()}
 function soft(){renderKidControls();renderPlans();renderList();renderMap();syncHash()}
 function setView(v){const m=v==='method';$('v-plan').hidden=m;$('v-method').hidden=!m;root.querySelectorAll('.views [data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));
   if(!m&&map)setTimeout(()=>map.resize(),0);root.querySelector('.views').scrollIntoView({behavior:'smooth',block:'start'})}
