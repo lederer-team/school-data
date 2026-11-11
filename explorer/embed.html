@@ -971,8 +971,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .suggest p{margin:0;font-size:15px;color:var(--ink2)}
 .bx .fsug{position:fixed;right:0;top:50%;transform:translateY(-50%);z-index:40;background:var(--teal);color:#fff;border:2px solid #fff;border-right:0;text-decoration:none;padding:16px 9px;border-radius:6px 0 0 6px;box-shadow:0 4px 14px rgba(0,0,0,.18);font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:900;writing-mode:vertical-rl;transform-origin:center;padding-right:max(9px,env(safe-area-inset-right,0px))}
 .bx .fsug span{transform:rotate(180deg);display:block}
-.bx .fsug:hover,.bx .fsug:focus-visible{background:#0B5549;color:#fff}
-@media (max-width:700px){.bx .fsug{top:auto;bottom:88px;transform:none;writing-mode:horizontal-tb;padding:10px 12px;border-radius:6px 0 0 6px;font-size:10.5px}
+.bx .fsug{transition:transform .2s ease,padding .2s ease,background .2s ease,box-shadow .2s ease}
+.bx .fsug:hover,.bx .fsug:focus-visible{background:#0B5549;color:#fff;transform:translate(-8px,-50%);padding-left:13px;box-shadow:-4px 6px 20px rgba(0,0,0,.28)}
+@media (prefers-reduced-motion:reduce){.bx .fsug{transition:none}}
+@media (max-width:700px){.bx .fsug:hover,.bx .fsug:focus-visible{transform:translateX(-6px)}
+.bx .fsug{top:auto;bottom:88px;transform:none;writing-mode:horizontal-tb;padding:10px 12px;border-radius:6px 0 0 6px;font-size:10.5px}
 .bx .fsug span{transform:none}}
 .bx .sbtn{display:inline-block;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:11px 20px;background:transparent}
 .bx .sbtn:hover{background:var(--ink);color:var(--surface)}
