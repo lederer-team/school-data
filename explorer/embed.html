@@ -839,6 +839,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .empty b{color:var(--ink)}
 .bx .note{background:var(--surface);border:1px solid var(--line);padding:16px 18px;display:grid;gap:8px;font-size:13px;color:var(--muted)}
 .bx .note b{color:var(--ink2)}
+.bx .znote{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:var(--ink2)}
+.bx .znote b{color:var(--ink)}
+.bx .znote .warn{color:var(--amber);font-weight:700}
+.bx .znote ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.bx .znote a{color:var(--teal)}
 .bx .special{background:var(--teal-soft);border:1px solid var(--teal);padding:14px 16px;display:grid;gap:6px;font-size:13.5px;color:var(--ink2)}
 .bx .special b{color:var(--ink)}
 .bx .spechead{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap}
@@ -931,7 +936,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <ul id="sugg" class="sugg" role="listbox" hidden></ul>
       <span class="sub" id="placeNote"></span></div>
     <div class="fld"><label class="lab" for="radius">Search radius</label><select id="radius"><option value="5">5 miles</option><option value="10">10 miles</option><option value="20">20 miles</option><option value="99">Any distance</option></select><span class="sub" id="radNote">Private and charter schools</span></div>
-    <div class="fld"><label class="lab" for="pub">Public schools</label><select id="pub"><option value="dist">In my districts</option><option value="city">In my cities</option><option value="radius">Anywhere in radius</option></select><span class="sub" id="pubNote"></span></div>
+    <div class="fld"><label class="lab" for="pub">Public schools</label><select id="pub"><option value="zone">Zoned for my locations</option><option value="dist">Anywhere in my district</option><option value="radius">Anywhere in radius</option></select><span class="sub" id="pubNote"></span></div>
     <div class="fld"><label class="lab" for="budget">Private tuition budget</label><select id="budget"><option value="0">No limit</option><option value="30000">Up to $30k a year</option><option value="60000">Up to $60k a year</option><option value="100000">Up to $100k a year</option><option value="150000">Up to $150k a year</option></select><span class="sub">Total for all children</span></div>
     <div class="fld"><div class="lab">Family plans favor</div><div class="seg" id="mode"><button type="button" data-v="protect" aria-pressed="true">Every child</button><button type="button" data-v="avg" aria-pressed="false">Best average</button></div><span class="sub" id="modeNote"></span><label class="check" style="font-size:13px"><input type="checkbox" id="together"><span>Prefer one campus for siblings</span></label></div>
     <div class="tbar">
@@ -956,6 +961,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       </div>
       <div id="planwrap" class="res"></div>
       <div class="reshead"><h3 class="h2" id="ktitle"></h3><span class="sub" id="ksub"></span></div>
+      <div id="znote"></div>
       <div id="special"></div>
       <div id="list" class="res"><div class="empty">Loading East Bay schools…</div></div>
       <p class="sub">Scores are The Lederer Team's own calculation from public data. See <a href="#method" data-view="method">how we score schools</a>. Public school attendance depends on district boundaries, which can change: confirm eligibility with the district before choosing a home.</p>
@@ -966,13 +972,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="band plain" id="v-method" hidden><div class="in">
  <div class="meth">
   <nav class="toc" aria-label="On this page">
-    <a href="#m-fit">The fit score</a><a href="#m-cats">What each category measures</a><a href="#m-path">Path to high school</a><a href="#m-family">Family plans</a><a href="#m-missing">Missing data</a><a href="#m-not">What we never use</a><a href="#m-sources">Sources</a><a href="#m-limits">Limits and updates</a>
+    <a href="#m-fit">The fit score</a><a href="#m-cats">What each category measures</a><a href="#m-path">Path to high school</a><a href="#m-family">Family plans</a><a href="#m-missing">Missing data</a><a href="#m-public">Which public schools appear</a><a href="#m-not">What we never use</a><a href="#m-sources">Sources</a><a href="#m-limits">Limits and updates</a>
   </nav>
   <div class="mbody">
    <section><div class="eyebrow">Methodology · updated November 2026</div>
     <h3>How the Bay Area School Explorer scores schools</h3>
     <p>There is no single best school, only the best fit for a particular child. So instead of one fixed ranking, the Explorer scores every school on several separate measures and lets you decide how much each one matters. Every number comes from public records or from what schools publish about themselves. We never copy ratings from GreatSchools, Niche or any other ranking site.</p>
-    <div class="callout">The Explorer is a research tool. It does not tell you which school a home is assigned to, and it does not recommend specific schools. Public school attendance depends on district boundaries and enrollment rules, which can change. Confirm with the district or school before relying on anything here in a home purchase.</div>
+    <div class="callout">The Explorer is a research tool, and it does not recommend specific schools. Public school attendance areas come from each district’s own map, but boundaries, programs and enrollment rules change. Confirm with the district or school before relying on anything here in a home purchase.</div>
    </section>
    <section id="m-fit"><h3>The fit score</h3>
     <p>Each child gets a fit score from 0 to 10 for every school in range. It is a weighted average of the category scores below, using that child's sliders as the weights. If Academics is set to 8 and Sports to 2, academics counts four times as much as sports. The colored bar on each school shows which categories produced its score.</p>
@@ -1006,7 +1012,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <ul>
      <li><b>Every child</b> (the default) blends 60% the weakest child's fit with 40% the average, so no child is sacrificed for another. <b>Best average</b> uses the plain average.</li>
      <li><b>Logistics</b> is the estimated morning drive from home through each school, nearest first.</li>
-     <li>Public schools are paired only with a home city they typically serve. Charter and private schools are open to all.</li>
+     <li>Public schools are paired only with a location they’re zoned for. Charter and private schools are open to all.</li>
      <li>Plans over your tuition budget are hidden. The five-year view shows each child's school year by year, including the move to high school.</li>
     </ul>
    </section>
@@ -1014,11 +1020,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <p>When a school hasn't been measured on something your child cares about, it's held at an average 5.0, shown faded in the score bar and flagged on the card. Missing data neither helps nor hurts a school. A school whose score rests mostly on those averages can't appear in a child's top 10, so the top of each list always reflects real data. Schools with no usable measures at all are listed separately as not yet scored.</p>
    </section>
    <section id="m-public"><h3>Which public schools appear</h3>
-    <p>Public school eligibility is set by school district, so by default the Explorer shows the public schools in the districts that typically serve each location you enter. For an address, that's the district boundaries containing it (often one elementary and one high school district, or one unified district). For a city, it's every district with schools in that city. You can narrow this to schools located in the cities you picked, or widen it to every public school within your radius. Private and charter schools always use the radius, since they enroll from anywhere.</p>
-    <p>Districts assign schools by attendance area, and those areas don't always follow city lines. The Explorer works at the district level and never tells you which school an address is assigned to. Confirm with the district before choosing a home.</p>
+    <p>By default the Explorer shows only the public schools a family could attend without a transfer: the schools whose attendance areas cover each location you enter. Attendance areas come from each district’s own school locator map. For an address or neighborhood, that’s the elementary, middle and high school zoned for that spot. For a whole city, it’s every school zoned for at least 3% of the city’s area, labeled with its share, so a school that covers only the hills on one side of town says so.</p>
+    <p>Mapped so far: Oakland, Berkeley, West Contra Costa, Alameda, Mt. Diablo, San Ramon Valley, Pleasanton, Hayward, Newark and the Acalanes high schools. Schools in other districts show for any home in the district until their maps are added, and say so on the card. District programs without their own attendance area are listed as by application. You can widen the list to every school in your district (an intradistrict transfer, subject to space) or to every public school within your radius. Private and charter schools always use the radius, since they enroll from anywhere.</p>
+    <p>Elementary and middle schools are scored on the high school their attendance area feeds. When an area splits between two high schools, the path is weighted by how much of the area each one serves, unless you entered an address, which settles it.</p>
+    <p>Boundaries change and districts make exceptions. Always confirm the school for a specific address with the district before choosing a home.</p>
    </section>
    <section id="m-not"><h3>What we never use</h3>
-    <p>Scores never use the race, ethnicity, income, language or disability makeup of a school's students, and the Explorer has no demographic filters. We don't use home prices or neighborhood characteristics. Schools are identified with the cities and districts they typically serve, never with specific homes or streets. The learning support option only adds information about specialized schools and district services. It never changes how other schools rank.</p>
+    <p>Scores never use the race, ethnicity, income, language or disability makeup of a school's students, and the Explorer has no demographic filters. We don't use home prices or neighborhood characteristics. Attendance areas come straight from district maps and are shown only to say which public schools serve a location. The learning support option only adds information about specialized schools and district services. It never changes how other schools rank.</p>
    </section>
    <section id="m-sources"><h3>Sources</h3>
     <div class="twrap"><table class="mtab"><thead><tr><th>Data</th><th>Source</th></tr></thead><tbody>
@@ -1031,6 +1039,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
      <tr><td>Arts, clubs, STEM teams</td><td>School websites, course catalogs and published school profiles, reviewed school by school</td></tr>
      <tr><td>Tuition and aid</td><td>School admissions pages, 2026-27 where published</td></tr>
      <tr><td>District service areas</td><td>CDE district boundaries 2025-26</td></tr>
+     <tr><td>Attendance areas</td><td>District school locator maps: Oakland Unified 2026-27, Berkeley Unified zones, and SchoolSite Locator maps for West Contra Costa, Acalanes, Alameda, Mt. Diablo, Hayward, Newark, Pleasanton (2024-25) and San Ramon Valley (2016-17 map, being updated). City limits from the U.S. Census.</td></tr>
     </tbody></table></div>
    </section>
    <section id="m-limits"><h3>Limits and updates</h3>
@@ -1094,9 +1103,29 @@ const DCACHE=new Map();
 function placeDists(p){const k=p.label+'|'+p.lat+'|'+p.lng;if(DCACHE.has(k))return DCACHE.get(k);const out=new Set();
   for(const[n,,polys]of(G.bounds||[]))if(polys.some(poly=>inRing(+p.lng,+p.lat,poly[0])&&!poly.slice(1).some(h=>inRing(+p.lng,+p.lat,h))))out.add(n);
   if(p.kind==='city'&&p.n===p.city||!out.size)(G.cityDist[p.city]||[]).forEach(d=>out.add(d));DCACHE.set(k,out);return out}
-function servesHome(s,p){if(s.sec!=='Public')return true;if(AUHSD[s.id])return AUHSD[s.id].includes(p.city);return placeDists(p).has(s.dist)}
-function inCity(s,p){return s.c===p.city||(AUHSD[s.id]||[]).includes(p.city)}
-function pubOk(s,p){return st.pub==='city'?inCity(s,p):servesHome(s,p)}
+function servesHome(s,p){if(s.sec!=='Public')return true;return placeDists(p).has(s.dist)}
+// Attendance areas (district school-locator maps). ZB: school id -> its zone polygons; G.cityZ: city -> {id: share of the city's area}
+const ZB={},ZL={};for(const[d,lv,ids,polys]of(G.zones||[]))for(const i of ids){(ZB[i]=ZB[i]||[]).push(polys);(ZL[i]=ZL[i]||new Set()).add(lv)}
+const inPolys=(polys,x,y)=>polys.some(poly=>inRing(x,y,poly[0])&&!poly.slice(1).some(h=>inRing(x,y,h)));
+const levels=s=>[s.lo<=5?'E':'',s.hi>=6&&s.lo<=8?'M':'',s.hi>=9?'H':''].join('');
+const isCity=p=>p.kind==='city'&&p.n===p.city;
+function mapped(s){const z=(G.zmap||{})[s.dist]||'';return [...levels(s)].some(l=>z.includes(l))}
+// How a public school relates to a location: {k:'zone',share,pt} | {k:'prog'} (district-wide program) | {k:'dist'} (not mapped yet) | null
+function zoneFor(s,p){if(s.sec!=='Public')return null;
+  if(ZB[s.id]){if(isCity(p)&&G.cityZ&&G.cityZ[p.n]){const v=G.cityZ[p.n][s.id];return v?{k:'zone',share:v}:null}
+    return ZB[s.id].some(polys=>inPolys(polys,+p.lng,+p.lat))?{k:'zone',share:1,pt:true}:null}
+  if(!servesHome(s,p))return null;return mapped(s)?{k:'prog'}:{k:'dist'}}
+function pubOk(s,p){if(st.pub==='dist')return servesHome(s,p);return !!zoneFor(s,p)}
+function zoneBest(s){let b=null;for(const p of st.places){const z=zoneFor(s,p);if(z&&(!b||(z.share||0)>(b.z.share||0)))b={p,z}}return b}
+function zoneText(s,long){const b=zoneBest(s);const D=esc(s.dist);
+  if(!b)return long?`Run by ${D}. Families outside its attendance area can request a transfer, subject to space.`:`${D} · by transfer`;
+  const z=b.z,nm=esc(b.p.city||b.p.label);
+  if(z.k==='zone'){const bz=s.dist==='Berkeley Unified'&&s.hi<=8?(long?' Berkeley Unified assigns elementary students within three zones, so families rank the schools in their zone.':' zone'):'';
+    const where=z.pt?(b.p.kind==='address'?'this address':esc(b.p.label)):(z.share>=0.95?'all of '+nm:'about '+Math.round(z.share*100)+'% of '+nm);
+    const ww=z.pt&&addrWarn(b.p);
+    return long?`Attendance area covers ${where}, based on ${D}’s school locator map.${bz}${ww?' This location is near a boundary or in a district that mainly serves another city, so get the assigned school from the district in writing.':''} Confirm the school for a specific address with the district.`:(ww?`Likely zoned for ${where} · confirm with the district`:`Zoned school${bz} for ${where}`)}
+  if(z.k==='prog')return long?`A ${D} program without its own attendance area. Students in the district apply or are placed by the district.`:`${D} program · by application`;
+  return long?`Run by ${D}. We haven’t mapped this district’s attendance areas yet, so it’s shown for any home in the district. Confirm the school for a specific address with the district.`:`${D} · attendance areas not mapped yet`}
 const HSCATS=['acad','college','sports','arts','stem','clubs','interest'];
 const PRESETS={'Balanced':{acad:8,college:5,sports:3,arts:3,stem:3,clubs:3,path:5,size:2,commute:3,lang:2,care:1,small:2},
  'Academics first':{acad:10,college:8,sports:1,arts:1,stem:2,clubs:1,path:7,size:2,commute:2,lang:2,care:1,small:3},
@@ -1122,7 +1151,7 @@ const kname=(k,i)=>k.name||'Child '+(i+1);
 
 const pl=n=>{const p=PLACES.find(x=>x.n===n);return{...p,kind:'city',label:p.n}};
 function mk(name,grade,preset,ints,sector){return{name,grade,preset,w:{...PRESETS[preset],interest:ints.length?7:0},ints:new Set(ints),sector,sizePref:'any',support:false}}
-const fresh=()=>({places:[],radius:10,pub:'dist',budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,kids:[mk('',9,'Balanced',[],'all')]});
+const fresh=()=>({places:[],radius:10,pub:'zone',budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,kids:[mk('',9,'Balanced',[],'all')]});
 const example=()=>({places:[pl('Orinda'),pl('Moraga'),pl('Lafayette'),pl('Montclair, Oakland')],radius:10,budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,
  kids:[mk('Maya',10,'Athlete',['waterpolo'],'all'),mk('Leo',6,'STEM kid',['robotics','coding'],'all')]});
 let st=fresh();
@@ -1163,12 +1192,40 @@ function hsFit(s,kid){if(!s)return null;let tw=0,t=0;
 function pathInfo(s,kid){
   if(kid.grade>=9)return null;
   if(s.hi>=12&&s.sec==='Private'){const f=hsFit(s,kid);return f==null?null:{v:0.9*f+0.5,to:[s],cert:'Very likely',how:'Continues through 12th grade at the same school',same:true}}
+  if(s.feedw&&s.feedw.length){let fw=s.feedw;const hz=hsAtHome(s);if(hz)fw=[[hz,1]];
+    const hs=fw.map(([i,w])=>[BY[i],w]).filter(x=>x[0]);const fs=hs.map(([h,w])=>[hsFit(h,kid),w]).filter(x=>x[0]!=null);if(!fs.length)return null;
+    const tw=fs.reduce((a,x)=>a+x[1],0),v=fs.reduce((a,x)=>a+x[0]*x[1],0)/tw;
+    if(hs.length===1||hs[0][1]>=0.9)return{v,to:[hs[0][0]],cert:'Certain',how:`Attendance area feeds ${hs[0][0].n}`};
+    return{v,to:hs.map(x=>x[0]),cert:'Depends on address',how:'Attendance area splits: '+hs.map(([h,w])=>`${h.n} ${Math.round(w*100)}%`).join(', ')}}
   if(s.feed){const h=BY[s.feed];const f=hsFit(h,kid);return f==null?null:{v:f,to:[h],cert:'Certain',how:`District feeder to ${h.n}`}}
   if(s.next&&s.next.to){const h=BY[s.next.to];const f=hsFit(h,kid);return f==null?null:{v:0.9*f+0.5,to:[h],cert:'Very likely',how:s.next.how}}
   if(s.next&&s.next.list){const hs=s.next.list.map(i=>BY[i]).filter(Boolean);const fs=hs.map(h=>hsFit(h,kid)).filter(v=>v!=null);if(!fs.length)return null;
     const avg=fs.reduce((a,b)=>a+b,0)/fs.length;return{v:0.7*avg+1.5,to:hs,cert:'Uncertain',how:s.next.how}}
   return null}
 const pt=p=>[p.lat,p.lng];
+// Distance in feet from a point to the nearest edge of a set of polygons
+function edgeFeet(polys,x,y){const kx=Math.cos(y*Math.PI/180)*364000,ky=364000;let best=1e12;
+  for(const poly of polys)for(const r of poly)for(let i=1;i<r.length;i++){const ax=(r[i-1][0]-x)*kx,ay=(r[i-1][1]-y)*ky,bx=(r[i][0]-x)*kx,by=(r[i][1]-y)*ky;
+    const dx=bx-ax,dy=by-ay,L=dx*dx+dy*dy;let t=L?-(ax*dx+ay*dy)/L:0;t=Math.max(0,Math.min(1,t));const ex=ax+t*dx,ey=ay+t*dy;const d=ex*ex+ey*ey;if(d<best)best=d}
+  return Math.sqrt(best)}
+const NEAR_FT=800;
+// Warnings for an address or neighborhood: near a district or attendance-area line, or inside a district that mainly serves another city
+function addrWarn(p){if(isCity(p))return null;if(p._w!==undefined)return p._w;const x=+p.lng,y=+p.lat,w={near:[],other:[]};
+  for(const[n,t,polys]of(G.bounds||[])){if(!inPolys(polys,x,y))continue;
+    const f=edgeFeet(polys,x,y);if(f<NEAR_FT)w.near.push({what:n+' district line',f});
+    const cs=[...new Set((G.distCity[n]||[]).map(c=>c.replace(/,.*$/,'')))];if(p.kind==='address'&&p.city&&cs.length&&!cs.includes(p.city)&&t!=='H')w.other.push({d:n,cs})}
+  for(const[d,lv,ids,polys]of(G.zones||[])){if(!inPolys(polys,x,y))continue;const f=edgeFeet(polys,x,y);if(f<NEAR_FT)w.near.push({what:ids.map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area',f})}
+  p._w=(w.near.length||w.other.length)?w:null;return p._w}
+function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector==='Private'||st.pub==='radius'){el.innerHTML='';return}
+  const ds=new Set();st.places.forEach(p=>placeDists(p).forEach(d=>{if(S.some(s=>s.dist===d&&s.sec==='Public'&&k.grade>=s.lo&&k.grade<=s.hi))ds.add(d)}));
+  const warns=st.places.map(p=>[p,addrWarn(p)]).filter(x=>x[1]);
+  const host=w=>w.replace(/^https?:\/\//,'').replace(/\/$/,'');
+  const contact=[...ds].map(d=>{const c=(G.dinfo||{})[d]||{};return`<li><b>${esc(d)}</b>${c.ph?` · ${esc(c.ph)}`:''}${c.w?` · <a href="https://${esc(host(c.w))}" target="_blank" rel="noopener">${esc(host(c.w))}</a>`:''}</li>`}).join('');
+  el.innerHTML=`<div class="znote">${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
+   <p><b>Attendance areas change, and district lines can be complicated.</b> The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
+// When a home is an address or neighborhood inside this school's attendance area, the zoned high school at that point is known
+function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p)||!ZB[s.id].some(pl=>inPolys(pl,+p.lng,+p.lat)))continue;
+  for(const[d,lv,ids,polys]of G.zones)if(lv==='H'&&d===s.dist&&inPolys(polys,+p.lng,+p.lat))return ids[0]}return null}
 function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;for(const p of st.places){if(lim&&!pubOk(s,p))continue;const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}
   if(!best)for(const p of st.places){const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}return best}
 function baseOk(s,kid){
@@ -1224,7 +1281,7 @@ function plans(){
   const out=[];
   for(const home of st.places){
     const hp=pt(home);
-    const lists=K.map(k=>order(rankKid(k,home).filter(r=>r.s.sec!=='Public'||(st.pub==='city'?inCity(r.s,home):servesHome(r.s,home)))).slice(0,8));
+    const lists=K.map(k=>order(rankKid(k,home).filter(r=>r.s.sec!=='Public'||pubOk(r.s,home))).slice(0,8));
     if(lists.some(l=>!l.length))continue;
     const tops=lists.map(l=>l[0]);
     const rec=(i,acc)=>{if(i===K.length){const pl=evalPlan(home,hp,acc);pl.tops=tops;out.push(pl);return}for(const r of lists[i])rec(i+1,[...acc,r])};
@@ -1260,11 +1317,11 @@ function timeline(p){
 /* ---------- share links: settings live in the link's #fragment, never sent to a server ---------- */
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
-function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['dist','city','radius'].indexOf(st.pub),a:st.active,
+function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['zone','dist','radius'].indexOf(st.pub),a:st.active,
   k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||''])}}
 function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
-  n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g!==0;n.pub=['dist','city','radius'][o.u|0]||'dist';
+  n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g!==0;n.pub=['zone','dist','radius'][o.u|0]||'zone';
   n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Private'].includes(sector)?sector:'all',
     sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup}));
@@ -1409,7 +1466,7 @@ function openDetail(id){
   let cost='';
   if(s.spec&&s.spec.t==='nps')cost='<p>When a district places a student here through the IEP, the district typically covers the cost. Confirm with your district.</p>';
   else if(s.sec==='Private'){cost=s.tui?`<p>${Object.entries(s.tui).map(([b,v])=>`<b>${b==='K-5'?'Grades K-5':b==='6-8'?'Grades 6-8':'Grades 9-12'}:</b> $${v.toLocaleString()} a year`).join('<br>')}</p>`:'<p>Tuition not yet collected. Check the school’s admissions page.</p>';if(s.aid)cost+=`<p>About ${s.aid}% of students receive financial aid.</p>`}
-  else cost=s.sec==='Charter'?'<p>Free. Charter schools are open to all; admission is by lottery if applications exceed seats.</p>':`<p>Free. ${AUHSD[s.id]?`Typically serves ${esc(AUHSD[s.id].join(', '))} residents through ${esc(s.dist)}. `:`Run by ${esc(s.dist)}. `}Assigned by attendance area. Families elsewhere in the district can request a transfer, subject to space. Confirm the school for a specific address with the district.</p>`;
+  else cost=s.sec==='Charter'?'<p>Free. Charter schools are open to all; admission is by lottery if applications exceed seats.</p>':`<p>Free. ${zoneText(s,true)}</p>`;
   const flags=(s.flags||[]).filter(x=>x!=='Programs not yet scored');
   const links=[d.w&&/\./.test(d.w)&&!/\s/.test(d.w)?`<a href="https://${esc(d.w.replace(/^https?:\/\//,''))}" target="_blank" rel="noopener">School website</a>`:'',s.sec!=='Private'&&/^\d{14}$/.test(s.id)?`<a href="https://www.caschooldashboard.org/reports/${s.id}/2025" target="_blank" rel="noopener">CA School Dashboard</a>`:'',map?`<button type="button" data-dmap="${s.id}">Show on map</button>`:''].filter(Boolean).join('');
   $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}${d.rel?' · '+esc(d.rel):''}</div><h3 id="dname">${esc(s.n)}</h3><div>${esc(s.c)}${s.sec!=='Private'&&s.dist?' · '+esc(s.dist):''}</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
@@ -1441,7 +1498,7 @@ function renderFamily(){
   $('radius').value=st.radius;$('budget').value=st.budget;
   root.querySelectorAll('#mode button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===st.mode));
   $('together').checked=st.together;$('pub').value=st.pub;
-  $('pubNote').textContent=st.pub==='dist'?'Every school in the districts that typically serve each location':st.pub==='city'?'Only schools with an address in each city you picked':'Same radius as private and charter schools';
+  $('pubNote').textContent=st.pub==='zone'?'Schools whose attendance areas cover each location, no transfer needed':st.pub==='dist'?'Includes schools you\u2019d need an intradistrict transfer for':'Same radius as private and charter schools';
   $('radNote').textContent=st.pub==='radius'?'All schools':'Private and charter schools';
   $('modeNote').textContent=st.mode==='protect'?'Plans are held back by the weakest fit':'Plans use the simple average of fits';
 }
@@ -1489,11 +1546,11 @@ function renderPlans(){
 function renderList(){
   const k=st.kids[st.active];const nm=kname(k,st.active);lastSpec=[];
   $('ktitle').textContent=`Best fits for ${nm} (${GRADES[k.grade]})`;
-  if(!st.places.length){lastList={scored:[],un:[]};$('ksub').textContent='';$('special').innerHTML='';
+  if(!st.places.length){lastList={scored:[],un:[]};$('ksub').textContent='';$('special').innerHTML='';$('znote').innerHTML='';
     $('list').innerHTML=`<div class="empty"><b>Start with where you might live.</b><span>Type an address or a city in the box above. Add several cities to compare them. Each child gets a ranked list, and with two or more children you'll also see family plans.</span><button type="button" class="btn line" data-example="1">See an example family</button></div>`;return}
   const R=rankKid(k);
   const scored=order(R),un=R.filter(r=>r.score==null);lastList={scored,un};
-  $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='dist'?'public schools in your locations\u2019 districts':'public schools in your cities')+', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi')}`;
+  $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi')}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
     $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
      ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.</div>`}
@@ -1502,16 +1559,16 @@ function renderList(){
       <span>Every public district must provide special education services, and many run dedicated autism programs. Ask each district on your list about its programs. Mainstream private schools aren't required to offer the same services, so ask each school what support it provides.</span></div>
      <div class="reshead"><h3 class="h2">All schools for ${esc(nm)}</h3></div>`;
   }else $('special').innerHTML='';
-  lastSpec=k.support?specList(k,'ld'):[];
+  lastSpec=k.support?specList(k,'ld'):[];renderZoneNote(k);
   const n=st.showN[st.active]||10;
   $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>{
     const s=r.s,top=[...r.parts].sort((a,b)=>b.share-a.share).slice(0,2).map(p=>`${CATS[p.c][0].toLowerCase()} ${p.v.toFixed(1)}`);
     const tags=[];
-    if(r.path)tags.push(`<span class="tag ${r.path.cert==='Uncertain'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
+    if(r.path)tags.push(`<span class="tag ${r.path.cert==='Uncertain'||r.path.cert==='Depends on address'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
     if(r.it)r.it.list.forEach(x=>tags.push(`<span class="tag ${x.hit?'good':''}">${esc(x.txt)}</span>`));
     if(r.min!=null){const h=homeFor(s);tags.push(`<span class="tag"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pc(h.p)};margin-right:6px"></i>About ${r.min} min from ${esc(h.c)}</span>`)}
     tags.push(`<span class="tag ${tuition(s,k.grade)==null?'warn':''}">${money(tuition(s,k.grade))}${s.aid?` · ${s.aid}% get aid`:''}</span>`);
-    if(s.sec==='Public')tags.push(`<span class="tag">${AUHSD[s.id]?'Typically serves '+esc(AUHSD[s.id].join(', '))+' residents':esc(s.dist)+' \u00b7 school set by home address'}</span>`);
+    if(s.sec==='Public')tags.push(`<span class="tag">${zoneText(s,false)}</span>`);
     if(s.sec==='Charter')tags.push('<span class="tag">Charter · open enrollment, lottery if full</span>');
     if(level(k.grade)!=='H'&&s.k8){const x=s.k8;if(x.langs)tags.push(`<span class="tag ${x.lang>=6?'good':''}">${esc(x.langs)}</span>`);if(x.care===10)tags.push('<span class="tag good">Before and after care on campus</span>');if(x.cls)tags.push(`<span class="tag">Classes of about ${x.cls}</span>`)}
     if(s.e)tags.push(`<span class="tag">${s.e.toLocaleString()} students${s.rt?' · '+s.rt+' per teacher':''}</span>`);
