@@ -1139,8 +1139,10 @@ function zoneHits(p){const k=p.lat+'|'+p.lng;if(ZHC.has(k))return ZHC.get(k);con
   const byKey={};(G.zones||[]).forEach(z=>{if(ds.has(z[0]))(byKey[z[0]+'|'+z[1]]=byKey[z[0]+'|'+z[1]]||[]).push(z)});
   for(const zs of Object.values(byKey)){const hit=zs.filter(z=>inPolys(z[3],x,y));
     if(hit.length){hit.forEach(z=>z[2].forEach(i=>ids.add(i)));continue}
-    let best=null;for(const z of zs){const f=edgeFeet(z[3],x,y);if(!best||f<best.f)best={z,f}}
-    if(best&&best.f<=SNAP_FT){best.z[2].forEach(i=>{ids.add(i);edge.add(i)});snaps.push({what:best.z[2].map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area (the address falls just outside the mapped areas)',f:best.f})}}
+    const near=zs.map(z=>({z,f:edgeFeet(z[3],x,y)})).filter(q=>q.f<=SNAP_FT).sort((a,b)=>a.f-b.f);if(!near.length)continue;
+    near[0].z[2].forEach(i=>ids.add(i));
+    // Only a question when two attendance areas are about equally close; a shoreline or outer map edge isn't a boundary
+    if(near.length>1&&near[1].f-near[0].f<400){near[0].z[2].forEach(i=>edge.add(i));snaps.push({what:'between the '+near.slice(0,2).map(q=>q.z[2].map(i=>BY[i]?.n).filter(Boolean).join(' / ')).join(' and ')+' attendance areas',f:near[0].f})}}
   const r={ids,edge,snaps};ZHC.set(k,r);return r}
 const ZB={},ZL={};for(const[d,lv,ids,polys]of(G.zones||[]))for(const i of ids){(ZB[i]=ZB[i]||[]).push(polys);(ZL[i]=ZL[i]||new Set()).add(lv)}
 const inPolys=(polys,x,y)=>polys.some(poly=>inRing(x,y,poly[0])&&!poly.slice(1).some(h=>inRing(x,y,h)));
@@ -1260,9 +1262,9 @@ const NEAR_FT=800;
 // Warnings for an address or neighborhood: near a district or attendance-area line, or inside a district that mainly serves another city
 function addrWarn(p){if(isCity(p))return null;if(p._w!==undefined)return p._w;const x=+p.lng,y=+p.lat,w={near:[],other:[]};
   for(const[n,t,polys]of(G.bounds||[])){if(!inPolys(polys,x,y))continue;
-    const f=edgeFeet(polys,x,y);if(f<NEAR_FT)w.near.push({what:n+' district line',f});
+    const f=edgeFeet(polys,x,y);if(f<NEAR_FT&&(G.bounds||[]).some(([n2,t2,p2])=>n2!==n&&(t2==='U'||t2===t||t==='U')&&edgeFeet(p2,x,y)<f+300))w.near.push({what:n+' district line',f});
     const cs=[...new Set((G.distCity[n]||[]).map(c=>c.replace(/,.*$/,'')))];if(p.kind==='address'&&p.city&&cs.length&&!cs.includes(p.city)&&t!=='H')w.other.push({d:n,cs})}
-  for(const[d,lv,ids,polys]of(G.zones||[])){if(!inPolys(polys,x,y))continue;const f=edgeFeet(polys,x,y);if(f<NEAR_FT)w.near.push({what:ids.map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area',f})}
+  for(const[d,lv,ids,polys]of(G.zones||[])){if(!inPolys(polys,x,y))continue;const f=edgeFeet(polys,x,y);if(f<NEAR_FT&&(G.zones||[]).some(z=>z[0]===d&&z[1]===lv&&z[2][0]!==ids[0]&&edgeFeet(z[3],x,y)<f+300))w.near.push({what:ids.map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area',f})}
   zoneHits(p).snaps.forEach(q=>w.near.push(q));
   p._w=(w.near.length||w.other.length)?w:null;return p._w}
 function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector==='Private'||st.pub==='radius'){el.innerHTML='';return}
