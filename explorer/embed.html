@@ -896,7 +896,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .feat .bd{padding:18px}}
 .bx .hgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
 .bx .hcard{display:grid;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--line);min-width:0;overflow:hidden}
-.bx .hcard .ph{aspect-ratio:4/3;max-width:100%;background:var(--sunk) center/cover no-repeat;position:relative;transition:transform .5s ease}
+.bx .hcard .ph{aspect-ratio:4/3;max-width:100%;background:var(--sunk) center/cover no-repeat;position:relative;flex-shrink:0;transition:transform .5s ease}
 .bx .hcard:hover .ph{transform:scale(1.03)}
 .bx .hcard .ph::after{content:"";position:absolute;inset:auto 0 0 0;height:55%;background:linear-gradient(180deg,transparent,rgba(0,0,0,.62))}
 .bx .hcard .pr{position:absolute;left:14px;bottom:10px;z-index:1;font-family:var(--serif);font-size:26px;color:#fff;line-height:1}
@@ -1395,10 +1395,11 @@ async function fetchListings(p){const[s0,w0,n0,e0]=placeBox(p);
     options:{collapseBy:'UNIQUE_ADDRESS'},pagination:{page:1,limit:150},sort:[{field:'lpListingOnMarketTimestamp',order:'DESC'}],websiteId:'8f1b626b-e68a-4ea9-b505-57ca4b4f7594'}})});
   const j=await r.json();const it=j&&j.data&&j.data.mlsListings&&j.data.mlsListings.items;if(!it)throw new Error('no data');
   const disc=new Set();
+  const tc=t=>/[a-z]/.test(t)?t:t.toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase());
   const out=it.filter(x=>x.lpShowAddress!==false).map(x=>{const pm=x.mlsProvider||{};if(pm.searchResultsDisclaimer)disc.add(pm.searchResultsDisclaimer.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());
     const ph=[x.lpPrimaryPhoto&&x.lpPrimaryPhoto.photoUrl,...(x.lpPhotos||[]).map(q=>q.photoUrl)].filter(Boolean);
     return{href:'/home-search/listings/'+x.lpListingSlug,price:x.listPrice,bd:x.bedroomsTotal,ba:x.lpTotalDecimalBath,sf:x.lpSqft,lot:x.lpLotSqft,yr:x.lpYearBuilt,
-      ad:[x.lpDisplayAddress,x.city].filter(Boolean).join(', ')+(x.postalCode?' CA '+x.postalCode:''),street:x.lpDisplayAddress||'',city:x.city||'',mls:x.lpListingId||'',
+      ty:x.lpPropertyType||'',ad:[tc(x.lpDisplayAddress||''),x.city].filter(Boolean).join(', ')+(x.postalCode?' CA '+x.postalCode:''),street:x.lpDisplayAddress||'',city:x.city||'',mls:x.lpListingId||'',
       st:x.lpListingStatus==='COMING_SOON'?'Coming soon':'For sale',img:ph[0]||'',imgs:ph.slice(0,4),office:x.listOfficeName||'',lat:x.latitude,lng:x.longitude,
       km:x.latitude?km(+p.lat,+p.lng,x.latitude,x.longitude):99}});
   LST.disc=[...disc];return out.sort((a,b)=>a.km-b.km)}
@@ -1423,9 +1424,9 @@ function renderHomes(){const el=$('homes');if(!el)return;const p=st.places.find(
   if(LST.state==='loading'){el.innerHTML=`<section class="homes">${head('Homes for sale near '+esc(p.label))}<div class="hgrid">${'<div class="hcard sk"><div class="ph"></div><div class="bd"><span></span><span style="width:60%"></span></div></div>'.repeat(3)}</div></section>`;return}
   if(LST.state==='offsite'){el.innerHTML=`<section class="homes">${head('Homes for sale near '+esc(p.label),'Active listings appear here on theledererteam.com.')}</section>`;return}
   const key=addrKey(p.label);const me=LST.items.find(x=>key&&addrKey(x.ad)===key);
-  let others=LST.items.filter(x=>x!==me);
+  let others=LST.items.filter(x=>x!==me&&!/LAND|LOT/i.test(x.ty||''));
   if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd)d+=x.bd?Math.abs(x.bd-me.bd)*0.5:0.6;if(me.sf)d+=x.sf?Math.abs(Math.log(x.sf/me.sf))*2:0.6;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
-  const list=others.slice(0,6);
+  const list=others.slice(0,8);
   const feat=me?`<a class="feat" href="${esc(me.href)}" target="_blank" rel="noopener"><div class="ph"${bg(me)}></div><div class="bd"><span class="badge">This home is for sale</span><span class="pr">${me.price?'$'+me.price.toLocaleString():''}</span><span class="ad">${esc(me.ad)}</span><span class="sp">${spec(me)}</span>${me.imgs&&me.imgs.length>1?`<span class="thumbs">${me.imgs.slice(1,4).map(u=>`<i style="background-image:url('${esc(u)}')"></i>`).join('')}</span>`:''}<span class="ml">${me.office?'Listed by '+esc(me.office)+(me.mls?' · ':''):''}${me.mls?'MLS® '+esc(me.mls):''}</span><span class="go">View this listing →</span></div></a>`:'';
   el.innerHTML=`<section class="homes">${head(me?esc(p.label.replace(/,.*$/,''))+' is for sale':'Homes for sale near '+esc(p.label),me?'Plus similar homes nearby, closest in price, bedrooms and size.':LST.items.length?'This address isn’t an active listing right now. Here are homes for sale nearby.':'No active listings found near this address right now.')}
     ${feat}${me&&list.length?`<div class="eyebrow">Similar homes nearby</div>`:''}${list.length?`<div class="hgrid">${list.map(card).join('')}</div>`:''}${foot}</section>`}
