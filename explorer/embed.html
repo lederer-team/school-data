@@ -1625,7 +1625,7 @@ function openDetail(id){
     ${sec('College outcomes',col)}
     ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
     ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
-    ${L2!=='H'?sec('School path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?'<p class="sub">Middle and high schools are assigned by the district from its attendance maps. Confirm with the district.</p>':''}`)+sec('Path to high school',path):''}
+    ${L2!=='H'?sec('Potential school path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?'<p class="sub">Middle and high schools are assigned by the district from its attendance maps. Confirm with the district.</p>':''}`)+sec('Path to high school',path):''}
     ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span. ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
     ${sec('Cost and eligibility',cost)}
     ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
@@ -1720,7 +1720,7 @@ function renderList(){
   $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>head(i)+(()=>{
     const s=r.s,top=[...r.parts].sort((a,b)=>b.share-a.share).slice(0,2).map(p=>`${CATS[p.c][0].toLowerCase()} ${p.v.toFixed(1)}`);
     const tags=[];
-    const spv=k.grade<9?`<div class="sp-lab">School path</div>${pathView(s,k)}`:'';
+    const spv=k.grade<9?`<div class="sp-lab">Potential school path</div>${pathView(s,k)}`:'';
     if(r.path&&k.grade>=9)tags.push(`<span class="tag ${r.path.cert==='Uncertain'||r.path.cert==='Depends on address'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
     if(r.it)r.it.list.forEach(x=>tags.push(`<span class="tag ${x.hit?'good':''}">${esc(x.txt)}</span>`));
     if(r.min!=null){const h=homeFor(s);tags.push(`<span class="tag"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pc(h.p)};margin-right:6px"></i>About ${r.min} min from ${esc(h.c)}</span>`)}
