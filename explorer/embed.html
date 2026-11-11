@@ -841,6 +841,28 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .note b{color:var(--ink2)}
 .bx .grphead{display:grid;gap:2px;margin:10px 0 2px;padding-bottom:6px;border-bottom:1px solid var(--line2)}
 .bx .grphead h4{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink);font-weight:700;margin:0}
+.bx .spath{display:flex;flex-wrap:wrap;align-items:stretch;gap:4px 0;margin-top:2px}
+.bx .sp-step{border:1px solid var(--line2);background:var(--surface);padding:6px 10px 7px;display:grid;gap:1px;align-content:start;min-width:0;max-width:240px}
+.bx .sp-step.cur{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--kc,var(--ink))}
+.bx .sp-gr{font-size:10px;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .sp-n{font-size:13px;color:var(--ink);font-weight:700;line-height:1.3}
+.bx .sp-n small{font-weight:400;color:var(--muted);font-size:12px}
+.bx .sp-y{font-size:11px;color:var(--muted)}
+.bx .sp-arr{align-self:center;width:22px;height:2px;background:var(--line2);position:relative;flex:none}
+.bx .sp-arr::after{content:"";position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left:6px solid var(--line2);border-right:0}
+.bx .sp-end{align-self:center;font-size:11px;letter-spacing:.8px;text-transform:uppercase;font-weight:700;padding:6px 10px;border:1px solid}
+.bx .sp-end.good{background:var(--teal-soft);color:var(--teal);border-color:var(--teal)}
+.bx .sp-end.warn{background:var(--amber-soft);color:var(--amber);border-style:dashed;border-color:var(--amber)}
+.bx .sp-end.plain{background:var(--sunk);color:var(--muted);border-color:var(--line2)}
+.bx .sp-note{flex-basis:100%;font-size:12px;color:var(--muted);margin-top:4px}
+.bx .sp-lab{font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:4px}
+.bx .drawer .sp-step{max-width:none;padding:9px 12px}
+.bx .drawer .sp-n{font-size:14px}
+.bx .tbadge{display:inline-block;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:900;padding:3px 7px;margin-right:6px;vertical-align:1px}
+.bx .t-zone{background:var(--teal);color:#fff}
+.bx .t-pub{background:var(--ink2);color:#fff}
+.bx .t-ch{background:#2F5D8A;color:#fff}
+.bx .t-pr{background:#8A4F7D;color:#fff}
 .bx .znote{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:var(--ink2)}
 .bx .znote b{color:var(--ink)}
 .bx .znote .warn{color:var(--amber);font-weight:700}
@@ -1317,6 +1339,22 @@ function pathYears(s,kid){const p=schoolPath(s);const out=[];let g=kid.grade;
     out.push(`${y}-${String(y+1).slice(2)} (${GRADES[g]}): ${opts.length>1?opts.map(([z,w])=>`${z.n} ${Math.round(w*100)}%`).join(' or '):x.n}`);g=x.hi+1}
   if(g<=12)out.push(`${YEAR+(g-kid.grade)}-${String(YEAR+(g-kid.grade)+1).slice(2)} (${GRADES[g]}): ${p.kind==='public'?'next school depends on the district':'apply to the next school'}`);
   return out}
+const tbadge=s=>{if(s.sec==='Charter')return'<span class="tbadge t-ch">Charter \u00b7 lottery</span>';if(s.sec==='Private')return'<span class="tbadge t-pr">Private \u00b7 apply</span>';const b=zoneBest(s);return b&&b.z.k==='zone'?'<span class="tbadge t-zone">Zoned public</span>':b&&b.z.k==='prog'?'<span class="tbadge t-pub">District program</span>':'<span class="tbadge t-pub">Public</span>'};
+const shortN=n=>n.replace(/\b(Elementary|Middle|High|Intermediate|School|Academy|Senior)\b/g,'').replace(/\s+/g,' ').replace(/[\s,]+$/,'').trim()||n;
+// The school path as a row of steps: grades, school, school year the child starts there, and how it ends
+function pathView(s,kid){const p=schoolPath(s);const H=[];let g=kid?kid.grade:null;
+  const yr=lo=>{if(g==null)return'';const st=Math.max(lo,kid.grade);if(st>12)return'';const y=YEAR+(st-kid.grade);return`${st<=kid.grade?'Starts':'From'} ${y}-${String(y+1).slice(2)}`};
+  p.steps.forEach((opts,i)=>{const x=opts[0][0];const lo=i===0?Math.max(x.lo,0):Math.max(x.lo,p.steps[i-1][0][0].hi+1);
+    if(i)H.push('<span class="sp-arr" aria-hidden="true"></span>');
+    const nm=opts.length===1?esc(x!==s&&x.n===s.n?'Upper school, '+x.c:shortN(x.n)):opts.map(([z,w])=>`${esc(shortN(z.n))} <small>${Math.round(w*100)}%</small>`).join('<br>');
+    H.push(`<div class="sp-step${i===0?' cur':''}"><span class="sp-gr">Grades ${lo===0?'K':lo}-${x.hi}</span><span class="sp-n">${nm}</span>${g!=null&&kid.grade<=x.hi?`<span class="sp-y">${yr(lo)}</span>`:''}${opts.length>1?'<span class="sp-y">Depends on address</span>':''}</div>`)});
+  const last=p.steps[p.steps.length-1][0][0];let note='';
+  if(p.kind==='k12')H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end good">Through 12th · one admission</span>');
+  else if(p.kind==='continue')H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end good">No reapplying</span>');
+  else if(p.kind==='apply'){H.push(`<span class="sp-arr" aria-hidden="true"></span><span class="sp-end warn">Apply for ${GRADES[s.hi+1]||'next'} grade</span>`);if(p.to.length)note=`Graduates often go to ${esc(p.to.slice(0,3).map(x=>shortN(x.n)).join(', '))}.`}
+  else if(last.hi<12)H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end plain">High school assigned by district</span>');
+  else H.push('<span class="sp-arr" aria-hidden="true"></span><span class="sp-end plain">Assigned by district</span>');
+  return`<div class="spath">${H.join('')}${note?`<div class="sp-note">${note}</div>`:''}</div>`}
 function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
   for(const[d,lv,ids]of G.zones)if(lv==='H'&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids[0]}return null}
 function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;for(const p of st.places){if(lim&&!pubOk(s,p))continue;const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}
@@ -1570,7 +1608,7 @@ function openDetail(id){
     ${sec('College outcomes',col)}
     ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
     ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
-    ${L2!=='H'?sec('School path as '+esc(nm)+' grows',`<p>${pathLine(s)}</p>${inGrade?`<ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.7">${pathYears(s,k).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${s.sec==='Public'?'<p class="sub">Middle and high schools are assigned by the district from its attendance maps. Confirm with the district.</p>':''}`)+sec('Path to high school',path):''}
+    ${L2!=='H'?sec('School path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?'<p class="sub">Middle and high schools are assigned by the district from its attendance maps. Confirm with the district.</p>':''}`)+sec('Path to high school',path):''}
     ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span. ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
     ${sec('Cost and eligibility',cost)}
     ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
@@ -1644,7 +1682,8 @@ function renderList(){
     $('list').innerHTML=`<div class="empty"><b>Start with where you might live.</b><span>Type an address or a city in the box above. Add several cities to compare them. Each child gets a ranked list, and with two or more children you'll also see family plans.</span><button type="button" class="btn line" data-example="1">See an example family</button></div>`;return}
   const R=rankKid(k);
   // Zoned (or district) public schools first, then charter and private schools by radius, each ranked on its own
-  const grp=st.pub!=='radius';const isZ=r=>{const b=zoneBest(r.s);return !!b&&b.z.k==='zone'};const pubs=grp?[...order(R.filter(r=>r.s.sec==='Public'&&isZ(r))),...order(R.filter(r=>r.s.sec==='Public'&&!isZ(r)))]:[]; // zoned schools before district-wide programs
+  // With All, every school is ranked together and type badges tell them apart
+  const grp=st.pub!=='radius'&&k.sector==='Public';const isZ=r=>{const b=zoneBest(r.s);return !!b&&b.z.k==='zone'};const pubs=grp?[...order(R.filter(r=>r.s.sec==='Public'&&isZ(r))),...order(R.filter(r=>r.s.sec==='Public'&&!isZ(r)))]:[]; // zoned schools before district-wide programs
   const rest=grp?order(R.filter(r=>r.s.sec!=='Public')):order(R);
   const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
@@ -1664,8 +1703,8 @@ function renderList(){
   $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>head(i)+(()=>{
     const s=r.s,top=[...r.parts].sort((a,b)=>b.share-a.share).slice(0,2).map(p=>`${CATS[p.c][0].toLowerCase()} ${p.v.toFixed(1)}`);
     const tags=[];
-    if(k.grade<9){const pp=schoolPath(s);tags.unshift(`<span class="tag ${pp.kind==='k12'||pp.kind==='continue'?'good':pp.kind==='apply'?'warn':''}" style="border-radius:4px"><b>School path:</b> ${pathLine(s)}</span>`)}
-    if(r.path)tags.push(`<span class="tag ${r.path.cert==='Uncertain'||r.path.cert==='Depends on address'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
+    const spv=k.grade<9?`<div class="sp-lab">School path</div>${pathView(s,k)}`:'';
+    if(r.path&&k.grade>=9)tags.push(`<span class="tag ${r.path.cert==='Uncertain'||r.path.cert==='Depends on address'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
     if(r.it)r.it.list.forEach(x=>tags.push(`<span class="tag ${x.hit?'good':''}">${esc(x.txt)}</span>`));
     if(r.min!=null){const h=homeFor(s);tags.push(`<span class="tag"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pc(h.p)};margin-right:6px"></i>About ${r.min} min from ${esc(h.c)}</span>`)}
     tags.push(`<span class="tag ${tuition(s,k.grade)==null?'warn':''}">${money(tuition(s,k.grade))}${s.aid?` · ${s.aid}% get aid`:''}</span>`);
@@ -1675,10 +1714,10 @@ function renderList(){
     if(s.e)tags.push(`<span class="tag">${s.e.toLocaleString()} students${s.rt?' · '+s.rt+' per teacher':''}</span>`);
     const flags=[...(level(k.grade)==='H'?(s.flags||[]).filter(f=>f!=='Programs not yet scored'):[]),...(r.limited?['Limited data: kept out of the top 10']:[]),...(r.est.length?['Estimated at average until scored: '+r.est.join(', ')]:[])];
     return`<article class="card" id="c-${s.id}"><div class="rk">${i+1}</div>
-     <div><div class="nm">${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
+     <div><div class="nm">${tbadge(s)}${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
      <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
      <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
-      <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
+      <div class="reason">Strongest here: ${esc(top.join(', '))}</div>${spv}<div class="tags">${tags.join('')}</div>
       ${flags.length?`<div class="flag">${flags.map(esc).join(' · ')}</div>`:''}
       <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button>${s.sec==='Public'&&ZB[s.id]&&zoneBest(s)?.z.k==='zone'?homesLink(homesUrl(zoneBox(s)),'Homes for sale near this attendance area'):''}</div></div></article>`})()).join('')+
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
