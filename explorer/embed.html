@@ -849,7 +849,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .stop .dot{position:absolute;left:0;top:-7px;width:18px;height:18px;border-radius:50%;background:var(--surface);border:4px solid currentColor;box-sizing:border-box}
 .bx .stop.cur .dot{background:currentColor;box-shadow:0 0 0 3px var(--surface) inset}
 .bx .stop .t{padding:12px 12px 0 0;display:grid;gap:1px}
-.bx .stop .t b{color:var(--ink);font-size:13px;line-height:1.3}
+.bx .stop .t b,.bx .stop .nm1{color:var(--ink);font-size:13px;line-height:1.3;font-weight:700}
+.bx .sch{background:none;border:0;padding:0;margin:0;font:inherit;font-weight:700;font-size:13px;line-height:1.3;color:var(--ink);cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:var(--line2);text-decoration-thickness:1px;text-underline-offset:3px}
+.bx .sch:hover,.bx .sch:focus-visible{text-decoration-color:currentColor;color:var(--teal)}
+.bx .fork{display:grid;gap:5px;margin:2px 0 3px 8px;padding:2px 0;border-left:2px solid currentColor}
+.bx .fk{position:relative;padding-left:14px;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px}
+.bx .fk::before{content:"";position:absolute;left:0;top:.65em;width:10px;height:2px;background:currentColor}
+.bx .fk small{font-size:11.5px;color:var(--muted)}
+.bx .stop.br .t{padding-top:10px}
 .bx .stop .t b small{font-weight:400;color:var(--muted);font-size:12px}
 .bx .stop .t span{font-size:11.5px;color:var(--muted)}
 .bx .stop.alt .trk{background:repeating-linear-gradient(90deg,var(--rt-x) 0 6px,transparent 6px 11px)!important}
@@ -1376,11 +1383,13 @@ function pathView(s,kid){const p=schoolPath(s);const H=[];const C={E:'var(--rt-e
   p.steps.forEach((opts,i)=>{const x=opts[0][0];const lo=i===0?x.lo:p.steps[i-1][0][0].hi+1;
     const one=p.kind==='k12'&&i===0;const col=one?'var(--rt-e)':C[lvOf(x)];
     const trk=one?`background:linear-gradient(90deg,var(--rt-e) 0 46%,var(--rt-m) 46% 69%,var(--rt-h) 69%)`:`background:${col}`;
-    const nm=opts.length===1?label(x,false):opts.map(([z,w])=>`${esc(shortN(z.n))} <small>${Math.round(w*100)}%</small>`).join(' or ');
-    const mxs=i===1&&p.mx&&p.mx.length?` <small>or</small> ${p.mx.map(z=>`${esc(shortN(z.n))} <small>(district-wide)</small>`).join(' or ')}`:'';
-    H.push(`<div class="stop${i===0?' cur':''}" style="color:${col};${one?'flex-grow:2':''}"><div class="trk" style="${trk}"><span class="dot"></span></div><div class="t"><b>${nm}${mxs}</b><span>Grades ${lo===0?'K':lo}-${x.hi}${p.app&&i>0?' · by district application':opts.length>1?' · depends on address':kid&&kid.grade<=x.hi?' · '+yr(lo):''}</span></div></div>`)});
+    // Each school on the path opens its own details. Several possible schools branch off the line, one per row.
+    const btn=(z,txt)=>z===s?`<b>${txt}</b>`:`<button type="button" class="sch" data-detail="${z.id}" title="See ${esc(z.n)}">${txt}</button>`;
+    const branch=[...opts.map(([z,w])=>[z,opts.length>1?Math.round(w*100)+'%':'']),...(i===1&&p.mx?p.mx.map(z=>[z,'district-wide']):[])];
+    const nm=branch.length===1?btn(x,label(x,false)):`<div class="fork">${branch.map(([z,t])=>`<div class="fk">${btn(z,esc(shortN(z.n)))}${t?` <small>${t}</small>`:''}</div>`).join('')}</div>`;
+    H.push(`<div class="stop${i===0?' cur':''}${branch.length>1?' br':''}" style="color:${col};${one?'flex-grow:2':branch.length>1?'flex-grow:1.3':''}"><div class="trk" style="${trk}"><span class="dot"></span></div><div class="t">${branch.length>1?nm:`<span class="nm1">${nm}</span>`}<span>Grades ${lo===0?'K':lo}-${x.hi}${p.app&&i>0?' · by district application':branch.length>1?' · depends on address':kid&&kid.grade<=x.hi?' · '+yr(lo):''}</span></div></div>`)});
   if(p.kind==='apply'){const pn=publicNext(s);const g=s.hi+1;
-    const pub=pn?(pn.opts.length===1||pn.opts[0][1]>=0.95?`or public: <b>${esc(pn.opts[0][0].n)}</b>`:`or public: ${pn.opts.slice(0,3).map(([z,w])=>`<b>${esc(z.n)}</b>${w?` <small>${Math.round(w*100)}%</small>`:''}`).join(' or ')}`):'or a public school';
+    const pub=pn?(pn.opts.length===1||pn.opts[0][1]>=0.95?`or public: <button type="button" class="sch" data-detail="${pn.opts[0][0].id}">${esc(pn.opts[0][0].n)}</button>`:`or public: ${pn.opts.slice(0,3).map(([z,w])=>`<button type="button" class="sch" data-detail="${z.id}">${esc(z.n)}</button>${w?` <small>${Math.round(w*100)}%</small>`:''}`).join(' or ')}`):'or a public school';
     H.push(`<div class="stop alt" style="color:var(--rt-x)"><div class="trk"><span class="dot"></span></div><div class="t"><b>Apply to private schools ${pub}</b><span>Grades ${g}-12${kid&&kid.grade<g?' · '+yr(g):''}${p.to.length?` · graduates often go to ${esc(p.to.slice(0,3).map(x=>shortN(x.n)).join(', '))}`:''}</span></div></div>`)}
   else if(p.kind==='k12')H.push('<span class="term ok">✓ One admission</span>');
   else if(p.kind==='continue')H.push('<span class="term ok">✓ No reapplying</span>');
