@@ -1,0 +1,1656 @@
+<!-- Bay Area School Explorer · The Lederer Team. Paste into a custom HTML section. Data: lederer-team.github.io/school-data/explorer/ -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Playfair+Display:wght@400;500&display=swap">
+<style>
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+.bx{--ink:#1A1A1A;--ink2:#3B3B38;--muted:#6E6E6A;--line:#E3E3DF;--line2:#CFCFC8;--surface:#FFFFFF;--sunk:#F7F7F4;--dark:#0B0B0B;--onink:#FFFFFF;
+  --teal:#0F6E5F;--teal-soft:#E3F0ED;--amber:#9A5A12;--amber-soft:#F6EBDD;
+  --c-acad:#0F6E5F;--c-college:#2F5D8A;--c-sports:#B5652A;--c-arts:#8A4F7D;--c-stem:#5E7F2E;--c-clubs:#9C7C1E;--c-commute:#6B6B66;--c-interest:#B8433F;--c-path:#3E6E8E;--c-size:#7A6A55;--c-lang:#4A6FA5;--c-care:#8B6FB0;--c-small:#4F8A7E;
+  --k1:#0F6E5F;--k2:#B5652A;--k3:#8A4F7D;--k4:#2F5D8A;
+  --serif:"Playfair Display",Georgia,serif;--sans:Lato,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink2);font-family:var(--sans);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;max-width:1240px;margin:0 auto;text-align:left;background:var(--sunk)}
+.bx *{box-sizing:border-box}
+.bx h1,.bx h2,.bx h3,.bx h4,.bx p{margin:0;text-transform:none;letter-spacing:normal}
+.bx button,.bx input,.bx select{font-family:var(--sans);font-size:inherit;letter-spacing:normal;text-transform:none;margin:0}
+.bx a{color:inherit}
+.bx [hidden]{display:none!important}
+.bx :focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.bx .band{margin-left:calc(-1 * var(--bl,0px));margin-right:calc(-1 * var(--br,0px));padding:48px calc(var(--br,0px) + 16px) 48px calc(var(--bl,0px) + 16px)}
+.bx .band > .in{max-width:1240px;margin:0 auto}
+.bx .dark{background:var(--dark);color:rgba(255,255,255,.82)}
+.bx .sunk{background:var(--sunk)}
+.bx .plain{background:var(--surface)}
+.bx .eyebrow{font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .dark .eyebrow{color:rgba(255,255,255,.6)}
+.bx .hero{text-align:center;padding-bottom:0;padding-top:var(--bx-top,160px);background-color:var(--dark);background-image:linear-gradient(180deg,rgba(11,11,11,.72) 0%,rgba(11,11,11,.58) 45%,rgba(11,11,11,.85) 100%),var(--hero,none);background-size:cover;background-position:var(--hero-pos,center)}
+.bx .hero .lede{text-shadow:0 1px 12px rgba(0,0,0,.5)}
+@media (max-width:760px){.bx .hero{padding-top:var(--bx-top-m,110px)}}
+.bx .hero .title{font-family:var(--serif);font-weight:400;color:#fff;font-size:clamp(32px,4.6vw,54px);line-height:1.1;margin:10px auto 14px;text-wrap:balance}
+.bx .hero .lede{font-size:15.5px;max-width:62ch;margin:0 auto;line-height:1.65}
+.bx .views{display:flex;justify-content:center;gap:12px;margin:34px auto 0;padding-bottom:44px;flex-wrap:wrap}
+.bx .views button{min-width:250px;border:2px solid #fff;background:rgba(11,11,11,.45);color:#fff;font-size:13.5px;letter-spacing:1.8px;text-transform:uppercase;font-weight:900;padding:17px 28px;cursor:pointer;border-radius:0;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);transition:background .15s,color .15s}
+.bx .views button[aria-selected="true"]{background:#fff;color:#1A1A1A}
+.bx .views button:hover{background:#fff;color:#1A1A1A}
+@media (max-width:600px){.bx .views{flex-direction:column;align-items:stretch;padding-bottom:32px}
+.bx .views button{min-width:0;width:100%}}
+.bx .eyebrow2{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .h2{font-family:var(--serif);font-weight:400;font-size:24px;margin:0;color:var(--ink);line-height:1.2}
+.bx .family{background:var(--surface);border:1px solid var(--line);padding:18px 20px;display:grid;grid-template-columns:minmax(0,2fr) repeat(4,minmax(0,1fr));gap:18px}
+@media (max-width:900px){.bx .family{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.bx .family .where{grid-column:1/-1}}
+@media (max-width:480px){.bx .family{grid-template-columns:minmax(0,1fr)}}
+.bx .fld{display:grid;gap:8px;align-content:start;min-width:0}
+.bx .lab{font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;justify-content:space-between;gap:8px}
+.bx .chips{display:flex;flex-wrap:wrap;gap:6px}
+.bx .chip{font-size:13px;border:1px solid var(--line2);background:var(--surface);color:var(--ink2);padding:5px 11px;cursor:pointer;border-radius:999px;line-height:1.3}
+.bx .chip:hover{border-color:var(--teal)}
+.bx .chip[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+.bx select,.bx input[type=text]{width:100%;padding:8px 9px;border:1px solid var(--line2);border-radius:0;background:var(--surface);color:var(--ink);font-size:14px;height:auto}
+.bx .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line2)}
+.bx .seg button{font-size:13px;background:var(--surface);color:var(--ink2);border:0;border-radius:0;padding:8px 4px;cursor:pointer}
+.bx .seg button+button{border-left:1px solid var(--line2)}
+.bx .seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface)}
+.bx .where{position:relative}
+.bx .family,.bx .where,.bx .grid,.bx .res,.bx .stack,.bx #v-plan,.bx #v-plan > .in{overflow:visible!important;max-height:none!important}
+.bx .family{position:relative;z-index:30}
+.bx .tokbox{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line2);background:var(--surface);padding:6px 8px;min-height:44px;cursor:text}
+.bx .tokbox:focus-within{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal)}
+.bx .toks{display:contents}
+.bx .tok{display:inline-flex;align-items:center;gap:6px;background:var(--teal-soft);color:var(--teal);font-size:13px;font-weight:700;padding:3px 4px 3px 10px;border-radius:999px;max-width:100%}
+.bx .tok.addr{background:var(--ink);color:var(--surface)}
+.bx .tok span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bx .tok button{border:0;background:none;color:inherit;cursor:pointer;font-size:15px;line-height:1;padding:0 5px;border-radius:50%}
+.bx .tokbox input{flex:1;min-width:170px;border:0;outline:0;background:none;color:var(--ink);font-size:14px;padding:5px 2px;box-shadow:none}
+.bx .sugg{position:absolute;left:0;right:0;top:calc(100% - 22px);z-index:1100!important;list-style:none;margin:0;padding:4px 0;background:var(--surface);border:1px solid var(--line2);box-shadow:0 8px 24px rgba(0,0,0,.14);max-height:300px;overflow:auto}
+.bx .sugg li{padding:9px 12px;cursor:pointer;font-size:14px;color:var(--ink);display:flex;justify-content:space-between;gap:12px;margin:0}
+.bx .sugg li small{color:var(--muted);font-size:12px;text-align:right}
+.bx .sugg li[aria-selected="true"]{background:var(--teal-soft)}
+.bx .sugg .pw{font-size:10.5px;color:var(--muted);padding:6px 12px 2px;justify-content:flex-end;cursor:default}
+.bx .tbar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;border-top:1px solid var(--line);margin:0 -20px -18px;padding:11px 20px;background:var(--sunk)}
+.bx .tbar .sp{flex:1}
+.bx .tlink{background:none;border:0;padding:0;cursor:pointer;font-size:12px;letter-spacing:1.1px;text-transform:uppercase;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:7px;border-radius:0}
+.bx .tlink:hover{color:var(--ink)}
+.bx .tlink.strong{color:var(--teal)}
+.bx .tbar .sharebox{flex:1 1 280px}
+.bx .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.bx .toolbar .l{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bx .btn{border:1px solid var(--ink);background:var(--ink);color:var(--surface);font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;padding:10px 16px;cursor:pointer;border-radius:0}
+.bx .btn.line{background:transparent;color:var(--ink)}
+.bx .btn.line:hover{background:var(--ink);color:var(--surface)}
+.bx .sharebox{display:flex;gap:8px;align-items:center;flex:1 1 320px;min-width:0}
+.bx .sharebox input{font-size:12.5px;color:var(--muted)}
+.bx .ok{font-size:12.5px;color:var(--teal);font-weight:700}
+.bx .grid{display:grid;grid-template-columns:370px minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:980px){.bx .grid{grid-template-columns:minmax(0,1fr)}}
+.bx .kids{display:flex;gap:0;border-bottom:1px solid var(--line2);overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-bottom-color:var(--line2)}
+.bx .kt{border:0;background:none;padding:11px 11px;cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px;border-radius:0}
+.bx .kt .dot{width:9px;height:9px;border-radius:50%}
+.bx .kt[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--kc)}
+.bx .kt.add{color:var(--teal)}
+.bx .kt .x{color:var(--muted);cursor:pointer;font-size:16px;padding:0 3px;margin-left:2px;line-height:1;border-radius:50%}
+.bx .kt .x:hover{color:var(--amber)}
+.bx .panel{background:var(--surface);border:1px solid var(--line);border-top:0;padding:18px;display:grid;gap:20px}
+.bx .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.bx .sec{display:grid;gap:9px;align-content:start}
+.bx .sl{display:grid;grid-template-columns:12px 1fr 52px;gap:3px 10px;align-items:center}
+.bx .sl .sw{width:10px;height:10px;border-radius:2px}
+.bx .sl label{font-size:14px;color:var(--ink)}
+.bx .sl .pct{font-size:12px;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.bx .sl input{grid-column:2/4}
+.bx .sl input[type=range]{-webkit-appearance:none!important;appearance:none!important;display:block!important;width:100%!important;height:22px!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;outline-offset:2px;cursor:pointer;opacity:1!important;position:static!important}
+.bx .sl input[type=range]::-webkit-slider-runnable-track{height:4px;border:0;border-radius:2px;background:linear-gradient(to right,var(--teal) 0,var(--teal) var(--p,50%),var(--line2) var(--p,50%))}
+.bx .sl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:50%;background:var(--surface);border:2px solid var(--teal);box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.bx .sl input[type=range]::-moz-range-track{height:4px;border:0;border-radius:2px;background:var(--line2)}
+.bx .sl input[type=range]::-moz-range-progress{height:4px;border-radius:2px;background:var(--teal)}
+.bx .sl input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--surface);border:2px solid var(--teal)}
+.bx .sl input[type=range]:disabled{cursor:default;opacity:.45!important}
+.bx .sl.off label,.bx .sl.off .pct{opacity:.5}
+.bx .sub{font-size:12px;color:var(--muted)}
+.bx .grp{display:grid;gap:5px}
+.bx .grp .gl{font-size:12px;color:var(--muted)}
+.bx .mix{display:flex;height:8px;overflow:hidden;background:var(--sunk)}
+.bx .mix span{display:block;height:100%}
+.bx .check{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--ink)}
+.bx .check.support{background:var(--sunk);border:1px solid var(--line);padding:11px 12px}
+.bx .prow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:4px}
+.bx .check input[type=checkbox]{-webkit-appearance:checkbox!important;appearance:auto!important;display:inline-block!important;flex:none;width:16px!important;height:16px!important;min-height:0!important;padding:0!important;margin:3px 0 0!important;opacity:1!important;position:static!important;accent-color:var(--teal)}
+.bx .remove{justify-self:start;background:none;border:0;color:var(--amber);cursor:pointer;font-size:13px;padding:0}
+.bx .res{display:grid;gap:12px;min-width:0}
+.bx .mapcard{background:var(--surface);border:1px solid var(--line)}
+.bx .maptop{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.bx .maptop .t{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;font-weight:700;color:var(--ink)}
+.bx .maptop button{background:none;border:0;color:var(--teal);cursor:pointer;font-size:13px;padding:0;font-weight:700}
+.bx .lmap{height:380px;background:#E9E9E4;z-index:0}
+@media (max-width:560px){.bx .lmap{height:300px}}
+.bx .mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;padding:9px 14px;font-size:12px;color:var(--muted);border-top:1px solid var(--line)}
+.bx .mapkey i{display:inline-block;vertical-align:-2px;margin-right:6px}
+.bx .pin{width:26px;height:26px;border-radius:50%;background:#1A1A1A;color:#fff;font:700 12px/26px var(--sans);text-align:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.35)}
+.bx .pin.hl{transform:scale(1.25)}
+.bx .home{width:30px;height:30px;background:#fff;color:#1A1A1A;border:2px solid #1A1A1A;font:700 16px/26px var(--sans);text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.bx .leaflet-popup-content{margin:12px 14px;font-family:var(--sans);font-size:13px;line-height:1.45;color:#3B3B38}
+.bx .leaflet-popup-content b{color:#1A1A1A}
+.bx .leaflet-popup-content-wrapper,.bx .leaflet-popup-tip{border-radius:0}
+.bx .gpop{font-family:var(--sans);font-size:13px;line-height:1.45;color:#3B3B38;max-width:240px}
+.bx .gpop b{color:#1A1A1A}
+.bx .popbtn{display:inline-block;margin-top:6px;background:none;border:0;padding:0;color:#0F6E5F;cursor:pointer;font-weight:700;font-size:13px}
+.bx .plans{display:grid;gap:10px}
+.bx .plan{background:var(--surface);border:1px solid var(--line);padding:16px 18px;display:grid;gap:12px}
+.bx .plan.best{border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal)}
+.bx .ph{display:flex;justify-content:space-between;gap:12px;align-items:start}
+.bx .ph .live{font-size:11.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .ph .live b{color:var(--ink)}
+.bx .big{font-family:var(--serif);font-size:30px;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums;text-align:right}
+.bx .big small{display:block;font-family:var(--sans);font-size:11px;color:var(--muted)}
+.bx .assign{display:grid;gap:6px}
+.bx .as{display:grid;grid-template-columns:14px minmax(0,1fr) auto;gap:10px;align-items:baseline}
+.bx .as .dot{width:10px;height:10px;border-radius:50%;align-self:center}
+.bx .as .who{font-size:14px;color:var(--ink)}
+.bx .as .who b{font-weight:900}
+.bx .as .fit{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bx .pacts{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center}
+.bx .lnk{background:none;border:0;padding:0;color:var(--teal);cursor:pointer;font-size:13px;font-weight:700}
+.bx .tags{display:flex;flex-wrap:wrap;gap:6px}
+.bx .tag{font-size:12px;padding:2px 9px;border-radius:999px;background:var(--sunk);color:var(--ink2)}
+.bx .tag.good{background:var(--teal-soft);color:var(--teal)}
+.bx .tag.warn{background:var(--amber-soft);color:var(--amber)}
+.bx .tl{overflow-x:auto}
+.bx .tl table{border-collapse:collapse;font-size:12.5px;min-width:520px;width:100%}
+.bx .tl th{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line2);font-weight:700}
+.bx .tl td{padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink2)}
+.bx .tl td em{font-style:normal;color:var(--muted);font-size:11.5px;display:block}
+.bx .reshead{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-top:6px}
+.bx .card{background:var(--surface);border:1px solid var(--line);display:grid;grid-template-columns:40px minmax(0,1fr) 80px;gap:6px 14px;padding:14px 16px;align-items:start;scroll-margin-top:90px;transition:box-shadow .3s}
+.bx .card.flash{box-shadow:0 0 0 2px var(--teal)}
+.bx .rk{font-family:var(--serif);font-size:26px;color:var(--ink);line-height:1}
+.bx .nm{font-weight:900;color:var(--ink);text-transform:uppercase;letter-spacing:.5px;font-size:13.5px}
+.bx .meta{font-size:11.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-top:2px}
+.bx .score{text-align:right}
+.bx .score b{font-family:var(--serif);font-weight:400;font-size:28px;color:var(--ink);line-height:1;font-variant-numeric:tabular-nums}
+.bx .score small{display:block;font-size:11px;color:var(--muted)}
+.bx .why{grid-column:2/4;display:grid;gap:7px}
+.bx .bar{display:flex;height:10px;background:var(--sunk);overflow:hidden}
+.bx .bar span{display:block;height:100%;border-right:1px solid var(--surface)}
+.bx .reason{font-size:13px}
+.bx .flag{font-size:10.5px;letter-spacing:.7px;text-transform:uppercase;font-weight:700;color:var(--amber)}
+@media (max-width:560px){.bx .card{grid-template-columns:30px minmax(0,1fr) 60px;padding:12px}
+.bx .why{grid-column:1/4}}
+.bx .more{background:var(--surface);border:1px solid var(--line2);padding:10px;cursor:pointer;color:var(--teal);font-size:13px;font-weight:700}
+.bx .empty{background:var(--surface);border:1px dashed var(--line2);padding:18px;font-size:14px;color:var(--muted);display:grid;gap:10px;justify-items:start}
+.bx .empty b{color:var(--ink)}
+.bx .note{background:var(--surface);border:1px solid var(--line);padding:16px 18px;display:grid;gap:8px;font-size:13px;color:var(--muted)}
+.bx .note b{color:var(--ink2)}
+.bx .special{background:var(--teal-soft);border:1px solid var(--teal);padding:14px 16px;display:grid;gap:6px;font-size:13.5px;color:var(--ink2)}
+.bx .special b{color:var(--ink)}
+.bx .spechead{display:flex;justify-content:space-between;align-items:end;gap:10px;flex-wrap:wrap}
+.bx .spechead p{font-size:13px;color:var(--muted);max-width:60ch}
+.bx .card.spec{background:var(--teal-soft);border:1px solid var(--teal);box-shadow:inset 4px 0 0 var(--teal)}
+.bx .card.spec .tag{background:var(--surface)}
+.bx .badge{display:inline-block;font-size:10.5px;letter-spacing:1.1px;text-transform:uppercase;font-weight:900;color:var(--surface);background:var(--teal);padding:4px 9px;margin-bottom:6px}
+.bx .facts{font-size:13.5px;color:var(--ink2);display:grid;gap:3px}
+.bx .facts b{color:var(--ink)}
+.bx .nps{font-size:13px;color:var(--ink2);display:grid;gap:6px}
+.bx .stack{display:grid;gap:18px}
+.bx .meth{display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px;align-items:start}
+@media (max-width:860px){.bx .meth{grid-template-columns:minmax(0,1fr)}
+.bx .toc{display:none}}
+.bx .toc{position:sticky;top:20px;display:grid;gap:2px;border-left:1px solid var(--line2)}
+.bx .toc a{text-decoration:none;font-size:13.5px;color:var(--muted);padding:5px 0 5px 14px}
+.bx .toc a:hover{color:var(--ink)}
+.bx .mbody{display:grid;gap:34px;max-width:780px}
+.bx .mbody section{display:grid;gap:12px;scroll-margin-top:20px}
+.bx .mbody h3{font-family:var(--serif);font-weight:400;font-size:26px;color:var(--ink);line-height:1.2}
+.bx .mbody h4{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink);font-weight:700;margin-top:6px}
+.bx .mbody p,.bx .mbody li{font-size:15px;line-height:1.7;color:var(--ink2)}
+.bx .mbody ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.bx .mtab{width:100%;border-collapse:collapse;font-size:14px;background:var(--surface);border:1px solid var(--line)}
+.bx .mtab th{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line2);font-weight:700}
+.bx .mtab td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink2);line-height:1.5}
+.bx .mtab td:first-child{color:var(--ink);font-weight:700;white-space:nowrap}
+.bx .mtab .w{font-variant-numeric:tabular-nums;white-space:nowrap}
+.bx .twrap{overflow-x:auto}
+.bx .callout{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--ink);padding:14px 18px;font-size:14.5px;line-height:1.65}
+.bx .suggest .in{display:flex;align-items:center;justify-content:center;gap:16px 24px;flex-wrap:wrap;text-align:center;padding-top:28px;padding-bottom:28px}
+.bx .suggest p{margin:0;font-size:15px;color:var(--ink2)}
+.bx .sbtn{display:inline-block;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:11px 20px;background:transparent}
+.bx .sbtn:hover{background:var(--ink);color:var(--surface)}
+.bx .dfix{font-size:13px;margin-top:10px}
+.bx .dfix a{color:var(--teal)}
+.bx .cta{text-align:center}
+.bx .cta h3{font-family:var(--serif);font-weight:400;color:#fff;font-size:clamp(26px,3vw,36px);line-height:1.2;margin:8px auto 12px;max-width:24ch;text-wrap:balance}
+.bx .cta p{max-width:58ch;margin:0 auto;font-size:15px}
+.bx .ctabtns{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:24px}
+.bx .lbtn{display:inline-block;border:1px solid #fff;color:#fff;text-decoration:none;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;padding:13px 22px}
+.bx .lbtn:hover{background:#fff;color:var(--ink)}
+.bx .cta .ph{margin-top:18px;font-family:var(--serif);font-size:22px;color:#fff}
+.bx .fine{display:grid;gap:10px;max-width:900px}
+.bx .fine p{font-size:12.5px;line-height:1.65;color:var(--muted)}
+.bx .fine b{color:var(--ink2)}
+.bx .card{cursor:pointer}
+.bx .card:hover{border-color:var(--line2)}
+.bx .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2147483000}
+.bx .drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100vw);background:var(--surface);z-index:2147483001;overflow-y:auto;box-shadow:-12px 0 40px rgba(0,0,0,.25);display:grid;align-content:start}
+.bx .dhead{position:sticky;top:0;background:var(--dark);color:rgba(255,255,255,.8);padding:22px 24px 20px;display:grid;gap:6px;z-index:2}
+.bx .dhead .eyebrow{color:rgba(255,255,255,.6)}
+.bx .dhead h3{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.15;color:#fff;padding-right:40px}
+.bx .dhead .x{position:absolute;top:16px;right:16px;width:36px;height:36px;border:1px solid rgba(255,255,255,.4);background:none;color:#fff;font-size:20px;line-height:1;cursor:pointer;border-radius:0}
+.bx .dbody{padding:22px 24px 40px;display:grid;gap:26px}
+.bx .dsec{display:grid;gap:10px}
+.bx .dsec h4{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);font-weight:700;border-bottom:1px solid var(--line);padding-bottom:8px}
+.bx .dsec p{font-size:14.5px;line-height:1.6;color:var(--ink2)}
+.bx .dsec p b{color:var(--ink)}
+.bx .fitbox{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center;background:var(--sunk);padding:14px 16px}
+.bx .fitbox .v{font-family:var(--serif);font-size:40px;line-height:1;color:var(--ink)}
+.bx .fitbox .v small{display:block;font-family:var(--sans);font-size:11px;color:var(--muted);margin-top:4px}
+.bx .srow{display:grid;grid-template-columns:150px minmax(0,1fr) 44px;gap:12px;align-items:center;font-size:14px;color:var(--ink)}
+.bx .srow .sb{height:8px;background:var(--sunk);overflow:hidden}
+.bx .srow .sb span{display:block;height:100%}
+.bx .srow .n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.bx .srow.na .n,.bx .srow.na{color:var(--muted);font-weight:400}
+@media (max-width:480px){.bx .srow{grid-template-columns:110px minmax(0,1fr) 40px}}
+.bx .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0;padding:0 1px 1px 0}
+.bx .kv div{background:var(--surface);padding:12px 14px;display:grid;gap:2px;align-content:start;border:1px solid var(--line);margin:0 -1px -1px 0}
+.bx .kv b{font-family:var(--serif);font-weight:400;font-size:24px;color:var(--ink);line-height:1.1;font-variant-numeric:tabular-nums}
+.bx .kv span{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .dlinks{display:flex;flex-wrap:wrap;gap:10px}
+.bx .dlinks a,.bx .dlinks button{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;color:var(--ink);border:1px solid var(--ink);padding:9px 14px;text-decoration:none;background:none;cursor:pointer;border-radius:0}
+
+</style>
+
+<div class="bx" id="bx" data-src="https://lederer-team.github.io/school-data/explorer/" data-gkey="AIzaSyDUZsgq9-NRvNonNNHMRMWaPkTkogfv5Q8" data-share="" data-hero="https://images.unsplash.com/photo-1550399105-05c4a7641b02?auto=format&fit=crop&w=1920&q=75">
+<div class="band dark hero"><div class="in">
+  <div class="eyebrow">The Lederer Team · Alameda and Contra Costa counties</div>
+  <h2 class="title">Bay Area School Explorer</h2>
+  <p class="lede">Compare 750 public, charter and private schools by what matters to your family. Add each child with their own grade and priorities, then see ranked schools, a map, family plans that keep everyone's commute in check, and where each school leads for high school.</p>
+  <div class="views" role="tablist" aria-label="Explorer sections"><button type="button" role="tab" data-view="plan" aria-selected="true">Plan for my family</button><button type="button" role="tab" data-view="method" aria-selected="false">How we score schools</button></div>
+</div></div>
+
+<div class="band sunk" id="v-plan"><div class="in stack">
+  <section class="family" aria-label="Family settings">
+    <div class="fld where"><label class="lab" for="placeIn">Where you might live</label>
+      <div class="tokbox" id="tokbox"><div id="toks" class="toks"></div><input type="text" id="placeIn" autocomplete="off" placeholder="Type an address or a city" role="combobox" aria-expanded="false" aria-controls="sugg" aria-autocomplete="list"></div>
+      <ul id="sugg" class="sugg" role="listbox" hidden></ul>
+      <span class="sub" id="placeNote"></span></div>
+    <div class="fld"><label class="lab" for="radius">Search radius</label><select id="radius"><option value="5">5 miles</option><option value="10">10 miles</option><option value="20">20 miles</option><option value="99">Any distance</option></select><span class="sub" id="radNote">Private and charter schools</span></div>
+    <div class="fld"><label class="lab" for="pub">Public schools</label><select id="pub"><option value="dist">In my districts</option><option value="city">In my cities</option><option value="radius">Anywhere in radius</option></select><span class="sub" id="pubNote"></span></div>
+    <div class="fld"><label class="lab" for="budget">Private tuition budget</label><select id="budget"><option value="0">No limit</option><option value="30000">Up to $30k a year</option><option value="60000">Up to $60k a year</option><option value="100000">Up to $100k a year</option><option value="150000">Up to $150k a year</option></select><span class="sub">Total for all children</span></div>
+    <div class="fld"><div class="lab">Family plans favor</div><div class="seg" id="mode"><button type="button" data-v="protect" aria-pressed="true">Every child</button><button type="button" data-v="avg" aria-pressed="false">Best average</button></div><span class="sub" id="modeNote"></span><label class="check" style="font-size:13px"><input type="checkbox" id="together"><span>Prefer one campus for siblings</span></label></div>
+    <div class="tbar">
+      <button type="button" class="tlink strong" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Copy family link</button>
+      <span class="ok" id="shareOk" aria-live="polite"></span>
+      <span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span>
+      <span class="sp"></span>
+      <button type="button" class="tlink" id="example">Load an example family</button>
+      <button type="button" class="tlink" id="reset">Start over</button>
+    </div>
+  </section>
+  <div class="grid">
+    <aside>
+      <div class="kids" role="tablist" id="kidtabs"></div>
+      <div class="panel" id="kidpanel"></div>
+    </aside>
+    <section class="res" aria-live="polite">
+      <div class="mapcard" id="mapcard">
+        <div class="maptop"><span class="t" id="mapTitle">Map</span><button type="button" id="mapBack" hidden></button></div>
+        <div class="lmap" id="map" role="region" aria-label="Map of schools"></div>
+        <div class="mapkey" id="mapKey"></div>
+      </div>
+      <div id="planwrap" class="res"></div>
+      <div class="reshead"><h3 class="h2" id="ktitle"></h3><span class="sub" id="ksub"></span></div>
+      <div id="special"></div>
+      <div id="list" class="res"><div class="empty">Loading East Bay schools…</div></div>
+      <p class="sub">Scores are The Lederer Team's own calculation from public data. See <a href="#method" data-view="method">how we score schools</a>. Public school attendance depends on district boundaries, which can change: confirm eligibility with the district before choosing a home.</p>
+    </section>
+  </div>
+</div></div>
+
+<div class="band plain" id="v-method" hidden><div class="in">
+ <div class="meth">
+  <nav class="toc" aria-label="On this page">
+    <a href="#m-fit">The fit score</a><a href="#m-cats">What each category measures</a><a href="#m-path">Path to high school</a><a href="#m-family">Family plans</a><a href="#m-missing">Missing data</a><a href="#m-not">What we never use</a><a href="#m-sources">Sources</a><a href="#m-limits">Limits and updates</a>
+  </nav>
+  <div class="mbody">
+   <section><div class="eyebrow">Methodology · updated November 2026</div>
+    <h3>How the Bay Area School Explorer scores schools</h3>
+    <p>There is no single best school, only the best fit for a particular child. So instead of one fixed ranking, the Explorer scores every school on several separate measures and lets you decide how much each one matters. Every number comes from public records or from what schools publish about themselves. We never copy ratings from GreatSchools, Niche or any other ranking site.</p>
+    <div class="callout">The Explorer is a research tool. It does not tell you which school a home is assigned to, and it does not recommend specific schools. Public school attendance depends on district boundaries and enrollment rules, which can change. Confirm with the district or school before relying on anything here in a home purchase.</div>
+   </section>
+   <section id="m-fit"><h3>The fit score</h3>
+    <p>Each child gets a fit score from 0 to 10 for every school in range. It is a weighted average of the category scores below, using that child's sliders as the weights. If Academics is set to 8 and Sports to 2, academics counts four times as much as sports. The colored bar on each school shows which categories produced its score.</p>
+    <p>Profiles such as Athlete, Performer and STEM kid are starting points that set the sliders for you. You can change any slider afterwards.</p>
+    <p>Which categories apply depends on the child's grade next fall. High school students are scored on academics, college outcomes, sports, arts, STEM, clubs and their own interests. Younger children are scored on academics and on where each school leads for high school. School size and commute apply at every grade.</p>
+   </section>
+   <section id="m-cats"><h3>What each category measures</h3>
+    <div class="twrap"><table class="mtab"><thead><tr><th>Category</th><th>How it's measured</th></tr></thead><tbody>
+     <tr><td>Academics</td><td>Public and charter schools: the average share of students meeting the state standard in English and math (CAASPP, spring 2025), ranked as a percentile against every California school at the same level. For high schools this is 79% of the score and college outcomes are the other 21%. Private high schools don't take state tests, so their academic score is their College Outcomes Index. Private elementary and middle schools don't publish comparable results, so most aren't scored on academics yet.</td></tr>
+     <tr><td>College outcomes</td><td>Our College Outcomes Index. 60% is the share of graduates who enroll at four-year colleges (state-measured for public schools, school-reported for private schools, with a 9-point adjustment because state tracking runs lower than school reports). 40% is selective placement: the share of graduates enrolling at colleges that admit under 40% of applicants, using U.S. College Scorecard admission rates. Selective placement is only possible where a school publishes enrollment counts by college. Where it doesn't, that 40% is held at the midpoint.</td></tr>
+     <tr><td>Sports</td><td>Half is the number of varsity teams per gender, compared with the largest program in the two counties. Half is section and state championships since 2016 (North Coast Section results, and CIF state titles for Oakland Section schools). Titles use a square root so a few championships count, but one dynasty program can't outweigh everything else.</td></tr>
+     <tr><td>Arts</td><td>35% theater, musical, dance and film programs; 30% performing ensembles such as bands, orchestras and choirs (8 or more earns full credit); 20% advanced arts courses on the school's official UC course list (20 or more earns full credit); 15% outside recognition such as festival results.</td></tr>
+     <tr><td>STEM</td><td>Half is the number of AP math, science and computer science courses on the school's official UC course list. Half is competitive STEM teams and clubs such as robotics, Science Olympiad and math team (5 or more earns full credit). Schools without AP courses are measured by their advanced course catalog instead.</td></tr>
+     <tr><td>Clubs and activities</td><td>80% the number of student clubs, 20% civic and speaking programs such as debate, mock trial and Model UN.</td></tr>
+     <tr><td>Elementary and middle school programs</td><td>For children below 9th grade: <b>Arts</b> (performing ensembles, art, theater), <b>STEM</b> (science specialist or lab, coding, robotics, math or problem-solving teams), <b>Sports</b> (interscholastic teams in the middle grades, PE specialists in elementary), <b>Clubs</b>, <b>World languages</b> (10 for immersion or languages from kindergarten, 6 for language classes, 3 for before or after school only), <b>Before and after care</b> on campus, and <b>Small classes</b> (average class size, adjusted for co-teaching). Researched school by school from school and district sites, starting with Lamorinda, Piedmont, Bentley and Head-Royce.</td></tr>
+     <tr><td>Child's interests</td><td>Matches the activities you select. For a sport, championships in that sport. For music, the number of ensembles. For other activities, whether the school offers a team or program.</td></tr>
+     <tr><td>School size</td><td>Enrollment compared with typical sizes for that level: an exact match scores 10, one size off scores 5.</td></tr>
+     <tr><td>Short commute</td><td>An estimated morning drive from your closest location: straight-line distance, plus 35% for roads, at 40 miles per hour, plus 4 minutes. 10 minutes or less scores 10; 45 minutes or more scores 0. Real drive times vary with traffic.</td></tr>
+    </tbody></table></div>
+   </section>
+   <section id="m-path"><h3>Path to high school</h3>
+    <p>For children below 9th grade, part of a school's value is where it leads. Each elementary and middle school is scored on the high school it feeds into, judged by that child's own high school priorities. How certain the path is changes the score:</p>
+    <ul>
+     <li><b>Certain:</b> a public district feeder to its high school. Scored at the high school's full fit.</li>
+     <li><b>Very likely:</b> a private school that continues through 12th grade, or one with its own upper school, where students re-enroll rather than reapply. Scored at 90% of the high school's fit, plus a half point for continuity. Confirm with the school.</li>
+     <li><b>Uncertain:</b> a school that only publishes a list of high schools that accepted its students. Scored at 70% of the average of those high schools plus 30% of a neutral 5, since the list doesn't say how many students go to each.</li>
+    </ul>
+   </section>
+   <section id="m-family"><h3>Family plans</h3>
+    <p>With two or more children, the Explorer builds family plans: the best combination of schools for each location you entered. Each plan's family score blends the children's fit with the morning drive, plus a small bonus when children share a campus. The drive counts for 15% when the children's Short commute sliders sit at 3, more when they're higher (up to 30%) and not at all when they're at 0. Turn off "Prefer one campus for siblings" and each plan shows every child's own best school for that location instead, with the approximate drive to each drop-off. Tuition is approximate, shown per child and as a family total.</p>
+    <ul>
+     <li><b>Every child</b> (the default) blends 60% the weakest child's fit with 40% the average, so no child is sacrificed for another. <b>Best average</b> uses the plain average.</li>
+     <li><b>Logistics</b> is the estimated morning drive from home through each school, nearest first.</li>
+     <li>Public schools are paired only with a home city they typically serve. Charter and private schools are open to all.</li>
+     <li>Plans over your tuition budget are hidden. The five-year view shows each child's school year by year, including the move to high school.</li>
+    </ul>
+   </section>
+   <section id="m-missing"><h3>Missing data</h3>
+    <p>When a school hasn't been measured on something your child cares about, it's held at an average 5.0, shown faded in the score bar and flagged on the card. Missing data neither helps nor hurts a school. A school whose score rests mostly on those averages can't appear in a child's top 10, so the top of each list always reflects real data. Schools with no usable measures at all are listed separately as not yet scored.</p>
+   </section>
+   <section id="m-public"><h3>Which public schools appear</h3>
+    <p>Public school eligibility is set by school district, so by default the Explorer shows the public schools in the districts that typically serve each location you enter. For an address, that's the district boundaries containing it (often one elementary and one high school district, or one unified district). For a city, it's every district with schools in that city. You can narrow this to schools located in the cities you picked, or widen it to every public school within your radius. Private and charter schools always use the radius, since they enroll from anywhere.</p>
+    <p>Districts assign schools by attendance area, and those areas don't always follow city lines. The Explorer works at the district level and never tells you which school an address is assigned to. Confirm with the district before choosing a home.</p>
+   </section>
+   <section id="m-not"><h3>What we never use</h3>
+    <p>Scores never use the race, ethnicity, income, language or disability makeup of a school's students, and the Explorer has no demographic filters. We don't use home prices or neighborhood characteristics. Schools are identified with the cities and districts they typically serve, never with specific homes or streets. The learning support option only adds information about specialized schools and district services. It never changes how other schools rank.</p>
+   </section>
+   <section id="m-sources"><h3>Sources</h3>
+    <div class="twrap"><table class="mtab"><thead><tr><th>Data</th><th>Source</th></tr></thead><tbody>
+     <tr><td>Schools, grades, enrollment</td><td>California Department of Education (CDE) School Directory and Census Day Enrollment 2025-26; CDE Private School Affidavits 2025-26</td></tr>
+     <tr><td>Test results</td><td>CAASPP Smarter Balanced results, spring 2025, all students</td></tr>
+     <tr><td>College enrollment</td><td>CDE College-Going Rate, class of 2022-23; NCES Private School Survey 2023-24; school profiles and published matriculation lists</td></tr>
+     <tr><td>College selectivity</td><td>U.S. Department of Education College Scorecard admission rates</td></tr>
+     <tr><td>Courses</td><td>University of California A-G course lists, 2026-27</td></tr>
+     <tr><td>Athletics</td><td>North Coast Section results history 2016-2026; CIF state championship records; MaxPreps team listings</td></tr>
+     <tr><td>Arts, clubs, STEM teams</td><td>School websites, course catalogs and published school profiles, reviewed school by school</td></tr>
+     <tr><td>Tuition and aid</td><td>School admissions pages, 2026-27 where published</td></tr>
+     <tr><td>District service areas</td><td>CDE district boundaries 2025-26</td></tr>
+    </tbody></table></div>
+   </section>
+   <section id="m-limits"><h3>Limits and updates</h3>
+    <ul>
+     <li>Program data (sports, arts, STEM and clubs) currently covers 102 high schools in Alameda and Contra Costa counties. Other counties are coming.</li>
+     <li>Club and team counts come from what schools publish, which varies in detail. Estimates are flagged on each card.</li>
+     <li>Test results describe one year of students and don't measure teaching quality, school culture or fit for an individual child.</li>
+     <li>Visit schools, talk with families there and confirm enrollment rules before deciding. Spot something out of date? Call us at 510-774-4231 and we'll correct it.</li>
+    </ul>
+   </section>
+  </div>
+ </div>
+</div></div>
+
+<div class="band plain suggest"><div class="in">
+  <p><b>Don’t see a school, or spot something out of date?</b> Tell us and we’ll research it and add it.</p>
+  <a class="sbtn" href="#" data-type="CONTACT_US" data-suggest="">Suggest a school</a>
+</div></div>
+
+<div class="band dark cta"><div class="in">
+  <div class="eyebrow">Moving to the East Bay?</div>
+  <h3>We'll match the schools you like to homes that fit your family.</h3>
+  <p>School assignment depends on the exact address. Send us your family link and we'll show you the neighborhoods and homes that work for every child.</p>
+  <div class="ctabtns"><a class="lbtn" href="/buyer-representation">Buyer Representation</a><a class="lbtn" href="/neighborhoods">Explore Neighborhoods</a></div>
+</div></div>
+
+<div class="band plain"><div class="in"><div class="fine">
+  <p><b>Please verify.</b> Attendance boundaries, programs, tuition and enrollment rules change. Confirm eligibility with the school or district before relying on it in a purchase decision. Scores are The Lederer Team's own calculation from public data and what schools publish. They do not measure teaching quality or school culture, and we do not recommend specific schools. This page is for research.</p>
+  <p><b>Your family link</b> stores your settings, including any address and children's names you typed, in the link itself. Nothing is saved on our servers. Share it only with people you choose.</p>
+  <p>The Lederer Team at Red Oak Realty is committed to fair housing and Equal Housing Opportunity. We serve every client without regard to race, color, religion, sex, disability, familial status, national origin or any other protected class.</p>
+</div></div></div>
+<div class="scrim" id="scrim" hidden></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" hidden></aside>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+(function(){
+const root=document.getElementById('bx');if(!root)return;
+const $=id=>root.querySelector('#'+id);
+const attr=(n,d)=>{const v=root.getAttribute(n);return v&&!v.startsWith('__')?v:d};
+const CFG={src:attr('data-src','https://lederer-team.github.io/school-data/explorer/'),gkey:attr('data-gkey',''),share:attr('data-share',''),hero:attr('data-hero','')};
+if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,encodeURIComponent)+'")');
+function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
+bleed();window.addEventListener('resize',bleed);
+function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  return get(CFG.src).catch(()=>get('data/'))}
+load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page, or call 510-774-4231.</div>'});
+
+function boot(S,G){
+const BY=Object.fromEntries(S.map(s=>[s.id,s]));
+const PLACES=G.places;
+const CATS={acad:['Academics','--c-acad'],college:['College outcomes','--c-college'],sports:['Sports','--c-sports'],arts:['Arts','--c-arts'],stem:['STEM','--c-stem'],clubs:['Clubs & activities','--c-clubs'],path:['Path to high school','--c-path'],size:['School size fit','--c-size'],commute:['Short commute','--c-commute'],interest:['Child\u2019s interests','--c-interest'],lang:['World languages','--c-lang'],care:['Before & after care','--c-care'],small:['Small classes','--c-small']};
+const CK=Object.keys(CATS);
+const AUHSD={'07616300734244':['Orinda'],'07616300731125':['Moraga'],'07616300730283':['Lafayette'],'07616300733725':['Walnut Creek']}; // Acalanes Union HSD typical attendance areas
+function servesCities(s){if(s.sec!=='Public')return null;return AUHSD[s.id]||G.distCity[s.dist]||[]}
+function inRing(x,y,r){let c=false;for(let i=0,j=r.length-1;i<r.length;j=i++){const[xi,yi]=r[i],[xj,yj]=r[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}
+const DCACHE=new Map();
+// Districts that serve a location: the boundaries containing its point, plus (for a whole city) every district with schools in that city.
+function placeDists(p){const k=p.label+'|'+p.lat+'|'+p.lng;if(DCACHE.has(k))return DCACHE.get(k);const out=new Set();
+  for(const[n,,polys]of(G.bounds||[]))if(polys.some(poly=>inRing(+p.lng,+p.lat,poly[0])&&!poly.slice(1).some(h=>inRing(+p.lng,+p.lat,h))))out.add(n);
+  if(p.kind==='city'&&p.n===p.city||!out.size)(G.cityDist[p.city]||[]).forEach(d=>out.add(d));DCACHE.set(k,out);return out}
+function servesHome(s,p){if(s.sec!=='Public')return true;if(AUHSD[s.id])return AUHSD[s.id].includes(p.city);return placeDists(p).has(s.dist)}
+function inCity(s,p){return s.c===p.city||(AUHSD[s.id]||[]).includes(p.city)}
+function pubOk(s,p){return st.pub==='city'?inCity(s,p):servesHome(s,p)}
+const HSCATS=['acad','college','sports','arts','stem','clubs','interest'];
+const PRESETS={'Balanced':{acad:8,college:5,sports:3,arts:3,stem:3,clubs:3,path:5,size:2,commute:3,lang:2,care:1,small:2},
+ 'Academics first':{acad:10,college:8,sports:1,arts:1,stem:2,clubs:1,path:7,size:2,commute:2,lang:2,care:1,small:3},
+ 'Athlete':{acad:6,college:4,sports:10,arts:1,stem:1,clubs:2,path:5,size:1,commute:3,lang:1,care:1,small:1},
+ 'Performer':{acad:6,college:4,sports:1,arts:10,stem:1,clubs:3,path:5,size:2,commute:3,lang:2,care:1,small:2},
+ 'STEM kid':{acad:8,college:5,sports:1,arts:1,stem:10,clubs:3,path:6,size:2,commute:3,lang:1,care:1,small:2}};
+const INT=[{g:'Sports',items:[['football','Football'],['basketball','Basketball'],['soccer','Soccer'],['volleyball','Volleyball'],['baseball','Baseball / softball'],['waterpolo','Water polo'],['track','Track'],['lacrosse','Lacrosse'],['tennis','Tennis']]},
+ {g:'Arts',items:[['theater','Theater'],['music','Music'],['dance','Dance'],['film','Film']]},
+ {g:'STEM',items:[['robotics','Robotics'],['sciolympiad','Science competitions'],['coding','Coding'],['math','Math team']]},
+ {g:'Speaking',items:[['debate','Debate'],['mocktrial','Mock trial'],['mun','Model UN']]}];
+const INT8=[{g:'Activities',items:[['music','Music'],['art','Art'],['theater','Theater'],['robotics','Robotics'],['coding','Coding'],['sports','Sports'],['languages','Languages']]}];
+const SPORTS=new Set(INT[0].items.map(i=>i[0]));const LABEL=Object.fromEntries([...INT8,...INT].flatMap(g=>g.items));
+const HSI=new Set(INT.flatMap(g=>g.items.map(i=>i[0]))),K8I=new Set(INT8[0].items.map(i=>i[0]));
+const GRADES=['K','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+const KC=['--k1','--k2','--k3','--k4'];
+const PC=['#C23B5A','#2874A6','#B9770E','#6C3483','#117A65','#34495E']; // one color per location
+const pc=p=>PC[Math.max(0,st.places.indexOf(p))%PC.length];
+const YEAR=2027; // "next fall" = 2027-28
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const css=v=>`var(${v})`;
+const cv=v=>getComputedStyle(root).getPropertyValue(v).trim()||'#1A1A1A';
+const kname=(k,i)=>k.name||'Child '+(i+1);
+
+const pl=n=>{const p=PLACES.find(x=>x.n===n);return{...p,kind:'city',label:p.n}};
+function mk(name,grade,preset,ints,sector){return{name,grade,preset,w:{...PRESETS[preset],interest:ints.length?7:0},ints:new Set(ints),sector,sizePref:'any',support:false}}
+const fresh=()=>({places:[],radius:10,pub:'dist',budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,kids:[mk('',9,'Balanced',[],'all')]});
+const example=()=>({places:[pl('Orinda'),pl('Moraga'),pl('Lafayette'),pl('Montclair, Oakland')],radius:10,budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,
+ kids:[mk('Maya',10,'Athlete',['waterpolo'],'all'),mk('Leo',6,'STEM kid',['robotics','coding'],'all')]});
+let st=fresh();
+
+const km=(a,b,c,d)=>{const R=6371,t=Math.PI/180,x=(c-a)*t,y=(d-b)*t,h=Math.sin(x/2)**2+Math.cos(a*t)*Math.cos(c*t)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+const mi=(p,s)=>km(p[0],p[1],s.lat,s.lng)*0.6214;
+const drive=(p,s)=>Math.round(4+km(p[0],p[1],s.lat,s.lng)*1.35/40*60);
+const driveSS=(a,b)=>Math.round(4+km(a.lat,a.lng,b.lat,b.lng)*1.35/40*60);
+const level=g=>g<=5?'E':g<=8?'M':'H';
+const band=g=>g<=5?'K-5':g<=8?'6-8':'9-12';
+const tuition=(s,g)=>s.sec!=='Private'?0:(s.tui?s.tui[band(g)]??null:null);
+const money=v=>v==null?'Tuition not yet collected':v===0?'Free':'$'+Math.round(v/1000)+'k a year';
+const maxT={};for(const s of S)if(s.titles)for(const[k,v]of Object.entries(s.titles))maxT[k]=Math.max(maxT[k]||0,v);
+
+function interestScore(s,kid,hs){
+  const H=hs||level(kid.grade)==='H';const ints=[...kid.ints].filter(k=>(H?HSI:K8I).has(k));if(!ints.length)return null;
+  if(!H){const x=s.k8;if(!x)return null;const has=c=>x.has.includes(c);
+    const r=ints.map(k=>{const L=LABEL[k];
+      if(k==='music')return{v:Math.min(10,(x.ens||0)*3.4),hit:!!x.ens,txt:x.ens?`Music: ${x.ens} ensemble${x.ens>1?'s':''}`:'Music: no ensembles listed'};
+      if(k==='sports'){const v=x.sports;return{v:v??5,hit:(v||0)>=6,txt:x.teams?`Sports: ${x.teams} teams`:'Sports: PE'}}
+      if(k==='languages')return{v:x.lang,hit:x.lang>=6,txt:x.langs?`Languages: ${x.langs}`:'Languages: none listed'};
+      const h=has(k==='art'?'art':k);return{v:h?10:0,hit:h,txt:L+(h?'':': not listed')}});
+    return{v:r.reduce((a,b)=>a+b.v,0)/r.length,list:r}}
+  if(!s.prog)return null;
+  const r=ints.map(k=>{
+    if(SPORTS.has(k)){const t=s.titles[k]||0;return{v:t?4+6*Math.sqrt(t)/Math.sqrt(maxT[k]):0,hit:t>0,txt:t?`${LABEL[k]}: ${t} title${t===1?'':'s'}`:`${LABEL[k]}: no titles since 2016`}}
+    if(k==='music'){const m=s.prog.music;return{v:m*2,hit:m>0,txt:m?`Music: ${m} ensembles`:'Music: none listed'}}
+    const h=!!s.prog[k];return{v:h?10:0,hit:h,txt:LABEL[k]+(h?'':': not listed')}});
+  return{v:r.reduce((a,b)=>a+b.v,0)/r.length,list:r}}
+function sizeScore(s,kid){
+  if(kid.sizePref==='any'||!s.e)return null;
+  const L=level(kid.grade),T={E:[300,550],M:[400,900],H:[600,1500]}[L];
+  const cls=s.e<T[0]?'small':s.e>T[1]?'large':'medium';const ord={small:0,medium:1,large:2};
+  return 10-5*Math.abs(ord[cls]-ord[kid.sizePref])}
+function hsFit(s,kid){if(!s)return null;let tw=0,t=0;
+  for(const c of HSCATS){const w=kid.w[c]||0;let v=c==='interest'?interestScore(s,kid,true)?.v:s.s[c];if(!w||v==null)continue;tw+=w;t+=w*v}
+  return tw?t/tw:null}
+function pathInfo(s,kid){
+  if(kid.grade>=9)return null;
+  if(s.hi>=12&&s.sec==='Private'){const f=hsFit(s,kid);return f==null?null:{v:0.9*f+0.5,to:[s],cert:'Very likely',how:'Continues through 12th grade at the same school',same:true}}
+  if(s.feed){const h=BY[s.feed];const f=hsFit(h,kid);return f==null?null:{v:f,to:[h],cert:'Certain',how:`District feeder to ${h.n}`}}
+  if(s.next&&s.next.to){const h=BY[s.next.to];const f=hsFit(h,kid);return f==null?null:{v:0.9*f+0.5,to:[h],cert:'Very likely',how:s.next.how}}
+  if(s.next&&s.next.list){const hs=s.next.list.map(i=>BY[i]).filter(Boolean);const fs=hs.map(h=>hsFit(h,kid)).filter(v=>v!=null);if(!fs.length)return null;
+    const avg=fs.reduce((a,b)=>a+b,0)/fs.length;return{v:0.7*avg+1.5,to:hs,cert:'Uncertain',how:s.next.how}}
+  return null}
+const pt=p=>[p.lat,p.lng];
+function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;for(const p of st.places){if(lim&&!pubOk(s,p))continue;const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}
+  if(!best)for(const p of st.places){const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}return best}
+function baseOk(s,kid){
+  if(kid.grade<s.lo||kid.grade>s.hi)return false;
+  if(kid.sector==='Public'&&s.sec==='Private')return false;
+  if(kid.sector==='Private'&&s.sec!=='Private')return false;return true}
+function eligible(s,kid){if(!baseOk(s,kid)||!st.places.length)return false;if(s.sec==='Public'&&st.pub!=='radius')return st.places.some(p=>pubOk(s,p));return homeFor(s).d<=st.radius}
+function scoreFor(s,kid,home){
+  const v={...s.s};if(level(kid.grade)!=='H'){delete v.college;const x=s.k8||{};for(const c of ['sports','arts','stem','clubs','lang','care','small'])v[c]=x[c]??null}
+  const p=pathInfo(s,kid);v.path=p?.v??null;
+  v.size=sizeScore(s,kid);
+  const it=interestScore(s,kid);v.interest=it?.v??null;
+  const hf=homeFor(s);const hp=home?pt(home):(hf?pt(hf.p):null);const m=hp?drive(hp,s):null;v.commute=m==null?null:Math.max(0,Math.min(10,(45-m)/35*10));
+  const w=activeW(kid);let tw=0,t=0;const parts=[],est=[];
+  const L=level(kid.grade),IMP=L==='H'?['college','sports','arts','stem','clubs','interest']:['path','sports','arts','stem','clubs','lang','care','small','interest'];
+  for(const c of CK){const ww=w[c]||0;let x=v[c],e=false;if(!ww)continue;
+    if(x==null&&IMP.includes(c)&&(v.acad!=null||v.path!=null)){x=5;e=true;est.push(CATS[c][0].toLowerCase())}
+    if(x==null)continue;tw+=ww;t+=ww*x;parts.push({c,w:ww,v:x,e})}
+  parts.forEach(q=>q.share=tw?q.w*q.v/tw:0);
+  const core=v.acad!=null||v.path!=null;
+  const ew=parts.filter(q=>q.e).reduce((a,q)=>a+q.w,0);const limited=tw>0&&ew/tw>(L==='H'?0.5:0.6);
+  return{s,score:tw&&core?t/tw:null,parts,path:p,it,min:m,v,est,limited}}
+// Data-minimum rule: the top 10 is reserved for schools with real data behind most of what this child cares about
+function order(list){const s=list.filter(r=>r.score!=null).sort((a,b)=>b.score-a.score);const full=s.filter(r=>!r.limited),lim=s.filter(r=>r.limited);
+  const head=full.slice(0,10);const rest=[...full.slice(10),...lim].sort((a,b)=>b.score-a.score);return[...head,...rest]}
+function activeW(kid){const w={...kid.w};const L=level(kid.grade);
+  if(L!=='H')w.college=0;else{w.path=0;w.lang=0;w.care=0;w.small=0}
+  if(kid.sizePref==='any')w.size=0;if(![...kid.ints].some(k=>(L==='H'?HSI:K8I).has(k)))w.interest=0;return w}
+function rankKid(kid,home){return S.filter(s=>!s.spec&&eligible(s,kid)).map(s=>scoreFor(s,kid,home))}
+// Specialized schools: ranked on what applies to them (distance, grade span, size). They don't publish comparable academic data.
+const SPEC_MI=25;
+function specList(kid,t){if(!st.places.length)return[];return S.filter(s=>s.spec&&s.spec.t===t&&kid.grade>=s.lo&&kid.grade<=s.hi).map(s=>{const h=homeFor(s);if(h.d>Math.max(st.radius,SPEC_MI))return null;
+  const m=drive(pt(h.p),s),parts=[];const add=(c,w,v)=>{if(w&&v!=null)parts.push({c,w,v})};
+  add('commute',kid.w.commute||3,Math.max(0,Math.min(10,(45-m)/35*10)));
+  if(kid.grade<9)add('path',kid.w.path||5,s.hi>=12?9.5:5);
+  if(kid.sizePref!=='any')add('size',kid.w.size||2,sizeScore(s,kid));
+  const tw=parts.reduce((a,q)=>a+q.w,0);parts.forEach(q=>q.share=q.w*q.v/tw);
+  return{s,score:parts.reduce((a,q)=>a+q.w*q.v,0)/tw,parts,min:m,from:h.c,mi:h.d}}).filter(Boolean).sort((a,b)=>b.score-a.score)}
+function specCard(r,i){const s=r.s,sp=s.spec,k=st.kids[st.active];
+  return`<article class="card spec" id="c-${s.id}"><div class="rk">${i+1}</div>
+   <div><span class="badge">Specialized school · learning differences</span><div class="nm">${esc(s.n)}</div><div class="meta">${esc(s.c)} · Private · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
+   <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
+   <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])}"></span>`).join('')}</div>
+    <div class="facts">${sp.serves?`<span><b>Serves:</b> ${esc(sp.serves)}</span>`:''}${sp.cls?`<span><b>Classes:</b> ${esc(sp.cls)}</span>`:''}${sp.out?`<span><b>After graduation:</b> ${esc(sp.out)}</span>`:''}</div>
+    <div class="tags"><span class="tag">About ${r.min} min from ${esc(r.from)}</span>${s.e?`<span class="tag">${s.e} students</span>`:''}<span class="tag ${tuition(s,k.grade)==null?'warn':''}">${money(tuition(s,k.grade))}</span>${s.hi>=12&&k.grade<9?'<span class="tag good">Continues through 12th grade</span>':''}</div>
+    <div class="flag">Ranked on distance${k.grade<9?', grade span':''}${k.sizePref!=='any'?', size':''}. Academic and outcome data not published</div>
+    <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`}
+
+/* ---------- family plans ---------- */
+let lastPlans=[],lastList={scored:[],un:[]},lastSpec=[];
+function plans(){
+  const K=st.kids;if(K.length<2||!st.places.length)return[];
+  const out=[];
+  for(const home of st.places){
+    const hp=pt(home);
+    const lists=K.map(k=>order(rankKid(k,home).filter(r=>r.s.sec!=='Public'||(st.pub==='city'?inCity(r.s,home):servesHome(r.s,home)))).slice(0,8));
+    if(lists.some(l=>!l.length))continue;
+    const tops=lists.map(l=>l[0]);
+    const rec=(i,acc)=>{if(i===K.length){const pl=evalPlan(home,hp,acc);pl.tops=tops;out.push(pl);return}for(const r of lists[i])rec(i+1,[...acc,r])};
+    rec(0,[]);
+  }
+  const ok=out.filter(p=>!st.budget||p.cost==null||p.cost<=st.budget);
+  ok.sort((a,b)=>b.score-a.score);
+  // best plan for each location, so every city or address the family entered gets its own answer
+  const seen=new Set(),res=[];for(const p of ok){if(seen.has(p.home))continue;seen.add(p.home);res.push(p)}
+  return res}
+function evalPlan(home,hp,picks){
+  const fits=picks.map(r=>r.score);const mn=Math.min(...fits),av=fits.reduce((a,b)=>a+b,0)/fits.length;
+  const fam=st.mode==='protect'?0.6*mn+0.4*av:av;
+  const uniq=[];for(const r of picks){const key=r.s.org||r.s.id;if(!uniq.some(u=>(u.org||u.id)===key))uniq.push(r.s)}
+  let route=0,cur=null,left=[...uniq],legs=[];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);legs.push(nx);cur=nx}
+  const logi=Math.max(0,Math.min(10,(60-route)/45*10));
+  const together=uniq.length<picks.length;
+  let cost=0,unknown=false;picks.forEach((r,i)=>{const t=tuition(r.s,st.kids[i].grade);if(t==null)unknown=true;else cost+=t});
+  // the drive's share follows the kids' Short commute sliders (3 = 15%, 0 = ignored, capped at 30%)
+  const cw=st.kids.reduce((a,k)=>a+(k.w.commute||0),0)/st.kids.length,lw=Math.min(0.3,0.15*cw/3);
+  const score=st.together?Math.min(10,(1-lw)*fam+lw*logi+(together?0.3:0)):fam;
+  return{home,picks,score,route,legs,together,cost:unknown?null:cost,costKnown:cost,unknown,mn}}
+function timeline(p){
+  const yrs=[0,1,2,3,4];
+  const rows=st.kids.map((k,i)=>{let sch=p.picks[i].s;return yrs.map(y=>{const g=k.grade+y;if(g>12)return{txt:'Graduated',em:''};
+    if(g<=sch.hi)return{txt:sch.n,em:GRADES[g]};
+    const pi=pathInfo(sch,{...k,grade:Math.min(8,k.grade)});
+    if(pi&&pi.to.length===1){const prev=sch;sch=pi.to[0];return{txt:sch.n,em:`${GRADES[g]} · ${pi.cert==='Certain'?'district feeder':'continues'}${prev.org&&prev.org===sch.org&&prev.c!==sch.c?' · campus moves to '+sch.c:''}`}}
+    return{txt:'Apply to high school',em:GRADES[g]+' · admission needed',warn:true}})});
+  const tog=yrs.map(y=>{const ids=rows.map(r=>r[y].txt);return ids.length>1&&ids.every(x=>x===ids[0]&&x!=='Graduated'&&!x.startsWith('Apply'))});
+  return`<div class="tl"><table><thead><tr><th>Child</th>${yrs.map(y=>`<th>${YEAR+y}-${String(YEAR+y+1).slice(2)}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr><td><b>${esc(kname(st.kids[i],i))}</b></td>${r.map((c,y)=>`<td${c.warn?' style="color:var(--amber)"':''}>${esc(c.txt)}<em>${esc(c.em)}${tog[y]?' · together':''}</em></td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+
+/* ---------- share links: settings live in the link's #fragment, never sent to a server ---------- */
+const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
+function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['dist','city','radius'].indexOf(st.pub),a:st.active,
+  k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||''])}}
+function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
+  n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
+  n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g!==0;n.pub=['dist','city','radius'][o.u|0]||'dist';
+  n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
+    w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Private'].includes(sector)?sector:'all',
+    sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup}));
+  if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
+const frag=()=>'family='+b64e(JSON.stringify(pack()));
+function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
+let hashT;function syncHash(){clearTimeout(hashT);hashT=setTimeout(()=>{try{history.replaceState(null,'','#'+frag())}catch(e){}},500)}
+function fromHash(){const m=(location.hash||'').match(/family=([\w-]+)/);if(!m)return false;try{const n=unpack(JSON.parse(b64d(m[1])));if(n){st=n;return true}}catch(e){}return false}
+
+/* ---------- map: Google Maps when the key works, otherwise Leaflet with free tiles ---------- */
+let map=null,fitKey='';
+const GSTYLE=[{elementType:'geometry',stylers:[{color:'#f2f2ef'}]},{elementType:'labels.icon',stylers:[{visibility:'off'}]},{elementType:'labels.text.fill',stylers:[{color:'#6e6e6a'}]},{elementType:'labels.text.stroke',stylers:[{color:'#f7f7f4'}]},
+ {featureType:'poi',stylers:[{visibility:'off'}]},{featureType:'transit',stylers:[{visibility:'off'}]},{featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'}]},{featureType:'road.highway',elementType:'geometry',stylers:[{color:'#e1e1dc'}]},
+ {featureType:'road',elementType:'labels.icon',stylers:[{visibility:'off'}]},{featureType:'water',elementType:'geometry',stylers:[{color:'#d3dce3'}]},{featureType:'landscape.natural',elementType:'geometry',stylers:[{color:'#ecece7'}]},
+ {featureType:'administrative.locality',elementType:'labels.text.fill',stylers:[{color:'#3b3b38'}]},{featureType:'administrative.neighborhood',elementType:'labels.text.fill',stylers:[{color:'#8a8a84'}]}];
+function freshMapDiv(){const old=$('map');const nd=old.cloneNode(false);old.replaceWith(nd);return nd}
+function leafletAdapter(){
+  const el=freshMapDiv();const m=L.map(el,{scrollWheelZoom:false,zoomControl:true}).setView([37.83,-122.12],10);
+  const esri=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'}).addTo(m);
+  const lbl=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,pane:'shadowPane'}).addTo(m);
+  let fails=0;esri.on('tileerror',()=>{if(++fails===4){m.removeLayer(esri);m.removeLayer(lbl);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(m)}});
+  const lay=L.layerGroup().addTo(m);let byId={};
+  return{kind:'leaflet',
+    clear(){lay.clearLayers();byId={}},
+    circle(ll,meters,c){L.circle(ll,{radius:meters,color:c||'#1A1A1A',weight:2,opacity:.8,fillColor:c||'#1A1A1A',fillOpacity:.05,dashArray:'6 5',interactive:false}).addTo(lay)},
+    html(ll,html,o){const z=o.size;const mk=L.marker(ll,{icon:L.divIcon({className:'',html,iconSize:[z,z],iconAnchor:[z/2,z/2],popupAnchor:[0,-z/2]}),zIndexOffset:o.z||0,title:o.title||''}).addTo(lay);if(o.popup)mk.bindPopup(o.popup);if(o.id)byId[o.id]=mk},
+    dot(ll,o){const c=L.circleMarker(ll,{radius:o.r,weight:o.stroke?1:0,color:'#fff',fillColor:o.fill,fillOpacity:o.op}).addTo(lay);if(o.popup)c.bindPopup(o.popup)},
+    line(a,b){L.polyline([a,b],{color:'#1A1A1A',weight:2,opacity:.55,dashArray:'6 6'}).addTo(lay)},
+    fit(pts,maxZoom){m.fitBounds(L.latLngBounds(pts),{maxZoom,padding:[24,24]})},
+    view(ll,z){m.setView(ll,z)},
+    focus(id){const mk=byId[id];if(!mk)return;m.setView(mk.getLatLng(),Math.max(m.getZoom(),13));mk.openPopup()},
+    resize(){m.invalidateSize()}}}
+function googleAdapter(){
+  const g=google.maps,el=freshMapDiv();
+  const m=new g.Map(el,{center:{lat:37.83,lng:-122.12},zoom:10,styles:GSTYLE,mapTypeControl:false,streetViewControl:false,fullscreenControl:true,clickableIcons:false,gestureHandling:'cooperative'});
+  const iw=new g.InfoWindow();
+  class Html extends g.OverlayView{
+    constructor(){super();this.items=[];this.box=document.createElement('div');this.box.style.position='absolute'}
+    onAdd(){this.getPanes().overlayMouseTarget.appendChild(this.box)}
+    onRemove(){this.box.remove()}
+    draw(){const pr=this.getProjection();if(!pr)return;for(const it of this.items){const p=pr.fromLatLngToDivPixel(it.ll);it.el.style.left=(p.x-it.size/2)+'px';it.el.style.top=(p.y-it.size/2)+'px'}}
+    add(it){const e=it.el;e.style.position='absolute';e.style.zIndex=String(1000+(it.z||0));this.box.appendChild(e);this.items.push(it)}
+    clear(){this.box.textContent='';this.items=[]}}
+  const ov=new Html();ov.setMap(m);let shapes=[],byId={};
+  const open=(html,ll,size)=>{iw.setOptions({content:`<div class="gpop">${html}</div>`,position:ll,pixelOffset:new g.Size(0,-Math.round(size/2))});iw.open({map:m})};
+  const add=(ll,el,size,o)=>{const L2=new g.LatLng(ll[0],ll[1]);el.style.cursor='pointer';if(o.title)el.title=o.title;
+    if(o.popup)el.addEventListener('click',e=>{e.stopPropagation();open(o.popup,L2,size)});ov.add({ll:L2,el,size,z:o.z});ov.draw();if(o.id)byId[o.id]={ll:L2,popup:o.popup,size}};
+  return{kind:'google',
+    clear(){shapes.forEach(s=>s.setMap(null));shapes=[];ov.clear();byId={};iw.close()},
+    circle(ll,meters,c){shapes.push(new g.Circle({map:m,center:{lat:ll[0],lng:ll[1]},radius:meters,strokeColor:c||'#1A1A1A',strokeOpacity:.85,strokeWeight:2,fillColor:c||'#1A1A1A',fillOpacity:.05,clickable:false}))},
+    html(ll,html,o){const el=document.createElement('div');el.innerHTML=html;add(ll,el,o.size,o)},
+    dot(ll,o){const el=document.createElement('div');const d=o.r*2;el.style.cssText=`width:${d}px;height:${d}px;border-radius:50%;background:${o.fill};opacity:${o.op};${o.stroke?'box-shadow:0 0 0 1px #fff;':''}`;add(ll,el,d,o)},
+    line(a,b){shapes.push(new g.Polyline({map:m,path:[{lat:a[0],lng:a[1]},{lat:b[0],lng:b[1]}],strokeOpacity:0,clickable:false,icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:.6,strokeColor:'#1A1A1A',scale:2},offset:'0',repeat:'12px'}]}))},
+    fit(pts,maxZoom){const b=new g.LatLngBounds();pts.forEach(p=>b.extend({lat:p[0],lng:p[1]}));m.fitBounds(b,24);g.event.addListenerOnce(m,'idle',()=>{if(m.getZoom()>maxZoom)m.setZoom(maxZoom)})},
+    view(ll,z){m.setCenter({lat:ll[0],lng:ll[1]});m.setZoom(z)},
+    focus(id){const it=byId[id];if(!it)return;m.setCenter(it.ll);if(m.getZoom()<13)m.setZoom(13);open(it.popup,it.ll,it.size)},
+    resize(){}}}
+function useLeaflet(){if(map&&map.kind==='leaflet')return;if(!window.L){$('mapcard').hidden=true;map=null;return}map=leafletAdapter();fitKey='';renderMap()}
+function initMap(){
+  if(gReady){const t=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000));
+    Promise.race([gReady,t]).then(()=>{if(gFailed)return useLeaflet();try{map=googleAdapter();fitKey='';renderMap()}catch(e){console.error(e);useLeaflet()}}).catch(()=>useLeaflet())}
+  else useLeaflet()}
+const pinHtml=(txt,color)=>`<div class="pin" style="background:${color}">${txt}</div>`;
+const homeHtml=c=>`<div class="home" style="border-color:${c};color:${c}">\u2302</div>`;
+function popup(s,extra){return`<b>${esc(s.n)}</b><br>${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}${extra?'<br>'+extra:''}<br><button type="button" class="popbtn" data-goto="${s.id}">See details</button>`}
+function radiusPts(p,miles){const dl=miles/69,dg=miles/(69*Math.cos(p.lat*Math.PI/180));return[[p.lat-dl,p.lng-dg],[p.lat+dl,p.lng+dg]]}
+function renderMap(){
+  if(!map)return;map.clear();const pts=[];
+  const plan=st.mapPlan!=null?lastPlans[st.mapPlan]:null;
+  st.places.forEach(p=>{
+    if(!plan&&st.radius<99)map.circle(pt(p),st.radius*1609.34,pc(p));
+    if(!plan||plan.home===p){map.html(pt(p),homeHtml(pc(p)),{size:30,z:1000,title:p.label,popup:`<b>${esc(p.label)}</b><br>${p.kind==='address'?(p.approx?'Placed at the city center':'Your address'):'City or neighborhood center'}`});pts.push(pt(p))}});
+  if(plan){
+    const hp=pt(plan.home);let prev=hp;
+    plan.legs.forEach(s=>{map.line(prev,[s.lat,s.lng]);prev=[s.lat,s.lng]});
+    const done={};plan.picks.forEach((r,i)=>{const s=r.s;const who=st.kids.map((k,j)=>plan.picks[j].s.id===s.id?kname(k,j):null).filter(Boolean);
+      if(done[s.id])return;done[s.id]=1;
+      const col=who.length>1?'#1A1A1A':cv(KC[i]);
+      map.html([s.lat,s.lng],pinHtml(esc(who.map(n=>n[0]).join('')),col),{size:26,z:500,id:s.id,title:s.n,popup:popup(s,`${esc(who.join(' and '))} · about ${drive(hp,s)} min from home`)});pts.push([s.lat,s.lng])});
+    $('mapTitle').textContent=`Plan: ${plan.home.kind==='address'?'at':'in'} ${plan.home.label}`;
+    $('mapBack').hidden=false;$('mapBack').textContent=`Back to ${kname(st.kids[st.active],st.active)}'s schools`;
+    $('mapKey').innerHTML=st.kids.map((k,i)=>`<span><i class="pin" style="width:12px;height:12px;border:0;background:${css(KC[i])}"></i>${esc(kname(k,i))}</span>`).join('')+'<span><i class="pin" style="width:12px;height:12px;border:0"></i>Shared campus</span><span>Dashed line: estimated morning route</span>';
+  }else{
+    const k=st.kids[st.active],n=Math.min(st.showN[st.active]||10,lastList.scored.length);
+    $('mapBack').hidden=true;
+    if(!st.places.length){
+      S.filter(s=>baseOk(s,k)).forEach(s=>map.dot([s.lat,s.lng],{r:3,fill:'#1A1A1A',op:.35,popup:popup(s)}));
+      $('mapTitle').textContent=`Every school for ${GRADES[k.grade]} grade`;
+      $('mapKey').innerHTML='<span>Add where you might live to rank these schools for each child.</span>';
+    }else{
+      lastList.un.forEach(r=>{const s=r.s;map.dot([s.lat,s.lng],{r:4,fill:'#8A8A84',op:.85,stroke:1,popup:popup(s,'Not yet scored')})});
+      lastList.scored.slice(n).forEach(r=>{const s=r.s;map.dot([s.lat,s.lng],{r:5,fill:cv(KC[st.active]),op:.6,stroke:1,z:100,popup:popup(s,`Fit ${r.score.toFixed(1)}`)})});
+      lastList.scored.slice(0,n).forEach((r,i)=>{const s=r.s;map.html([s.lat,s.lng],pinHtml(i+1,cv(KC[st.active])),{size:26,z:400-i,id:s.id,title:s.n,popup:popup(s,`#${i+1} for ${esc(kname(k,st.active))} · fit ${r.score.toFixed(1)}`)});pts.push([s.lat,s.lng])});
+      lastSpec.forEach((r,i)=>{const s=r.s;map.html([s.lat,s.lng],`<div class="pin" style="background:#0F6E5F;border-radius:3px">S${i+1}</div>`,{size:26,z:600-i,id:s.id,title:s.n,popup:popup(s,`Specialized school · fit ${r.score.toFixed(1)}`)});pts.push([s.lat,s.lng])});
+      $('mapTitle').textContent=`${kname(k,st.active)}'s top ${n} schools`;
+      $('mapKey').innerHTML=`<span><i class="pin" style="width:12px;height:12px;border:0;background:${css(KC[st.active])}"></i>Numbered: ranked list</span><span><i style="width:9px;height:9px;border-radius:50%;background:${css(KC[st.active])};opacity:.6"></i>Also in range</span><span><i style="width:8px;height:8px;border-radius:50%;background:var(--muted)"></i>Not yet scored</span>${st.places.map(p=>`<span><i class="home" style="width:12px;height:12px;border-width:2px;border-color:${pc(p)}"></i>${esc(p.label)}</span>`).join('')}${lastSpec.length?'<span><i class="pin" style="width:12px;height:12px;border:0;border-radius:2px;background:#0F6E5F"></i>S: specialized schools</span>':''}${st.radius<99?`<span>Circles: ${st.radius} mile radius</span>`:''}`;
+    }
+  }
+  const key=JSON.stringify([st.places.map(p=>p.label),st.radius,st.mapPlan,st.active,st.places.length?0:st.kids[st.active].grade]);
+  if(key!==fitKey){fitKey=key;
+    if(plan&&pts.length)map.fit(pts,13);
+    else if(st.places.length){const b=[];const r=st.radius<99?st.radius:8;st.places.forEach(p=>b.push(...radiusPts(p,r)));map.fit(b,13)}
+    else map.view([37.83,-122.12],10)}
+}
+function goCard(id){const el=$('c-'+id);if(!el)return;el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('flash');setTimeout(()=>el.classList.remove('flash'),1600)}
+function showOnMap(id){if(!map)return;st.mapPlan=null;renderMap();$('mapcard').scrollIntoView({behavior:'smooth',block:'start'});map.focus(id)}
+
+/* ---------- school detail drawer ---------- */
+const pct=v=>v==null?'n/a':Math.round(v)+'%';
+const phone=p=>p&&p.length===10?`(${p.slice(0,3)}) ${p.slice(3,6)}-${p.slice(6)}`:p;
+let lastFocus=null;
+function openDetail(id){
+  const s=BY[id];if(!s)return;const k=st.kids[st.active],nm=kname(k,st.active),d=s.d||{},f=s.f,L2=level(k.grade);
+  const inGrade=k.grade>=s.lo&&k.grade<=s.hi;const r=inGrade&&st.places.length?scoreFor(s,k):null;
+  const lvl=s.lo>=9?'high':s.hi<=5?'elementary':'middle and K-8';
+  const SC=['acad','college','sports','arts','stem','clubs'];
+  const rows=SC.filter(c=>c!=='college'||s.hi===12).filter(c=>!['sports','arts','stem','clubs'].includes(c)||s.hi>=9).map(c=>{const v=s.s[c];return`<div class="srow${v==null?' na':''}"><span>${CATS[c][0]}</span><span class="sb">${v==null?'':`<span style="width:${v*10}%;background:${css(CATS[c][1])}"></span>`}</span><span class="n">${v==null?'n/a':v.toFixed(1)}</span></div>`}).join('');
+  const sec=(t,h)=>h?`<section class="dsec"><h4>${t}</h4>${h}</section>`:'';
+  let acad='';
+  if(d.ela!=null||d.m!=null)acad=`<div class="kv"><div><b>${pct(d.ela)}</b><span>English at standard</span></div><div><b>${pct(d.m)}</b><span>Math at standard</span></div>${d.pct!=null?`<div><b>${Math.round(d.pct)}</b><span>State percentile</span></div>`:''}</div><p>Share of students meeting the state standard on the spring 2025 CAASPP tests. ${d.pct!=null?`That ranks ahead of ${Math.round(d.pct)}% of California ${lvl} schools.`:''}</p>`;
+  else if(s.acad_note)acad=`<p>${esc(s.acad_note)}.</p>`;
+  else if(s.sec==='Private')acad='<p>Private schools don’t take the state tests, and this school doesn’t publish comparable results yet.</p>';
+  let col='';const c=d.col;
+  if(c&&c.four!=null){col=c.src==='cgr'
+    ?`<div class="kv"><div><b>${pct(c.any)}</b><span>Any college</span></div><div><b>${pct(c.four)}</b><span>Four-year</span></div>${c.uc!=null?`<div><b>${pct(c.uc)}</b><span>UC</span></div>`:''}${c.csu!=null?`<div><b>${pct(c.csu)}</b><span>CSU</span></div>`:''}${c.oos!=null?`<div><b>${pct(c.oos)}</b><span>Out of state</span></div>`:''}${c.ccc!=null?`<div><b>${pct(c.ccc)}</b><span>Community college</span></div>`:''}</div><p>Where the class of 2022-23 (${c.grads} graduates) enrolled within a year, tracked by the state.</p>`
+    :`<div class="kv"><div><b>${pct(c.four)}</b><span>Four-year college</span></div>${c.grads?`<div><b>${c.grads}</b><span>Graduates</span></div>`:''}</div><p>As reported by the school to the U.S. Department of Education.</p>`}
+  let prog='';
+  if(f){const T=Object.entries(s.titles||{}).sort((a,b)=>b[1]-a[1]).map(([x,v])=>`${LABEL[x]||x} ${v}`);
+    prog=`<div class="kv">${f.teams!=null?`<div><b>${f.teams*(f.gm||1)}${f.est_t?'*':''}</b><span>Varsity teams</span></div>`:''}${f.clubs!=null?`<div><b>${f.clubs}${f.est_c?'*':''}</b><span>Clubs</span></div>`:''}${f.ap!=null?`<div><b>${f.ap}</b><span>AP STEM courses</span></div>`:''}${f.ens!=null?`<div><b>${f.ens}</b><span>Music ensembles</span></div>`:''}${f.adv!=null?`<div><b>${f.adv}</b><span>Advanced arts courses</span></div>`:''}</div>
+     <p><b>Section and state titles since 2016:</b> ${T.length?esc(T.join(', ')):'none found'}.</p>
+     ${s.prog?`<p><b>Programs:</b> ${esc([s.prog.theater&&'theater',s.prog.dance&&'dance',s.prog.film&&'film',s.prog.robotics&&'robotics',s.prog.sciolympiad&&'science competitions',s.prog.coding&&'coding',s.prog.math&&'math team',s.prog.debate&&'debate',s.prog.mocktrial&&'mock trial',s.prog.mun&&'Model UN'].filter(Boolean).join(', ')||'not listed')}.</p>`:''}
+     ${f.stem&&f.stem.length?`<p><b>STEM teams and pathways:</b> ${esc(f.stem.join(', '))}.</p>`:''}
+     ${f.civic&&f.civic.length?`<p><b>Speaking and civic:</b> ${esc(f.civic.join(', '))}.</p>`:''}
+     ${f.est_t||f.est_c?'<p class="sub">* Estimated from what the school publishes.</p>':''}`}
+  else if(s.hi>=9)prog='<p>Sports, arts, STEM and club data for this school hasn’t been collected yet.</p>';
+  let k8='';if(s.lo<=8){const x=s.k8;
+    k8=x?`${['arts','stem','sports','clubs','lang','care','small'].map(c=>{const v=x[c];return`<div class="srow${v==null?' na':''}"><span>${CATS[c][0]}</span><span class="sb">${v==null?'':`<span style="width:${v*10}%;background:${css(CATS[c][1])}"></span>`}</span><span class="n">${v==null?'n/a':v.toFixed(1)}</span></div>`}).join('')}
+      <p>${esc(x.note)}.</p>${x.langs?`<p><b>Languages:</b> ${esc(x.langs)}.</p>`:''}${x.cls?`<p><b>Class size:</b> about ${x.cls}${x.ratio?`, with about ${x.ratio} students per teacher`:''}.</p>`:''}`
+      :'<p>Programs for this school haven’t been researched yet. Until they are, each program category is held at an average 5.0.</p>'}
+  const p=k.grade<9?pathInfo(s,k):null;
+  const path=p?`<p><b>${p.cert}:</b> ${esc(p.same?'continues through 12th grade at the same school':p.how)}. For ${esc(nm)}, that path scores ${p.v.toFixed(1)}.</p>`:(s.hi<9?'<p>No feeder high school is recorded for this school.</p>':'');
+  let cost='';
+  if(s.spec&&s.spec.t==='nps')cost='<p>When a district places a student here through the IEP, the district typically covers the cost. Confirm with your district.</p>';
+  else if(s.sec==='Private'){cost=s.tui?`<p>${Object.entries(s.tui).map(([b,v])=>`<b>${b==='K-5'?'Grades K-5':b==='6-8'?'Grades 6-8':'Grades 9-12'}:</b> $${v.toLocaleString()} a year`).join('<br>')}</p>`:'<p>Tuition not yet collected. Check the school’s admissions page.</p>';if(s.aid)cost+=`<p>About ${s.aid}% of students receive financial aid.</p>`}
+  else cost=s.sec==='Charter'?'<p>Free. Charter schools are open to all; admission is by lottery if applications exceed seats.</p>':`<p>Free. ${AUHSD[s.id]?`Typically serves ${esc(AUHSD[s.id].join(', '))} residents through ${esc(s.dist)}. `:`Run by ${esc(s.dist)}. `}Assigned by attendance area. Families elsewhere in the district can request a transfer, subject to space. Confirm the school for a specific address with the district.</p>`;
+  const flags=(s.flags||[]).filter(x=>x!=='Programs not yet scored');
+  const links=[d.w&&/\./.test(d.w)&&!/\s/.test(d.w)?`<a href="https://${esc(d.w.replace(/^https?:\/\//,''))}" target="_blank" rel="noopener">School website</a>`:'',s.sec!=='Private'&&/^\d{14}$/.test(s.id)?`<a href="https://www.caschooldashboard.org/reports/${s.id}/2025" target="_blank" rel="noopener">CA School Dashboard</a>`:'',map?`<button type="button" data-dmap="${s.id}">Show on map</button>`:''].filter(Boolean).join('');
+  $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}${d.rel?' · '+esc(d.rel):''}</div><h3 id="dname">${esc(s.n)}</h3><div>${esc(s.c)}${s.sec!=='Private'&&s.dist?' · '+esc(s.dist):''}</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
+   <div class="dbody">
+    ${r&&r.score!=null?`<div class="fitbox"><div class="v">${r.score.toFixed(1)}<small>fit for ${esc(nm)}</small></div><div class="bar">${r.parts.map(q=>`<span title="${esc(CATS[q.c][0])} ${q.v.toFixed(1)}" style="width:${q.share*10}%;background:${css(CATS[q.c][1])};${q.e?'opacity:.35':''}"></span>`).join('')}</div></div>`:(!inGrade?`<p class="sub">This school doesn’t serve ${esc(nm)}’s grade next fall (${GRADES[k.grade]}).</p>`:'')}
+    ${sec('School scores (0 to 10)',rows)}
+    ${sec('Academics',acad)}
+    ${sec('College outcomes',col)}
+    ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
+    ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
+    ${L2!=='H'?sec('Path to high school',path):''}
+    ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span. ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
+    ${sec('Cost and eligibility',cost)}
+    ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
+    ${sec('Contact',(d.a||d.ph?`<p>${esc(d.a||'')}${d.ph?'<br>'+esc(phone(d.ph)):''}</p>`:'')+(links?`<div class="dlinks">${links}</div>`:''))}
+    <p class="dfix">Something here out of date? <a href="#" data-type="CONTACT_US" data-suggest="${esc(s.n)}">Let us know</a>.</p>
+    ${flags.length?`<p class="flag">${flags.map(esc).join(' · ')}</p>`:''}
+    <p class="sub">Scores are The Lederer Team's own calculation. See how we score schools. Confirm details with the school.</p>
+   </div>`;
+  lastFocus=document.activeElement;$('scrim').hidden=false;$('drawer').hidden=false;$('drawer').scrollTop=0;$('drawer').querySelector('.x').focus();
+}
+function closeDetail(){$('scrim').hidden=true;$('drawer').hidden=true;if(lastFocus&&lastFocus.focus)lastFocus.focus()}
+
+/* ---------- render ---------- */
+function renderFamily(){
+  $('toks').innerHTML=st.places.map((p,i)=>`<span class="tok${p.kind==='address'?' addr':''}" title="${esc(p.label)}" style="background:${PC[i%PC.length]};color:#fff"><span>${p.kind==='address'?'⌂ ':''}${esc(p.label)}</span><button type="button" data-unplace="${i}" aria-label="Remove ${esc(p.label)}">×</button></span>`).join('');
+  $('placeIn').placeholder=st.places.length?'Add another city':'Type an address or a city';
+  $('placeNote').textContent=st.places.some(p=>p.approx)?'This address was placed at its city center because the exact location could not be looked up.':(st.places.length?'Add more cities to compare them, or use one address.':'One address, one city, or several cities to compare.');
+  $('radius').value=st.radius;$('budget').value=st.budget;
+  root.querySelectorAll('#mode button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===st.mode));
+  $('together').checked=st.together;$('pub').value=st.pub;
+  $('pubNote').textContent=st.pub==='dist'?'Every school in the districts that typically serve each location':st.pub==='city'?'Only schools with an address in each city you picked':'Same radius as private and charter schools';
+  $('radNote').textContent=st.pub==='radius'?'All schools':'Private and charter schools';
+  $('modeNote').textContent=st.mode==='protect'?'Plans are held back by the weakest fit':'Plans use the simple average of fits';
+}
+function renderKidControls(){
+  const K=st.kids;
+  $('kidtabs').innerHTML=K.map((k,i)=>`<button class="kt" role="tab" aria-selected="${i===st.active}" data-tab="${i}" style="--kc:${css(KC[i])}"><span class="dot" style="background:${css(KC[i])}"></span><span class="kn">${esc(kname(k,i))} · ${GRADES[k.grade]}</span>${K.length>1?`<span role="button" tabindex="0" class="x" data-kx="${i}" aria-label="Remove ${esc(kname(k,i))}" title="Remove">×</span>`:''}</button>`).join('')+(K.length<4?`<button class="kt add" data-add="1">+ Add child</button>`:'');
+  const k=K[st.active],L2=level(k.grade),w=activeW(k);
+  const tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
+  const hasInt=[...k.ints].some(x=>(L2==='H'?HSI:K8I).has(x));const show=CK.filter(c=>L2==='H'?!['path','lang','care','small'].includes(c):c!=='college');
+  $('kidpanel').innerHTML=`
+   <div class="row2"><div class="sec"><label class="lab" for="kname">Name (optional)</label><input type="text" id="kname" value="${esc(k.name)}" maxlength="20" placeholder="Child ${st.active+1}"></div>
+   <div class="sec"><label class="lab" for="kgrade">Grade next fall</label><select id="kgrade">${GRADES.map((g,i)=>`<option value="${i}" ${i===k.grade?'selected':''}>${g}  \u00B7  age ${i+5}-${i+6}</option>`).join('')}</select><span class="sub">Most ${GRADES[k.grade]==='K'?'kindergartners':GRADES[k.grade]+' graders'} are ${k.grade+5} or ${k.grade+6} in fall ${YEAR}</span></div></div>
+   <label class="check support"><input type="checkbox" id="ksupport" ${k.support?'checked':''}><span>Needs learning support<br><span class="sub">Autism, ADHD, dyslexia or another learning difference. Shows specialized schools first without changing other rankings.</span></span></label>
+   <div class="sec"><div class="lab">School type</div><div class="seg" id="ksector">${['all','Public','Private'].map(v=>`<button type="button" data-sec="${v}" aria-pressed="${k.sector===v}">${v==='all'?'Both':v}</button>`).join('')}</div></div>
+   <div class="sec"><div class="lab"><span>How much each matters</span><span>share</span></div>
+     <div class="prow"><label for="kpreset">Start from</label><select id="kpreset">${k.preset?'':'<option value="" selected>Custom</option>'}${Object.keys(PRESETS).map(p=>`<option value="${p}" ${k.preset===p?'selected':''}>${p}</option>`).join('')}</select></div>
+     <div class="mix">${show.filter(c=>w[c]).map(c=>`<span style="width:${w[c]/tot*100}%;background:${css(CATS[c][1])}"></span>`).join('')}</div>
+     ${show.map(c=>{const off=(c==='interest'&&!hasInt)||(c==='size'&&k.sizePref==='any');return`<div class="sl${off?' off':''}"><span class="sw" style="background:${css(CATS[c][1])}"></span><label for="w-${c}">${CATS[c][0]}</label><span class="pct">${w[c]?Math.round(w[c]/tot*100)+'%':'off'}</span><input type="range" id="w-${c}" min="0" max="10" step="1" value="${k.w[c]||0}" style="--p:${(k.w[c]||0)*10}%" aria-label="${CATS[c][0]} weight" ${off?'disabled':''}></div>`}).join('')}
+     ${L2!=='H'?`<span class="sub">Path to high school scores where each school leads, using ${esc(k.name||'this child')}'s own priorities.</span>`:''}
+   </div>
+   <div class="sec"><div class="lab">Preferred school size</div><div class="seg" id="ksize">${['any','small','medium','large'].map(v=>`<button type="button" data-size="${v}" aria-pressed="${k.sizePref===v}">${v==='any'?'Any':v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>
+   ${`<div class="sec"><div class="lab">${esc(k.name||'This child')} loves</div>${(L2==='H'?INT:INT8).map(g=>`<div class="grp"><span class="gl">${g.g}</span><div class="chips">${g.items.map(([id,n])=>`<button type="button" class="chip" data-i="${id}" aria-pressed="${k.ints.has(id)}">${esc(n)}</button>`).join('')}</div></div>`).join('')}<span class="sub">${L2==='H'?'Interest matching covers the 102 high schools with program data so far.':'Program matching covers the elementary and middle schools researched so far: Lamorinda, Piedmont, Bentley and Head-Royce, with more areas coming.'}</span></div>`}
+   ${K.length>1?`<button class="remove" data-remove="${st.active}">Remove ${esc(kname(k,st.active))}</button>`:''}`;
+}
+function renderPlans(){
+  lastPlans=[];
+  if(st.kids.length<2||!st.places.length){$('planwrap').innerHTML='';if(st.mapPlan!=null)st.mapPlan=null;return}
+  const P=plans();lastPlans=P;if(st.mapPlan!=null&&!P[st.mapPlan])st.mapPlan=null;
+  if(!P.length){$('planwrap').innerHTML=`<h3 class="h2">Family plans</h3><div class="empty">No plan fits these settings. Try a wider radius, another city, or a higher budget.</div>`;return}
+  $('planwrap').innerHTML=`<div class="reshead"><h3 class="h2">Family plans</h3><span class="sub">The best combination for each location${P.length<st.places.length?`. No plan fits in ${esc(st.places.filter(x=>!P.some(q=>q.home===x)).map(x=>x.label).join(', '))} with these settings`:''}</span></div>`+
+   P.map((p,j)=>`<article class="plan${j===0?' best':''}">
+    <div class="ph"><div class="live"><i style="display:inline-block;width:10px;height:10px;background:${pc(p.home)};margin-right:8px;vertical-align:0"></i>${j===0&&P.length>1?'Best overall · ':''}If you live ${p.home.kind==='address'?'at':'in'} <b>${esc(p.home.label)}</b></div><div class="big">${p.score.toFixed(1)}<small>family score</small></div></div>
+    <div class="assign">${p.picks.map((r,i)=>`<div class="as"><span class="dot" style="background:${css(KC[i])}"></span><span class="who"><b>${esc(kname(st.kids[i],i))}</b> (${GRADES[st.kids[i].grade]}) at ${esc(r.s.n)}</span><span class="fit">fit ${r.score.toFixed(1)} · ${drive(pt(p.home),r.s)} min · ${(()=>{const t=tuition(r.s,st.kids[i].grade);return t==null?'tuition n/a':t===0?'free':'approx. $'+Math.round(t/1000)+'k'})()}</span></div>`).join('')}</div>
+    ${!p.together?`<p class="sub" style="margin:0">${new Set(p.picks.map(r=>r.s.org||r.s.id)).size} separate drop-offs: ${p.picks.map((r,i)=>`about ${drive(pt(p.home),r.s)} min to ${esc(r.s.n)} for ${esc(kname(st.kids[i],i))}`).join('; ')}.</p>`:''}
+    <div class="tags">
+      <span class="tag ${p.route<=25?'good':p.route>40?'warn':''}">${p.together?'Morning drive':'Total morning drive'} about ${p.route} min</span>
+      ${p.together?'<span class="tag good">Same campus</span>':''}
+      <span class="tag ${p.unknown?'warn':''}">${p.unknown?(p.costKnown?`Approx. tuition $${Math.round(p.costKnown/1000)}k a year, plus some not yet collected`:'Tuition not yet collected'):p.cost===0?'No tuition':`Approx. tuition ${p.picks.map((r,i)=>{const t=tuition(r.s,st.kids[i].grade);return t?'$'+Math.round(t/1000)+'k':null}).filter(Boolean).join(' + ')}${p.picks.filter((r,i)=>tuition(r.s,st.kids[i].grade)).length>1?' = $'+Math.round(p.cost/1000)+'k':''} a year`}</span>
+      ${p.mn<6?'<span class="tag warn">One child\u2019s fit is weak</span>':''}
+    </div>
+    <div class="pacts"><button type="button" class="lnk" data-planmap="${j}">Show this plan on the map</button></div>
+    <details><summary class="sub" style="cursor:pointer;color:var(--teal);font-weight:700">See the next five years</summary>${timeline(p)}</details>
+   </article>`).join('');
+}
+function renderList(){
+  const k=st.kids[st.active];const nm=kname(k,st.active);lastSpec=[];
+  $('ktitle').textContent=`Best fits for ${nm} (${GRADES[k.grade]})`;
+  if(!st.places.length){lastList={scored:[],un:[]};$('ksub').textContent='';$('special').innerHTML='';
+    $('list').innerHTML=`<div class="empty"><b>Start with where you might live.</b><span>Type an address or a city in the box above. Add several cities to compare them. Each child gets a ranked list, and with two or more children you'll also see family plans.</span><button type="button" class="btn line" data-example="1">See an example family</button></div>`;return}
+  const R=rankKid(k);
+  const scored=order(R),un=R.filter(r=>r.score==null);lastList={scored,un};
+  $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='dist'?'public schools in your locations\u2019 districts':'public schools in your cities')+', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi')}`;
+  if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
+    $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
+     ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.</div>`}
+     <div class="special"><b>Also available through your district</b>
+      ${np.length?`<span class="nps">Certified nonpublic special education schools nearby, usually reached through your child's IEP team rather than by applying: ${np.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, about ${r.min} min)`).join(' · ')}.</span>`:''}
+      <span>Every public district must provide special education services, and many run dedicated autism programs. Ask each district on your list about its programs. Mainstream private schools aren't required to offer the same services, so ask each school what support it provides.</span></div>
+     <div class="reshead"><h3 class="h2">All schools for ${esc(nm)}</h3></div>`;
+  }else $('special').innerHTML='';
+  lastSpec=k.support?specList(k,'ld'):[];
+  const n=st.showN[st.active]||10;
+  $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>{
+    const s=r.s,top=[...r.parts].sort((a,b)=>b.share-a.share).slice(0,2).map(p=>`${CATS[p.c][0].toLowerCase()} ${p.v.toFixed(1)}`);
+    const tags=[];
+    if(r.path)tags.push(`<span class="tag ${r.path.cert==='Uncertain'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
+    if(r.it)r.it.list.forEach(x=>tags.push(`<span class="tag ${x.hit?'good':''}">${esc(x.txt)}</span>`));
+    if(r.min!=null){const h=homeFor(s);tags.push(`<span class="tag"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pc(h.p)};margin-right:6px"></i>About ${r.min} min from ${esc(h.c)}</span>`)}
+    tags.push(`<span class="tag ${tuition(s,k.grade)==null?'warn':''}">${money(tuition(s,k.grade))}${s.aid?` · ${s.aid}% get aid`:''}</span>`);
+    if(s.sec==='Public')tags.push(`<span class="tag">${AUHSD[s.id]?'Typically serves '+esc(AUHSD[s.id].join(', '))+' residents':esc(s.dist)+' \u00b7 school set by home address'}</span>`);
+    if(s.sec==='Charter')tags.push('<span class="tag">Charter · open enrollment, lottery if full</span>');
+    if(level(k.grade)!=='H'&&s.k8){const x=s.k8;if(x.langs)tags.push(`<span class="tag ${x.lang>=6?'good':''}">${esc(x.langs)}</span>`);if(x.care===10)tags.push('<span class="tag good">Before and after care on campus</span>');if(x.cls)tags.push(`<span class="tag">Classes of about ${x.cls}</span>`)}
+    if(s.e)tags.push(`<span class="tag">${s.e.toLocaleString()} students${s.rt?' · '+s.rt+' per teacher':''}</span>`);
+    const flags=[...(level(k.grade)==='H'?(s.flags||[]).filter(f=>f!=='Programs not yet scored'):[]),...(r.limited?['Limited data: kept out of the top 10']:[]),...(r.est.length?['Estimated at average until scored: '+r.est.join(', ')]:[])];
+    return`<article class="card" id="c-${s.id}"><div class="rk">${i+1}</div>
+     <div><div class="nm">${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
+     <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
+     <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
+      <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
+      ${flags.length?`<div class="flag">${flags.map(esc).join(' · ')}</div>`:''}
+      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`}).join('')+
+   (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
+   (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
+}
+function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();syncHash()}
+function soft(){renderKidControls();renderPlans();renderList();renderMap();syncHash()}
+function setView(v){const m=v==='method';$('v-plan').hidden=m;$('v-method').hidden=!m;root.querySelectorAll('.views [data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));
+  if(!m&&map)setTimeout(()=>map.resize(),0);root.querySelector('.views').scrollIntoView({behavior:'smooth',block:'start'})}
+
+root.addEventListener('click',e=>{
+  const vw=e.target.closest('[data-view]');if(vw){e.preventDefault();setView(vw.dataset.view);return}
+  const ta=e.target.closest('.toc a');if(ta){e.preventDefault();const el=root.querySelector(ta.getAttribute('href'));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
+  const kx=e.target.closest('[data-kx]');if(kx){e.stopPropagation();const i=+kx.dataset.kx;st.kids.splice(i,1);st.active=Math.max(0,Math.min(i<=st.active?st.active-1:st.active,st.kids.length-1));st.mapPlan=null;soft();return}
+  const sg=e.target.closest('[data-suggest]');if(sg){e.preventDefault();const nm=sg.dataset.suggest;
+    // On the live site the site's own contact form opens from data-type="CONTACT_US". Elsewhere, fall back to email.
+    setTimeout(()=>{const open=[...document.querySelectorAll('.modal-content,[role=dialog]')].some(m=>!root.contains(m)&&m.offsetParent!==null);
+      if(!open)location.href='mailto:mark@theledererteam.com?subject='+encodeURIComponent(nm?'School Explorer update: '+nm:'Add a school to the Bay Area School Explorer')},600);return}
+  const go=e.target.closest('[data-goto]');if(go){openDetail(go.dataset.goto);return}
+  if(e.target.closest('[data-dclose]')||e.target.id==='scrim'){closeDetail();return}
+  const dm=e.target.closest('[data-dmap]');if(dm){closeDetail();showOnMap(dm.dataset.dmap);return}
+  const cd=e.target.closest('.card');if(cd&&!e.target.closest('button,a')){openDetail(cd.id.slice(2));return}
+  const t=e.target.closest('button');if(!t)return;const k=st.kids[st.active];
+  if(t.dataset.unplace){st.places.splice(+t.dataset.unplace,1);st.mapPlan=null;render();$('placeIn').focus()}
+  else if(t.dataset.v&&t.closest('#mode')){st.mode=t.dataset.v;render()}
+  else if(t.dataset.tab){st.active=+t.dataset.tab;st.mapPlan=null;soft()}
+  else if(t.dataset.add){const i=st.kids.length;st.kids.push(mk('',2,'Balanced',[],'all'));st.active=i;st.mapPlan=null;soft();$('kname').focus()}
+  else if(t.dataset.remove){st.kids.splice(+t.dataset.remove,1);st.active=0;st.mapPlan=null;soft()}
+  else if(t.dataset.sec){k.sector=t.dataset.sec;soft()}
+  else if(t.dataset.p){k.preset=t.dataset.p;Object.assign(k.w,PRESETS[k.preset]);soft()}
+  else if(t.dataset.size){k.sizePref=t.dataset.size;if(k.sizePref!=='any'&&!k.w.size)k.w.size=4;soft()}
+  else if(t.dataset.i){const id=t.dataset.i;k.ints.has(id)?k.ints.delete(id):k.ints.add(id);if(k.ints.size&&!k.w.interest)k.w.interest=5;soft()}
+  else if(t.dataset.more){st.showN[st.active]=(st.showN[st.active]||10)+10;renderList();renderMap()}
+  else if(t.dataset.detail){openDetail(t.dataset.detail)}
+  else if(t.dataset.showmap){showOnMap(t.dataset.showmap)}
+  else if(t.dataset.planmap){st.mapPlan=+t.dataset.planmap;renderMap();$('mapcard').scrollIntoView({behavior:'smooth',block:'start'})}
+  else if(t.id==='mapBack'){st.mapPlan=null;renderMap()}
+  else if(t.id==='example'||t.dataset.example){st=example();$('sharebox').hidden=true;render()}
+  else if(t.id==='reset'){st=fresh();$('sharebox').hidden=true;render()}
+  else if(t.id==='share'){const u=link();$('shareUrl').value=u;$('sharebox').hidden=false;$('shareUrl').select();
+    const ok=()=>{$('shareOk').textContent='Link copied';setTimeout(()=>$('shareOk').textContent='',2500)};
+    try{navigator.clipboard.writeText(u).then(ok,()=>{try{document.execCommand('copy');ok()}catch(_){}})}catch(_){try{document.execCommand('copy');ok()}catch(__){}}}
+});
+root.addEventListener('input',e=>{const k=st.kids[st.active];
+  if(e.target.id?.startsWith('w-')){k.w[e.target.id.slice(2)]=+e.target.value;e.target.style.setProperty('--p',(+e.target.value*10)+'%');k.preset=null;
+    const w=activeW(k),tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
+    root.querySelectorAll('#kidpanel .sl').forEach(el=>{const c=el.querySelector('input').id.slice(2);el.querySelector('.pct').textContent=w[c]?Math.round(w[c]/tot*100)+'%':'off'});
+    const ps=$('kpreset');if(ps&&ps.value){if(!ps.querySelector('option[value=""]'))ps.insertAdjacentHTML('afterbegin','<option value="">Custom</option>');ps.value=''}
+    renderPlans();renderList();renderMap();syncHash()}
+  if(e.target.id==='kname'){k.name=e.target.value;root.querySelector(`[data-tab="${st.active}"] .kn`).textContent=`${kname(k,st.active)} · ${GRADES[k.grade]}`;renderPlans();$('ktitle').textContent=`Best fits for ${kname(k,st.active)} (${GRADES[k.grade]})`;syncHash()}});
+root.addEventListener('change',e=>{const k=st.kids[st.active];
+  if(e.target.id==='kpreset'&&e.target.value){k.preset=e.target.value;Object.assign(k.w,PRESETS[k.preset]);soft();return}
+  if(e.target.id==='kgrade'){k.grade=+e.target.value;st.showN[st.active]=10;soft()}
+  if(e.target.id==='ksupport'){k.support=e.target.checked;renderList();renderMap();syncHash()}
+  if(e.target.id==='radius'){st.radius=+e.target.value;soft()}
+  if(e.target.id==='pub'){st.pub=e.target.value;st.mapPlan=null;render();syncHash()}
+  if(e.target.id==='together'){st.together=e.target.checked;renderPlans();renderMap();syncHash()}
+  if(e.target.id==='budget'){st.budget=+e.target.value;renderPlans();renderMap();syncHash()}});
+root.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('drawer').hidden){closeDetail();return}if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.kx!=null){e.preventDefault();e.target.click()}});
+
+/* ---------- place box: cities from our list; addresses from Google Places when a key is set, otherwise OpenStreetMap ---------- */
+let sugg=[],sel=0,gp=null,gseq=0,gT,gReady=null,gFailed=false;
+const norm=x=>x.toLowerCase().replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const CITYLIST=PLACES.filter(p=>p.n===p.city);
+function findCity(text){const parts=text.split(',');const tries=parts.length>1?[...parts.slice(1).reverse(),text]:[text];
+  for(const seg of tries){const t=' '+norm(seg)+' ';let best=null;for(const p of CITYLIST){const n=' '+norm(p.city)+' ';if(t.includes(n)&&(!best||p.city.length>best.city.length))best=p}if(best)return best}return null}
+function nearestCity(lat,lng){let b=null;for(const p of CITYLIST){const d=km(lat,lng,p.lat,p.lng);if(!b||d<b.d)b={p,d}}return b}
+function loadGoogle(){
+  if(!CFG.gkey)return;
+  const prevFail=window.gm_authFailure;window.gm_authFailure=()=>{gFailed=true;gp=null;if(map&&map.kind==='google'){map=null;useLeaflet()}if(prevFail)try{prevFail()}catch(e){}};
+  gReady=new Promise((res,rej)=>{
+    const ready=async()=>{try{const lib=await google.maps.importLibrary('places');gp={AS:lib.AutocompleteSuggestion,Tok:lib.AutocompleteSessionToken};gp.tok=new gp.Tok()}catch(e){gp=null}
+      try{await google.maps.importLibrary('maps');res()}catch(e){rej(e)}};
+    if(window.google&&google.maps&&google.maps.importLibrary){ready();return}
+    window.__bxGReady=ready;const s=document.createElement('script');s.async=true;s.onerror=()=>rej(new Error('load'));
+    s.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(CFG.gkey)+'&libraries=places&loading=async&callback=__bxGReady';document.head.appendChild(s)})}
+function cityMatches(q){const nq=norm(q);if(!nq)return[];const rank=p=>(norm(p.n).startsWith(nq)?0:2)+(p.n===p.city?0:1);return PLACES.filter(p=>{const n=norm(p.n);return n.startsWith(nq)||n.split(' ').some((w,i,a)=>a.slice(i).join(' ').startsWith(nq))}).sort((x,y)=>rank(x)-rank(y)||x.n.localeCompare(y.n)).slice(0,6)
+  .filter(p=>!st.places.some(x=>x.label===p.n)).map(p=>({...p,kind:'city',label:p.n,sub:p.n===p.city?'City':'Neighborhood'}))}
+function drawSugg(foot){
+  sel=Math.min(sel,Math.max(0,sugg.length-1));const ul=$('sugg');
+  ul.innerHTML=sugg.map((s,i)=>`<li role="option" id="sg${i}" data-sg="${i}" aria-selected="${i===sel}"><span>${s.kind!=='city'?'⌂ ':''}${esc(s.label)}</span><small>${esc(s.sub)}</small></li>`).join('')+(foot&&sugg.length?`<li class="pw" aria-hidden="true">${foot}</li>`:'');
+  ul.hidden=!sugg.length;$('placeIn').setAttribute('aria-expanded',String(!!sugg.length))}
+function suggest(){
+  const q=$('placeIn').value.trim();sel=0;const cities=/^\d/.test(q)?[]:cityMatches(q);sugg=cities;
+  if(q.length>=4&&(/\d/.test(q)||!cities.length)){
+    if(gp){clearTimeout(gT);const seq=++gseq;gT=setTimeout(async()=>{try{
+        const req={input:q,sessionToken:gp.tok,includedRegionCodes:['us'],locationBias:{west:-122.45,north:38.1,east:-121.55,south:37.45}};
+        const {suggestions}=await gp.AS.fetchAutocompleteSuggestions(req);if(seq!==gseq)return;
+        const skip=['locality','sublocality','neighborhood','administrative_area_level_1','administrative_area_level_2','country','postal_code'];
+        const adds=suggestions.map(x=>x.placePrediction).filter(p=>p&&!(p.types||[]).some(t=>skip.includes(t))).slice(0,5)
+          .map(p=>({kind:'gaddr',label:p.mainText?p.mainText.text:p.text.text,sub:p.secondaryText?p.secondaryText.text.replace(/, USA$/,''):'',pred:p}));
+        sugg=[...cityMatches($('placeIn').value.trim()),...adds];drawSugg(adds.length?'powered by Google':'')}catch(e){}},180)}
+    else if(/^\d/.test(q))sugg=[{kind:'oaddr',label:q,sub:'Find this address'}];
+  }
+  drawSugg('')}
+function addAddress(label,lat,lng,cityName,approx){
+  let c=cityName?CITYLIST.find(p=>norm(p.city)===norm(cityName)):null;const nc=nearestCity(lat,lng);if(!c)c=nc.p;
+  st.places=st.places.filter(p=>p.kind!=='address');
+  st.places.push({n:label,label,kind:'address',city:c.city,lat,lng,approx:!!approx});st.mapPlan=null;
+  $('placeIn').value='';sugg=[];$('sugg').hidden=true;render();
+  if(nc.d>16)$('placeNote').textContent='This address is outside Alameda and Contra Costa counties, which is all the Explorer covers so far.'}
+async function pick(i){const s=sugg[i];if(!s)return;
+  if(s.kind==='city'){st.places.push({n:s.label,label:s.label,kind:'city',city:s.city,lat:s.lat,lng:s.lng});st.mapPlan=null;$('placeIn').value='';sugg=[];$('sugg').hidden=true;render();$('placeIn').focus();return}
+  $('placeNote').textContent='Looking up the address…';$('sugg').hidden=true;
+  if(s.kind==='gaddr'){try{const place=s.pred.toPlace();await place.fetchFields({fields:['location','formattedAddress','addressComponents']});gp.tok=new gp.Tok();
+      const comp=place.addressComponents||[];const city=(comp.find(c=>c.types.includes('locality'))||{}).longText;
+      const label=(place.formattedAddress||s.label).replace(/, USA$/,'').replace(/ \d{5}(-\d{4})?$/,'').replace(/, CA$/,'');
+      addAddress(label,place.location.lat(),place.location.lng(),city,false);return}catch(e){}}
+  const q=s.kind==='gaddr'?s.label+', '+s.sub:s.label;
+  try{const u='https://nominatim.openstreetmap.org/search?'+new URLSearchParams({q,format:'jsonv2',addressdetails:'1',limit:'1',countrycodes:'us',viewbox:'-122.45,38.1,-121.55,37.45',bounded:'1'});
+    const r=await fetch(u);const j=await r.json();
+    if(j&&j[0]){const a=j[0].address||{};const city=a.city||a.town||a.village||a.hamlet||a.suburb;
+      const label=[[a.house_number,a.road].filter(Boolean).join(' '),city].filter(Boolean).join(', ')||q;addAddress(label,+j[0].lat,+j[0].lon,city,false);return}}catch(e){}
+  const c=findCity(q);if(c){addAddress(q,c.lat,c.lng,c.city,true);return}
+  $('placeNote').textContent='We couldn’t find that address. Add the city, like “12 Oak Rd, Orinda”.'}
+$('placeIn').addEventListener('input',suggest);
+$('placeIn').addEventListener('keydown',e=>{
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!sugg.length)return;e.preventDefault();sel=(sel+(e.key==='ArrowDown'?1:-1)+sugg.length)%sugg.length;root.querySelectorAll('#sugg li[data-sg]').forEach((li,i)=>li.setAttribute('aria-selected',String(i===sel)))}
+  else if(e.key==='Enter'){e.preventDefault();if(sugg.length)pick(sel);else if(/^\d/.test($('placeIn').value.trim())){sugg=[{kind:'oaddr',label:$('placeIn').value.trim(),sub:''}];pick(0)}}
+  else if(e.key==='Escape'){$('sugg').hidden=true}
+  else if(e.key==='Backspace'&&!$('placeIn').value&&st.places.length){st.places.pop();st.mapPlan=null;render()}});
+$('sugg').addEventListener('mousedown',e=>{const li=e.target.closest('[data-sg]');if(li){e.preventDefault();pick(+li.dataset.sg)}});
+$('placeIn').addEventListener('blur',()=>setTimeout(()=>{$('sugg').hidden=true},150));
+$('tokbox').addEventListener('click',e=>{if(e.target.id==='tokbox')$('placeIn').focus()});
+
+loadGoogle();
+fromHash();
+initMap();
+if(/(^|[#&])method\b/.test(location.hash))setView('method');
+render();
+}
+})();
+</script>
