@@ -953,7 +953,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="fld"><label class="lab" for="radius">Search radius</label><select id="radius"><option value="5">5 miles</option><option value="10">10 miles</option><option value="20">20 miles</option><option value="99">Any distance</option></select><span class="sub" id="radNote">Private and charter schools</span></div>
     <div class="fld"><label class="lab" for="pub">Public schools</label><select id="pub"><option value="zone">Zoned for my locations</option><option value="dist">Anywhere in my district</option><option value="radius">Anywhere in radius</option></select><span class="sub" id="pubNote"></span></div>
     <div class="fld"><label class="lab" for="budget">Private tuition budget</label><select id="budget"><option value="0">No limit</option><option value="30000">Up to $30k a year</option><option value="60000">Up to $60k a year</option><option value="100000">Up to $100k a year</option><option value="150000">Up to $150k a year</option></select><span class="sub">Total for all children</span></div>
-    <div class="fld"><div class="lab">Family plans favor</div><div class="seg" id="mode"><button type="button" data-v="each" aria-pressed="false">Best per child</button><button type="button" data-v="campus" aria-pressed="true">One campus</button></div><span class="sub" id="modeNote"></span></div>
+    <div class="fld"><div class="lab">Family plans favor</div><div class="seg" id="mode"><button type="button" data-v="each" aria-pressed="true">Best per child</button><button type="button" data-v="campus" aria-pressed="false">One campus</button></div><span class="sub" id="modeNote"></span></div>
     <div class="tbar">
       <button type="button" class="tlink strong" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Copy family link</button>
       <span class="ok" id="shareOk" aria-live="polite"></span>
@@ -1025,7 +1025,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
    <section id="m-family"><h3>Family plans</h3>
     <p>With two or more children, the Explorer builds family plans: the best combination of schools for each location you entered. Each plan's family score blends the children's fit with the morning drive, plus a small bonus when children share a campus. The drive counts for 15% when the children's Short commute sliders sit at 3, more when they're higher (up to 30%) and not at all when they're at 0. Choose <b>Best per child</b> and each plan shows every child’s own top school for that location instead, with the approximate drive to each drop-off. Tuition is approximate, shown per child and as a family total.</p>
     <ul>
-     <li><b>One campus</b> (the default) favors a shared school when the fits are close. The family score blends 60% the weakest child’s fit with 40% the average, so no child is sacrificed for another.</li>
+     <li><b>Best per child</b> is the default. <b>One campus</b> favors a shared school when the fits are close. The family score blends 60% the weakest child’s fit with 40% the average, so no child is sacrificed for another.</li>
      <li><b>Logistics</b> is the estimated morning drive from home through each school, nearest first.</li>
      <li>Public schools are paired only with a location they’re zoned for. Charter and private schools are open to all.</li>
      <li>Plans over your tuition budget are hidden. The five-year view shows each child's school year by year, including the move to high school.</li>
@@ -1201,8 +1201,8 @@ const kname=(k,i)=>k.name||'Child '+(i+1);
 
 const pl=n=>{const p=PLACES.find(x=>x.n===n);return{...p,kind:'city',label:p.n}};
 function mk(name,grade,preset,ints,sector){return{name,grade,preset,w:{...PRESETS[preset],interest:ints.length?7:0},ints:new Set(ints),sector,sizePref:'any',support:false}}
-const fresh=()=>({places:[],radius:10,pub:'zone',budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,kids:[mk('',9,'Balanced',[],'all')]});
-const example=()=>({...fresh(),places:[pl('Orinda'),pl('Moraga'),pl('Lafayette'),pl('Montclair, Oakland')],radius:10,budget:0,mode:'protect',together:true,active:0,showN:{},mapPlan:null,
+const fresh=()=>({places:[],radius:10,pub:'zone',budget:0,mode:'protect',together:false,active:0,showN:{},mapPlan:null,kids:[mk('',9,'Balanced',[],'all')]});
+const example=()=>({...fresh(),places:[pl('Orinda'),pl('Moraga'),pl('Lafayette'),pl('Montclair, Oakland')],radius:10,budget:0,mode:'protect',together:false,active:0,showN:{},mapPlan:null,
  kids:[mk('Maya',10,'Athlete',['waterpolo'],'all'),mk('Leo',6,'STEM kid',['robotics','coding'],'all')]});
 let st=fresh();
 
@@ -1274,15 +1274,57 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const contact=[...ds].map(d=>{const c=(G.dinfo||{})[d]||{};return`<li><b>${esc(d)}</b>${c.ph?` · ${esc(c.ph)}`:''}${c.w?` · <a href="https://${esc(host(c.w))}" target="_blank" rel="noopener">${esc(host(c.w))}</a>`:''}</li>`}).join('');
   el.innerHTML=`<div class="znote">${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
    ${st.places.filter(isCity).map(p=>`<p><b>${esc(p.n)}:</b> these are all the public schools that serve some part of ${esc(p.n)}. Which school a home attends depends on its exact address and on the district. Add an address to narrow the results, then confirm with the district.</p>`).join('')}
+   <p><b>Homes for sale:</b> ${st.places.map(p=>homesLink(homesUrl(placeBox(p)),(p.kind==='address'?'near ':'in ')+esc(p.label))).join(' \u00b7 ')}. Check each home\u2019s assigned school with the district.</p>
    <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
 // When a home is an address or neighborhood inside this school's attendance area, the zoned high school at that point is known
+// The zoned school of a level (M or H) for a home address inside this school's area, same district
+function atHome(s,lv){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
+  for(const[d,l,ids]of G.zones)if(l===lv&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids.find(i=>h.ids.has(i))}return null}
+const gr=s=>`${s.lo===0?'K':s.lo}-${s.hi}`;
+// Links into the site's own home search. It takes a map area (a rectangle), so results cover the area around a
+// school's attendance zone or a location, not the exact zone: every link says to check each home's school.
+const HOMES=(location.hostname.endsWith('theledererteam.com')?'':'https://www.theledererteam.com')+'/home-search/listings';
+function homesUrl(b){const[s0,w0,n0,e0]=b;const c={lat:+((s0+n0)/2).toFixed(5),lng:+((w0+e0)/2).toFixed(5)};
+  const span=Math.max(e0-w0,(n0-s0)*1.3,0.005),z=Math.max(11,Math.min(16,Math.floor(Math.log2(700*360/256/span))));
+  const ring=[[n0,w0],[n0,e0],[s0,e0],[s0,w0],[n0,w0]].map(p=>p.map(v=>+v.toFixed(5)));
+  return HOMES+'?'+new URLSearchParams({center:JSON.stringify(c),zoom:String(z),boundary:JSON.stringify([ring])})}
+function zoneBox(s){const P=ZB[s.id];if(!P)return null;let b=[90,180,-90,-180];
+  for(const polys of P)for(const poly of polys)for(const[x,y]of poly[0]){b=[Math.min(b[0],y),Math.min(b[1],x),Math.max(b[2],y),Math.max(b[3],x)]}return b}
+function placeBox(p){const r=isCity(p)?0.022:0.011;const k=1/Math.cos(p.lat*Math.PI/180);return[+p.lat-r,+p.lng-r*k,+p.lat+r,+p.lng+r*k]}
+const homesLink=(url,txt)=>`<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener" title="Opens our home search for this map area. Check each home's assigned school with the district.">${txt}</a>`;
+// Where a school leads as a child grows: public feeder chain, private continuation, or a new application
+function schoolPath(s){
+  if(s.sec==='Public'){const steps=[[[s,1]]];
+    if(s.hi<9){
+      if(s.hi<=6&&s.feedm&&s.feedm.length){const a=atHome(s,'M');steps.push(a&&BY[a]?[[BY[a],1]]:s.feedm.map(([i,w])=>[BY[i],w]).filter(x=>x[0]))}
+      let hs=null;const ah=atHome(s,'H');if(ah&&BY[ah])hs=[[BY[ah],1]];else if(s.feedw&&s.feedw.length)hs=s.feedw.map(([i,w])=>[BY[i],w]).filter(x=>x[0]);else if(s.feed&&BY[s.feed])hs=[[BY[s.feed],1]];
+      if(!hs&&steps.length>1){const m=steps[1][0][0];if(m.feedw)hs=m.feedw.map(([i,w])=>[BY[i],w]).filter(x=>x[0]);else if(m.feed&&BY[m.feed])hs=[[BY[m.feed],1]]}
+      if(hs&&hs.length)steps.push(hs)}
+    return{kind:'public',steps,end:steps[steps.length-1][0][0].hi>=12}}
+  if(s.hi>=12)return{kind:'k12',steps:[[[s,1]]]};
+  if(s.next&&s.next.to&&BY[s.next.to])return{kind:'continue',steps:[[[s,1]],[[BY[s.next.to],1]]]};
+  return{kind:'apply',steps:[[[s,1]]],to:s.next&&s.next.list?s.next.list.map(i=>BY[i]).filter(Boolean):[]}}
+const throughHS=s=>{const p=schoolPath(s);return p.kind==='k12'||p.kind==='continue'||(p.kind==='public'&&(p.end||s.hi<9))};
+function pathLine(s){const p=schoolPath(s);
+  const nmc=x=>esc(x.n)+(x!==s&&x.n===s.n?' upper school, '+esc(x.c):'');const step=opts=>opts.length===1?`${nmc(opts[0][0])} (${gr(opts[0][0])})`:opts.map(([x,w])=>`${esc(x.n)} ${Math.round(w*100)}%`).join(' or ')+` (${gr(opts[0][0])}, depends on address)`;
+  if(p.kind==='public')return p.steps.map(step).join(' → ')+(p.end?'':' → high school assigned by the district');
+  if(p.kind==='k12')return`${esc(s.n)} (${gr(s)}) · one admission through 12th grade, no reapplying`;
+  if(p.kind==='continue')return`${step(p.steps[0])} → ${step(p.steps[1])} · students continue without reapplying`;
+  return`${esc(s.n)} (${gr(s)}) · ends after ${s.hi===8?'8th':GRADES[s.hi]} grade, then apply to high schools${p.to.length?`. Graduates often go to ${esc(p.to.slice(0,3).map(x=>x.n).join(', '))}`:''}`}
+// Year by year for one child: which school, from which school year
+function pathYears(s,kid){const p=schoolPath(s);const out=[];let g=kid.grade;
+  for(const opts of p.steps){const x=opts[0][0];if(g>12)break;if(x.hi<g)continue;const y=YEAR+(g-kid.grade);
+    out.push(`${y}-${String(y+1).slice(2)} (${GRADES[g]}): ${opts.length>1?opts.map(([z,w])=>`${z.n} ${Math.round(w*100)}%`).join(' or '):x.n}`);g=x.hi+1}
+  if(g<=12)out.push(`${YEAR+(g-kid.grade)}-${String(YEAR+(g-kid.grade)+1).slice(2)} (${GRADES[g]}): ${p.kind==='public'?'next school depends on the district':'apply to the next school'}`);
+  return out}
 function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
   for(const[d,lv,ids]of G.zones)if(lv==='H'&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids[0]}return null}
 function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;for(const p of st.places){if(lim&&!pubOk(s,p))continue;const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}
   if(!best)for(const p of st.places){const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}return best}
 function baseOk(s,kid){
   if(kid.grade<s.lo||kid.grade>s.hi)return false;
-  if(kid.sector!=='all'&&s.sec!==kid.sector)return false;return true}
+  if(kid.sector!=='all'&&s.sec!==kid.sector)return false;
+  if(kid.k12&&kid.grade<9&&!throughHS(s))return false;return true}
 function eligible(s,kid){if(!baseOk(s,kid)||!st.places.length)return false;if(s.sec==='Public'&&st.pub!=='radius')return st.places.some(p=>pubOk(s,p));return homeFor(s).d<=st.radius}
 function scoreFor(s,kid,home){
   const v={...s.s};if(level(kid.grade)!=='H'){delete v.college;const x=s.k8||{};for(const c of ['sports','arts','stem','clubs','lang','care','small'])v[c]=x[c]??null}
@@ -1369,13 +1411,13 @@ function timeline(p){
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
 function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['zone','dist','radius'].indexOf(st.pub),a:st.active,
-  k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||''])}}
+  k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||'',k.k12?1:0])}}
 function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
-  n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g!==0;n.pub=['zone','dist','radius'][o.u|0]||'zone';
-  n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
+  n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g===1;n.pub=['zone','dist','radius'][o.u|0]||'zone';
+  n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset,k12])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
-    sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup}));
+    sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12}));
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
 function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
@@ -1519,7 +1561,7 @@ function openDetail(id){
   else if(s.sec==='Private'){cost=s.tui?`<p>${Object.entries(s.tui).map(([b,v])=>`<b>${b==='K-5'?'Grades K-5':b==='6-8'?'Grades 6-8':'Grades 9-12'}:</b> $${v.toLocaleString()} a year`).join('<br>')}</p>`:'<p>Tuition not yet collected. Check the school’s admissions page.</p>';if(s.aid)cost+=`<p>About ${s.aid}% of students receive financial aid.</p>`}
   else cost=s.sec==='Charter'?'<p>Free. Charter schools are open to all; admission is by lottery if applications exceed seats.</p>':`<p>Free. ${zoneText(s,true)}</p>`;
   const flags=(s.flags||[]).filter(x=>x!=='Programs not yet scored');
-  const links=[d.w&&/\./.test(d.w)&&!/\s/.test(d.w)?`<a href="https://${esc(d.w.replace(/^https?:\/\//,''))}" target="_blank" rel="noopener">School website</a>`:'',s.sec!=='Private'&&/^\d{14}$/.test(s.id)?`<a href="https://www.caschooldashboard.org/reports/${s.id}/2025" target="_blank" rel="noopener">CA School Dashboard</a>`:'',map?`<button type="button" data-dmap="${s.id}">Show on map</button>`:''].filter(Boolean).join('');
+  const links=[d.w&&/\./.test(d.w)&&!/\s/.test(d.w)?`<a href="https://${esc(d.w.replace(/^https?:\/\//,''))}" target="_blank" rel="noopener">School website</a>`:'',s.sec!=='Private'&&/^\d{14}$/.test(s.id)?`<a href="https://www.caschooldashboard.org/reports/${s.id}/2025" target="_blank" rel="noopener">CA School Dashboard</a>`:'',map?`<button type="button" data-dmap="${s.id}">Show on map</button>`:'',s.sec==='Public'&&ZB[s.id]?`<a href="${esc(homesUrl(zoneBox(s)))}" target="_blank" rel="noopener">Homes for sale near this attendance area</a>`:''].filter(Boolean).join('');
   $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}${d.rel?' · '+esc(d.rel):''}</div><h3 id="dname">${esc(s.n)}</h3><div>${esc(s.c)}${s.sec!=='Private'&&s.dist?' · '+esc(s.dist):''}</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
    <div class="dbody">
     ${r&&r.score!=null?`<div class="fitbox"><div class="v">${r.score.toFixed(1)}<small>fit for ${esc(nm)}</small></div><div class="bar">${r.parts.map(q=>`<span title="${esc(CATS[q.c][0])} ${q.v.toFixed(1)}" style="width:${q.share*10}%;background:${css(CATS[q.c][1])};${q.e?'opacity:.35':''}"></span>`).join('')}</div></div>`:(!inGrade?`<p class="sub">This school doesn’t serve ${esc(nm)}’s grade next fall (${GRADES[k.grade]}).</p>`:'')}
@@ -1528,7 +1570,7 @@ function openDetail(id){
     ${sec('College outcomes',col)}
     ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
     ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
-    ${L2!=='H'?sec('Path to high school',path):''}
+    ${L2!=='H'?sec('School path as '+esc(nm)+' grows',`<p>${pathLine(s)}</p>${inGrade?`<ul style="margin:0;padding-left:18px;font-size:14px;line-height:1.7">${pathYears(s,k).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${s.sec==='Public'?'<p class="sub">Middle and high schools are assigned by the district from its attendance maps. Confirm with the district.</p>':''}`)+sec('Path to high school',path):''}
     ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span. ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
     ${sec('Cost and eligibility',cost)}
     ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
@@ -1564,6 +1606,7 @@ function renderKidControls(){
    <div class="sec"><label class="lab" for="kgrade">Grade next fall</label><select id="kgrade">${GRADES.map((g,i)=>`<option value="${i}" ${i===k.grade?'selected':''}>${g}  \u00B7  age ${i+5}-${i+6}</option>`).join('')}</select><span class="sub">Most ${GRADES[k.grade]==='K'?'kindergartners':GRADES[k.grade]+' graders'} are ${k.grade+5} or ${k.grade+6} in fall ${YEAR}</span></div></div>
    <label class="check support"><input type="checkbox" id="ksupport" ${k.support?'checked':''}><span>Needs learning support<br><span class="sub">Autism, ADHD, dyslexia or another learning difference. Shows specialized schools first without changing other rankings.</span></span></label>
    <div class="sec"><div class="lab">School type</div><div class="seg" id="ksector">${['all','Public','Charter','Private'].map(v=>`<button type="button" data-sec="${v}" aria-pressed="${k.sector===v}">${v==='all'?'All':v}</button>`).join('')}</div></div>
+   ${k.grade<9?`<label class="check" style="font-size:13px"><input type="checkbox" id="kk12" ${k.k12?'checked':''}><span>Only schools with a path through 12th grade<br><span class="sub">Leaves out private and charter schools that end before high school, so there\u2019s no second admissions round. Public schools lead to an assigned middle and high school.</span></span></label>`:''}
    <div class="sec"><div class="lab"><span>How much each matters</span><span>share</span></div>
      <div class="prow"><label for="kpreset">Start from</label><select id="kpreset">${k.preset?'':'<option value="" selected>Custom</option>'}${Object.keys(PRESETS).map(p=>`<option value="${p}" ${k.preset===p?'selected':''}>${p}</option>`).join('')}</select></div>
      <div class="mix">${show.filter(c=>w[c]).map(c=>`<span style="width:${w[c]/tot*100}%;background:${css(CATS[c][1])}"></span>`).join('')}</div>
@@ -1590,7 +1633,7 @@ function renderPlans(){
       <span class="tag ${p.unknown?'warn':''}">${p.unknown?(p.costKnown?`Approx. tuition $${Math.round(p.costKnown/1000)}k a year, plus some not yet collected`:'Tuition not yet collected'):p.cost===0?'No tuition':`Approx. tuition ${p.picks.map((r,i)=>{const t=tuition(r.s,st.kids[i].grade);return t?'$'+Math.round(t/1000)+'k':null}).filter(Boolean).join(' + ')}${p.picks.filter((r,i)=>tuition(r.s,st.kids[i].grade)).length>1?' = $'+Math.round(p.cost/1000)+'k':''} a year`}</span>
       ${p.mn<6?'<span class="tag warn">One child\u2019s fit is weak</span>':''}
     </div>
-    <div class="pacts"><button type="button" class="lnk" data-planmap="${j}">Show this plan on the map</button></div>
+    <div class="pacts"><button type="button" class="lnk" data-planmap="${j}">Show this plan on the map</button>${(()=>{const pz=p.picks.map(r=>r.s).filter(x=>x.sec==='Public'&&ZB[x.id]&&partial(x,p.home)!=null).sort((a,b)=>a.lo-b.lo)[0];return homesLink(homesUrl(pz?zoneBox(pz):placeBox(p.home)),pz?`Homes for sale near ${esc(pz.n)}\u2019s area`:`Homes for sale ${p.home.kind==='address'?'near':'in'} ${esc(p.home.label)}`)})()}</div>
     <details><summary class="sub" style="cursor:pointer;color:var(--teal);font-weight:700">See the next five years</summary>${timeline(p)}</details>
    </article>`).join('');
 }
@@ -1621,6 +1664,7 @@ function renderList(){
   $('list').innerHTML=(scored.length?'':'<div class="empty">No schools match. Widen the radius or add a city.</div>')+scored.slice(0,n).map((r,i)=>head(i)+(()=>{
     const s=r.s,top=[...r.parts].sort((a,b)=>b.share-a.share).slice(0,2).map(p=>`${CATS[p.c][0].toLowerCase()} ${p.v.toFixed(1)}`);
     const tags=[];
+    if(k.grade<9){const pp=schoolPath(s);tags.unshift(`<span class="tag ${pp.kind==='k12'||pp.kind==='continue'?'good':pp.kind==='apply'?'warn':''}" style="border-radius:4px"><b>School path:</b> ${pathLine(s)}</span>`)}
     if(r.path)tags.push(`<span class="tag ${r.path.cert==='Uncertain'||r.path.cert==='Depends on address'?'warn':'good'}">${r.path.cert}: ${esc(r.path.same?'continues to its own high school':r.path.how)}</span>`);
     if(r.it)r.it.list.forEach(x=>tags.push(`<span class="tag ${x.hit?'good':''}">${esc(x.txt)}</span>`));
     if(r.min!=null){const h=homeFor(s);tags.push(`<span class="tag"><i style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${pc(h.p)};margin-right:6px"></i>About ${r.min} min from ${esc(h.c)}</span>`)}
@@ -1636,7 +1680,7 @@ function renderList(){
      <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
       <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
       ${flags.length?`<div class="flag">${flags.map(esc).join(' · ')}</div>`:''}
-      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`})()).join('')+
+      <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button>${s.sec==='Public'&&ZB[s.id]&&zoneBest(s)?.z.k==='zone'?homesLink(homesUrl(zoneBox(s)),'Homes for sale near this attendance area'):''}</div></div></article>`})()).join('')+
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
    (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
 }
@@ -1688,6 +1732,7 @@ root.addEventListener('input',e=>{const k=st.kids[st.active];
 root.addEventListener('change',e=>{const k=st.kids[st.active];
   if(e.target.id==='kpreset'&&e.target.value){k.preset=e.target.value;Object.assign(k.w,PRESETS[k.preset]);soft();return}
   if(e.target.id==='kgrade'){k.grade=+e.target.value;st.showN[st.active]=10;soft()}
+  if(e.target.id==='kk12'){k.k12=e.target.checked;soft();return}
   if(e.target.id==='ksupport'){k.support=e.target.checked;renderList();renderMap();syncHash()}
   if(e.target.id==='radius'){st.radius=+e.target.value;soft()}
   if(e.target.id==='pub'){st.pub=e.target.value;st.mapPlan=null;render();syncHash()}
