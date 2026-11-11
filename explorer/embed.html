@@ -889,7 +889,17 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .feat .sp{font-size:15px}
 .bx .feat .thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
 .bx .feat .thumbs i{aspect-ratio:4/3;background:var(--sunk) center/cover no-repeat}
-.bx .homes .disc{font-size:11px;line-height:1.5;opacity:.8}
+.bx .homes .disc{font-size:11px;line-height:1.5;color:var(--muted)}
+.bx .homes .disc summary{cursor:pointer;font-weight:700;letter-spacing:.4px}
+.bx .homes .disc p{margin:8px 0 0}
+.bx .hctl{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:4px 0 2px}
+.bx .hctl label{display:flex;gap:8px;align-items:center;font-size:13px}
+.bx .hctl select{font:inherit;padding:6px 8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.bx .hctl .cnt{font-size:13px;color:var(--muted);margin-left:auto}
+.bx .hctl .seg{display:flex;flex-wrap:wrap;gap:6px}
+.bx .hctl .seg button{font:inherit;font-size:13px;padding:6px 12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.bx .hctl .seg button.on{background:var(--ink);color:var(--onink);border-color:var(--ink)}
+.bx .hcard .stt{position:absolute;left:12px;top:12px;background:var(--teal);color:#fff;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:900;padding:4px 8px}
 .bx .feat .go{margin-top:8px;font-size:12px;letter-spacing:1.4px;text-transform:uppercase;font-weight:900;color:var(--ink)}
 @media (max-width:760px){.bx .feat{grid-template-columns:minmax(0,1fr)}
 .bx .feat .ph{min-height:0;aspect-ratio:4/3}
@@ -913,6 +923,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .znote b{color:var(--ink)}
 .bx .znote .warn{color:var(--amber);font-weight:700}
 .bx .znote.pol{border-left-color:var(--amber);background:var(--amber-soft)}
+.bx .znote.dg{font:inherit;text-align:left;cursor:pointer;width:100%;color:var(--ink2);line-height:1.5}
+.bx .znote.dg:hover{border-color:var(--amber)}
+.bx .znote.dg .more{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;font-weight:900;color:var(--ink)}
+.bx .dgs .lnk{margin-right:10px}
+.bx .dg-lv{display:grid;gap:10px}
+.bx .dg-lv>div{border-left:4px solid var(--rt-e);padding:4px 0 4px 12px}
+.bx .dg-lv>div.m{border-color:var(--rt-m)}
+.bx .dg-lv>div.h{border-color:var(--rt-h)}
+.bx .dg-lv b{display:block;color:var(--ink)}
+.bx .dg-links{display:grid;gap:6px}
+.bx .dg-links a{color:var(--ink);font-weight:700}
+.bx .dg-links small{display:block;color:var(--muted);font-weight:400}
 .bx .znote ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .bx .znote a{color:var(--teal)}
 .bx .special{background:var(--teal-soft);border:1px solid var(--teal);padding:14px 16px;display:grid;gap:6px;font-size:13.5px;color:var(--ink2)}
@@ -1234,14 +1256,46 @@ const NOGUAR='This isn’t a guarantee. Districts redraw lines, and a full schoo
 // A city result that covers only part of the city
 const partial=(s,p)=>{if(!p||!isCity(p))return null;const z=zoneFor(s,p);return z&&z.k==='zone'&&!z.pt&&z.share<0.95?z.share:null};
 // Districts where an address doesn't decide the school. Shown up front, on the cards and in the detail panel.
-const DPOL={'Berkeley Unified':{appE:true,short:'Assigned within your zone by application · not a specific school by address',
-  lv:{E:'Within your zone, by application',M:'By home address, or Longfellow by choice',H:'Every Berkeley student'},
-  sh:{E:'Zone school by application · no specific school guaranteed',M:'Assigned by home address (King or Willard) · Longfellow open by choice',H:'The district’s one comprehensive high school'},
-  long:'Berkeley Unified enrolls every student through its enrollment application. Elementary: each address is in one of three zones, families rank the schools in that zone, and the district assigns a seat by priorities and space, so no particular elementary school is guaranteed. Middle school: each address is assigned to King or Willard, and any Berkeley student can choose Longfellow Arts & Technology instead. High school: Berkeley High serves the whole district.',
-  head:'Berkeley elementary schools are assigned by application within your zone, not by address.'},
+const DPOL={'Berkeley Unified':{appE:true,short:'Seats by enrollment application · your zone gives priority, not a guarantee',
+  lv:{E:'Rank schools in your zone',M:'Families rank schools · zone gets first priority',H:'Every Berkeley student'},
+  sh:{E:'Families rank schools in their zone · no specific school guaranteed',M:'Families rank schools · students in the zone get first priority',H:'The district’s one comprehensive high school'},
+  long:'Elementary: every address is in one of three zones, families rank the schools in their zone, and no particular school is guaranteed. Middle school: families rank schools, and students who live in a school’s attendance zone get first priority. High school: Berkeley High serves the whole district.',
+  head:'Berkeley assigns schools through an enrollment application, and the rules differ by grade.'},
  'Oakland Unified':{short:'Assigned by enrollment application · area gives priority, not a guarantee',
   long:'Oakland Unified enrolls students through an enrollment application where families rank schools. Living in a school’s attendance area gives priority, but a seat isn’t guaranteed when the school is full.',
   head:'Oakland public schools are assigned through an enrollment application.'}};
+// District guides: how each district assigns seats, written for families moving in. Opens in the side panel.
+const DGUIDE={'Berkeley Unified':{intro:'Berkeley Unified (BUSD) does not assign a school to a home address the way most districts do. Every family fills out an enrollment application and ranks schools. Where you live decides which schools you can rank with priority, not which school you get.',
+  levels:[['e','Elementary (TK-5)','The city is split into three elementary zones. Families rank the schools in their zone, and the district places students by priorities and space, so no particular elementary school is guaranteed. Berkeley Arts Magnet and Malcolm X sit in two zones. Sylvia Mendez is a two-way Spanish immersion school open to families from all three zones.'],
+    ['m','Middle school (6-8)','Families rank King, Longfellow and Willard. Students who live in a school’s attendance zone get first priority, and out-of-zone requests are considered after that. The board adopted a three-zone middle school plan (King, Longfellow, Willard) in June 2022. Our map uses the district’s published King and Willard zone map, so confirm the current zone for any address with BUSD. Longfellow is in a temporary home at 1701 San Pablo Avenue while its campus is rebuilt.'],
+    ['h','High school (9-12)','Berkeley High serves the whole district. Berkeley Technology Academy is the district’s small alternative high school.']],
+  tips:['Elementary and middle school seats come from the enrollment application, so apply during the district’s open enrollment window for the best chance at your top choices.','Two current proofs of a Berkeley address are required, such as a utility bill, bank statement or lease.','If you are buying, check which elementary zone the home is in, then look at all the schools in that zone, not just the closest one.'],
+  links:[['Find your BUSD zone','berkeleyschools.net/admissions/find-your-busd-zone/','Street-by-street zone lookup'],['Admissions and enrollment','berkeleyschools.net/admissions/','Dates, forms and contacts'],['Elementary enrollment','berkeleyschools.net/admissions/enrollment/elementary/',''],['Middle school enrollment','berkeleyschools.net/admissions/enrollment/middle/','Zone priority rules'],['Middle school assignment plan','berkeleyschools.net/admissions/middle-school-assignment-plan/','The three-zone plan'],['Waitlist questions','berkeleyschools.net/admissions/waitlist/faq/','']],
+  phone:'510-644-6504 (Admissions)'},
+ 'Oakland Unified':{intro:'Oakland Unified (OUSD) places students through an enrollment application where families rank schools. Every school has an attendance area, and living in it gives priority there, but a seat is not guaranteed when the school is full.',
+  levels:[['e','Elementary (TK-5)','Apply when entering TK or kindergarten, or when choosing a new school. Families can rank schools across the city. The neighborhood school gives priority to families in its area.'],
+    ['m','Middle school (6-8)','Families apply again for 6th grade and rank middle schools. Living in a school’s area gives priority.'],
+    ['h','High school (9-12)','Families apply again for 9th grade. Some high schools and programs (linked learning pathways, specialty schools) draw students from across the city.']],
+  tips:['Students already enrolled do not need to reapply to stay at their current school.','Every application gets a waitlist number. Offers come in scheduled rounds, not as soon as a seat opens.','Oakland also has many independent charter schools. They run their own lotteries.'],
+  links:[['How the enrollment application works','ousd.org/enroll/faqs/enrollment-application-process','OUSD'],['A guide to enrolling in OUSD (Oaklandside, 2026)','oaklandside.org/2026/01/22/how-to-enroll-oakland-unified-school-district/','Plain-language overview']],
+  phone:'510-879-8000'}};
+function openDistrict(d){const g=DGUIDE[d];const c=(G.dinfo||{})[d]||{};const host=w=>String(w||'').replace(/^https?:\/\//,'').replace(/\/$/,'');
+  const pubs=S.filter(x=>x.dist===d&&x.sec==='Public');const n=lv=>pubs.filter(x=>lv==='E'?x.lo<=2&&x.hi<=8&&x.lo<5:lv==='M'?x.lo>=5&&x.lo<=7&&x.hi<=8:x.lo>=9).length;
+  const zl=new Set((G.zones||[]).filter(z=>z[0]===d).map(z=>z[1]));
+  const lvs=g?g.levels:[['e','Elementary',`${n('E')} elementary school${n('E')===1?'':'s'}. ${zl.has('E')?'Each home address falls in one school’s attendance area, shown on our map from the district’s own boundary map.':'We haven’t mapped this district’s elementary attendance areas yet, so the Explorer shows every school in the district. The district can tell you the school for a specific address.'}`],
+    ['m','Middle school',`${n('M')} middle school${n('M')===1?'':'s'}. ${zl.has('M')?'Assigned by home address from the district’s attendance map.':n('M')===1?'Every student in the district attends this middle school.':'The district assigns middle school by address; ask the district for a specific home.'}`],
+    ['h','High school',`${n('H')} high school${n('H')===1?'':'s'}. ${zl.has('H')?'Assigned by home address from the district’s attendance map.':n('H')===1?'Every student in the district attends this high school.':'The district assigns high school by address; ask the district for a specific home.'}`]].filter(x=>!/^0 /.test(x[2]));
+  const tips=g?g.tips:['Most California districts assign schools by home address. A seat at the assigned school is still not guaranteed if it is full: the district can place a new student at another school.','Transfers to a school outside your area, or to another district, are possible but depend on space and district approval.','Attendance lines change. Ask the district for the assigned schools for a specific address in writing before you rely on them.'];
+  const links=[...(g?g.links:[]),...(c.w?[['District website',host(c.w),'Enrollment, calendars and contacts']]:[])];
+  $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">How the district works</div><h3 id="dname">${esc(d)}</h3><div>${c.a?esc(c.a):''}</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
+   <div class="dbody">
+    <section class="dsec"><p>${esc(g?g.intro:`${d} assigns public schools by home address, using attendance areas. Here is how it works at each level.`)}</p></section>
+    <section class="dsec"><h4>By grade level</h4><div class="dg-lv">${lvs.map(([k,t,x])=>`<div class="${k}"><b>${esc(t)}</b>${esc(x)}</div>`).join('')}</div></section>
+    <section class="dsec"><h4>Good to know</h4><ul>${tips.map(t=>`<li>${esc(t)}</li>`).join('')}</ul></section>
+    <section class="dsec"><h4>Learn more from the district</h4><div class="dg-links">${links.map(([t,u,sm])=>`<a href="https://${esc(u)}" target="_blank" rel="noopener">${esc(t)}${sm?`<small>${esc(sm)}</small>`:''}</a>`).join('')}</div>${(g&&g.phone)||c.ph?`<p style="margin-top:10px">Call: ${esc((g&&g.phone)||c.ph)}</p>`:''}</section>
+    <p class="sub">This is a summary to help you ask the right questions. District rules change, so confirm with the district before you rely on it.</p>
+   </div>`;
+  lastFocus=document.activeElement;$('scrim').hidden=false;$('drawer').hidden=false;$('drawer').scrollTop=0;$('drawer').querySelector('.x').focus()}
 function zoneText(s,long){const b=zoneBest(s);const D=esc(s.dist);const pol=DPOL[s.dist];
   if(pol&&b&&b.z.k==='zone')return long?`${esc(pol.long)} ${b.z.pt?'On the district map, this location falls in '+esc(s.n)+'’s attendance area.':''} Confirm with the district.`:`${b.z.pt?'In this location’s area':'In the area for part of '+esc(b.p.city||b.p.label)} · ${(pol.sh&&pol.sh[s.lo>=9?'H':s.lo>=6?'M':'E'])||pol.short}`;
   if(!b)return long?`Run by ${D}. Families outside its attendance area can request a transfer, subject to space.`:`${D} · by transfer`;
@@ -1354,7 +1408,8 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const host=w=>w.replace(/^https?:\/\//,'').replace(/\/$/,'');
   const contact=[...ds].map(d=>{const c=(G.dinfo||{})[d]||{};return`<li><b>${esc(d)}</b>${c.ph?` · ${esc(c.ph)}`:''}${c.w?` · <a href="https://${esc(host(c.w))}" target="_blank" rel="noopener">${esc(host(c.w))}</a>`:''}</li>`}).join('');
   const pols=[...ds].filter(d=>DPOL[d]);
-  el.innerHTML=`${pols.map(d=>`<div class="znote pol"><p><span class="warn">${esc(DPOL[d].head)}</span> ${esc(DPOL[d].long)}</p></div>`).join('')}<div class="znote">${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
+  el.innerHTML=`${pols.map(d=>`<button type="button" class="znote pol dg" data-dguide="${esc(d)}"><span><span class="warn">${esc(DPOL[d].head)}</span> ${esc(DPOL[d].long)}</span><span class="more">How ${esc(d)} works, with links →</span></button>`).join('')}<div class="znote">
+   <p class="dgs"><b>How each district works:</b> ${[...ds].map(d=>`<button type="button" class="lnk" data-dguide="${esc(d)}">${esc(d)}</button>`).join(' ')}</p>${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
    ${st.places.filter(isCity).map(p=>`<p><b>${esc(p.n)}:</b> these are all the public schools that serve some part of ${esc(p.n)}. Which school a home attends depends on its exact address and on the district. Add an address to narrow the results, then confirm with the district.</p>`).join('')}
    <p><b>Homes for sale:</b> ${st.places.map(p=>homesLink(homesUrl(placeBox(p)),(p.kind==='address'?'near ':'in ')+esc(p.label))).join(' \u00b7 ')}. Check each home\u2019s assigned school with the district.</p>
    <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
@@ -1389,23 +1444,33 @@ function parseListings(doc){const seen=new Set(),out=[];
   return out}
 // Same data source as the site's home search and MLS grid widgets: the site's own listings service
 const LQ=`query BxListings($filter: MlsListingsFilterInput, $options: MlsListingsOptionsInput, $pagination: MlsListingsPaginationInput, $sort: [MlsListingsSortInput!], $websiteId: UUID!){ mlsListings(filter:$filter, options:$options, pagination:$pagination, sort:$sort){ items { id lpListingId lpListingSlug latitude longitude lpDisplayAddress city postalCode lpShowAddress lpPropertyType bedroomsTotal lpTotalDecimalBath lpSqft lpLotSqft lpYearBuilt listPrice lpListingStatus listOfficeName lpPrimaryPhoto{ photoUrl } lpPhotos{ photoUrl } mlsProvider(websiteId:$websiteId){ mlsProviderName searchResultsDisclaimer } } } }`;
-async function fetchListings(p){const[s0,w0,n0,e0]=placeBox(p);
+async function fetchBox(box,c){const[s0,w0,n0,e0]=box;
   const r=await fetch('/federation',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({operationName:'BxListings',query:LQ,variables:{
     filter:{lpLocation:{boundingBox:{topLeftLat:n0,topLeftLon:w0,bottomRightLat:s0,bottomRightLon:e0}},feedIds:['rapattoni_bareis','cws_mlsl','bridge_bear'],lpSaleLease:'SALE',lpListingStatus:['ACTIVE','COMING_SOON']},
     options:{collapseBy:'UNIQUE_ADDRESS'},pagination:{page:1,limit:150},sort:[{field:'lpListingOnMarketTimestamp',order:'DESC'}],websiteId:'8f1b626b-e68a-4ea9-b505-57ca4b4f7594'}})});
   const j=await r.json();const it=j&&j.data&&j.data.mlsListings&&j.data.mlsListings.items;if(!it)throw new Error('no data');
-  const disc=new Set();
   const tc=t=>/[a-z]/.test(t)?t:t.toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase());
-  const out=it.filter(x=>x.lpShowAddress!==false).map(x=>{const pm=x.mlsProvider||{};if(pm.searchResultsDisclaimer)disc.add(pm.searchResultsDisclaimer.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim());
+  // One disclaimer per MLS: the text repeats per listing with only the "last updated" time changing
+  const txt=h=>{try{return new DOMParser().parseFromString(h,'text/html').body.textContent.replace(/\s+/g,' ').trim()}catch(e){return h.replace(/<[^>]+>/g,' ')}};
+  for(const x of it){const d=(x.mlsProvider||{}).searchResultsDisclaimer;if(!d)continue;const t=txt(d).replace(/\s*Data last updated at [^.]*?UTC\.?/i,'').replace(/\s+\./g,'.');LST.discs[t.slice(0,160)]=t}
+  return it.filter(x=>x.lpShowAddress!==false).map(x=>{
     const ph=[x.lpPrimaryPhoto&&x.lpPrimaryPhoto.photoUrl,...(x.lpPhotos||[]).map(q=>q.photoUrl)].filter(Boolean);
     return{href:'/home-search/listings/'+x.lpListingSlug,price:x.listPrice,bd:x.bedroomsTotal,ba:x.lpTotalDecimalBath,sf:x.lpSqft,lot:x.lpLotSqft,yr:x.lpYearBuilt,
       ty:x.lpPropertyType||'',ad:[tc(x.lpDisplayAddress||''),x.city].filter(Boolean).join(', ')+(x.postalCode?' CA '+x.postalCode:''),street:x.lpDisplayAddress||'',city:x.city||'',mls:x.lpListingId||'',
       st:x.lpListingStatus==='COMING_SOON'?'Coming soon':'For sale',img:ph[0]||'',imgs:ph.slice(0,4),office:x.listOfficeName||'',lat:x.latitude,lng:x.longitude,
-      km:x.latitude?km(+p.lat,+p.lng,x.latitude,x.longitude):99}});
-  LST.disc=[...disc];return out.sort((a,b)=>a.km-b.km)}
-function listingsFor(p){const k=p.lat+','+p.lng;if(LST.key===k)return;LST={key:k,state:'loading',items:[],home:p,disc:[]};renderHomes();
+      km:x.latitude&&c?km(+c.lat,+c.lng,x.latitude,x.longitude):99}})}
+// A whole city: the area its schools cover, then only homes whose listing says that city
+function cityBox(p){const xs=S.filter(x=>x.c===p.n&&x.sec==='Public');if(xs.length<2)return placeBox(p);
+  let b=[90,180,-90,-180];for(const x of xs)b=[Math.min(b[0],x.lat),Math.min(b[1],x.lng),Math.max(b[2],x.lat),Math.max(b[3],x.lng)];return[b[0]-.012,b[1]-.015,b[2]+.012,b[3]+.015]}
+const areaKey=()=>st.places.map(p=>p.lat+','+p.lng).join('|');
+function listingsFor(p){const k=p.lat+','+p.lng;if(LST.key===k)return;LST={key:k,mode:'addr',state:'loading',items:[],home:p,discs:{}};renderHomes();
   if(!/theledererteam\.com$/.test(location.hostname)){LST.state='offsite';renderHomes();return}
-  fetchListings(p).then(items=>{if(LST.key!==k)return;LST.items=items;LST.state='done';renderHomes()}).catch(()=>{if(LST.key!==k)return;listingsViaFrame(p,k)})}
+  fetchBox(placeBox(p),p).then(items=>{if(LST.key!==k)return;LST.items=items.sort((a,b)=>a.km-b.km);LST.state='done';renderHomes()}).catch(()=>{if(LST.key!==k)return;listingsViaFrame(p,k)})}
+function listingsArea(){const k=areaKey();if(LST.key===k)return;LST={key:k,mode:'area',state:'loading',items:[],discs:{},f:{c:'',pr:'',bd:0},n:12};renderHomes();
+  if(!/theledererteam\.com$/.test(location.hostname)){LST.state='offsite';renderHomes();return}
+  Promise.all(st.places.map(p=>fetchBox(isCity(p)?cityBox(p):placeBox(p),p).then(xs=>xs.map(x=>({...x,place:p.n||p.label})).filter(x=>!isCity(p)||x.city.toLowerCase()===String(p.n).toLowerCase()))))
+    .then(all=>{if(LST.key!==k)return;const seen=new Set();LST.items=all.flat().filter(x=>!seen.has(x.href)&&seen.add(x.href)&&!/LAND|LOT/i.test(x.ty||''));LST.state='done';renderHomes()})
+    .catch(()=>{if(LST.key!==k)return;LST.state='error';renderHomes()})}
 function listingsViaFrame(p,k){
   const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.tabIndex=-1;f.style.cssText='position:fixed;left:0;top:0;width:min(1200px,100vw);height:900px;border:0;opacity:0;pointer-events:none;z-index:-1';
   f.src=homesUrl(placeBox(p));document.body.appendChild(f);let n=0,last=-1,same=0;
@@ -1413,16 +1478,33 @@ function listingsViaFrame(p,k){
     if(items.length&&items.length===last)same++;else same=0;last=items.length;
     if((items.length&&same>=2)||++n>22){LST.items=items;LST.state='done';f.remove();renderHomes()}else setTimeout(poll,700)};
   f.addEventListener('load',()=>setTimeout(poll,1500))}
-function renderHomes(){const el=$('homes');if(!el)return;const p=st.places.find(x=>x.kind==='address');
-  if(!p){el.innerHTML='';return}if(LST.key!==p.lat+','+p.lng){listingsFor(p);return}
-  const all=homesUrl(placeBox(p));
-  const head=(t,sub)=>`<div class="hh"><div><div class="eyebrow">Active listings · from our home search</div><h3>${t}</h3>${sub?`<p class="sub" style="margin-top:6px">${sub}</p>`:''}</div><a class="lnkall" href="${esc(all)}" target="_blank" rel="noopener">See every home in this area</a></div>`;
+const PRB=[['','Any price'],['0-1000000','Under $1M'],['1000000-1500000','$1M to $1.5M'],['1500000-2000000','$1.5M to $2M'],['2000000-3000000','$2M to $3M'],['3000000-1e12','$3M and up']];
+function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){el.innerHTML='';return}
+  const p=st.places.find(x=>x.kind==='address');
+  if(p){if(LST.key!==p.lat+','+p.lng){listingsFor(p);return}}else if(LST.key!==areaKey()){listingsArea();return}
+  const where=p?'near '+esc(p.label):'in '+esc(st.places.map(x=>x.n||x.label).join(', ').replace(/, ([^,]*)$/,' and $1'));
+  const all=homesUrl(p?placeBox(p):(()=>{const bs=st.places.map(q=>isCity(q)?cityBox(q):placeBox(q));return[Math.min(...bs.map(b=>b[0])),Math.min(...bs.map(b=>b[1])),Math.max(...bs.map(b=>b[2])),Math.max(...bs.map(b=>b[3]))]})());
+  const head=(t,sub,ctl)=>`<div class="hh"><div><div class="eyebrow">Active listings · from our home search</div><h3>${t}</h3>${sub?`<p class="sub" style="margin-top:6px">${sub}</p>`:''}</div><a class="lnkall" href="${esc(all)}" target="_blank" rel="noopener">See every home in this area</a></div>${ctl||''}`;
   const spec=x=>[x.bd&&x.bd+' bd',x.ba&&x.ba+' ba',x.sf&&x.sf.toLocaleString()+' sqft'].filter(Boolean).join(' · ');
   const bg=x=>x.img?` style="background-image:url('${esc(x.img)}')"`:'';
-  const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener"><div class="ph"${bg(x)}><span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span><span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
-  const foot=`<p class="ml">Listings come from the MLS through our home search and can change at any time. The schools above are for the address you entered; check each home’s assigned schools with the district.</p>${(LST.disc||[]).map(d=>`<p class="ml disc">${esc(d)}</p>`).join('')}`;
-  if(LST.state==='loading'){el.innerHTML=`<section class="homes">${head('Homes for sale near '+esc(p.label))}<div class="hgrid">${'<div class="hcard sk"><div class="ph"></div><div class="bd"><span></span><span style="width:60%"></span></div></div>'.repeat(3)}</div></section>`;return}
-  if(LST.state==='offsite'){el.innerHTML=`<section class="homes">${head('Homes for sale near '+esc(p.label),'Active listings appear here on theledererteam.com.')}</section>`;return}
+  const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener"><div class="ph"${bg(x)}>${x.st!=='For sale'?`<span class="stt">${x.st}</span>`:''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span><span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
+  const discs=Object.values(LST.discs||{});
+  const foot=`<p class="ml">Listings come from the MLS through our home search and can change at any time. ${p?'The schools above are for the address you entered; check':'A home’s assigned schools depend on its exact address; check'} each home’s schools with the district.</p>${discs.length?`<details class="disc"><summary>MLS information and disclaimers</summary>${discs.map(d=>`<p>${esc(d)}</p>`).join('')}</details>`:''}`;
+  const sk=n=>`<div class="hgrid">${'<div class="hcard sk"><div class="ph"></div><div class="bd"><span></span><span style="width:60%"></span></div></div>'.repeat(n)}</div>`;
+  if(LST.state==='loading'){el.innerHTML=`<section class="homes">${head('Homes for sale '+where)}${sk(4)}</section>`;return}
+  if(LST.state==='offsite'||LST.state==='error'){el.innerHTML=`<section class="homes">${head('Homes for sale '+where,LST.state==='offsite'?'Active listings appear here on theledererteam.com.':'Listings didn’t load. Use the button to open our home search.')}</section>`;return}
+  if(LST.mode==='area'){const f=LST.f;const multi=st.places.length>1;
+    const [lo,hi]=f.pr?f.pr.split('-').map(Number):[0,Infinity];
+    const xs=LST.items.filter(x=>(!f.c||x.place===f.c)&&(!f.pr||(x.price>=lo&&x.price<hi))&&(!f.bd||(x.bd||0)>=f.bd));
+    const ctl=`<div class="hctl">${multi?`<div class="seg">${['',...st.places.map(q=>q.n||q.label)].map(c=>`<button type="button" class="${f.c===c?'on':''}" data-hf="c" data-v="${esc(c)}">${c?esc(c):'All places'}</button>`).join('')}</div>`:''}
+      <label>Price <select data-hf="pr">${PRB.map(([v,t])=>`<option value="${v}"${f.pr===v?' selected':''}>${t}</option>`).join('')}</select></label>
+      <label>Bedrooms <select data-hf="bd">${[0,1,2,3,4,5].map(n=>`<option value="${n}"${f.bd===n?' selected':''}>${n?n+'+':'Any'}</option>`).join('')}</select></label>
+      <span class="cnt">${xs.length} home${xs.length===1?'':'s'}</span></div>`;
+    el.innerHTML=`<section class="homes">${head('Homes for sale '+where,'Newest listings first. Add an address above to see whether a home is listed and find similar homes.',ctl)}
+      ${xs.length?`<div class="hgrid">${xs.slice(0,LST.n).map(card).join('')}</div>`:'<p class="sub">No active listings match. Try a wider price range.</p>'}
+      ${xs.length>LST.n?`<div style="text-align:center"><button type="button" class="lnkall" data-hmore="1">Show more homes</button></div>`:''}${foot}</section>`;
+    el.querySelectorAll('[data-hf]').forEach(b=>b.addEventListener(b.tagName==='SELECT'?'change':'click',()=>{const k=b.dataset.hf;f[k]=k==='bd'?+b.value:(b.tagName==='SELECT'?b.value:b.dataset.v);LST.n=12;renderHomes()}));
+    const m=el.querySelector('[data-hmore]');if(m)m.addEventListener('click',()=>{LST.n+=12;renderHomes()});return}
   const key=addrKey(p.label);const me=LST.items.find(x=>key&&addrKey(x.ad)===key);
   let others=LST.items.filter(x=>x!==me&&!/LAND|LOT/i.test(x.ty||''));
   if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd)d+=x.bd?Math.abs(x.bd-me.bd)*0.5:0.6;if(me.sf)d+=x.sf?Math.abs(Math.log(x.sf/me.sf))*2:0.6;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
@@ -1438,7 +1520,7 @@ function schoolPath(s){
       // Where elementary seats are by application (Berkeley), middle school follows the home address, not the elementary
       if(s.hi<=6&&DPOL[s.dist]&&DPOL[s.dist].appE){const zm=(G.zones||[]).filter(([d,l])=>d===s.dist&&l==='M').flatMap(z=>z[2]);let a=null;
         for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);a=zm.find(i=>h.ids.has(i));if(a)break}
-        const ms=a&&BY[a]?[[BY[a],1]]:[...new Set(zm)].map(i=>[BY[i],0]).filter(x=>x[0]);if(ms.length)steps.push(ms)}
+        const ms=a&&BY[a]?[[BY[a],-1],...[...new Set(zm)].filter(i=>i!==a&&BY[i]).map(i=>[BY[i],-2])]:[...new Set(zm)].map(i=>[BY[i],0]).filter(x=>x[0]);if(ms.length)steps.push(ms)}
       else if(s.hi<=6&&s.feedm&&s.feedm.length){const a=atHome(s,'M');steps.push(a&&BY[a]?[[BY[a],1]]:s.feedm.map(([i,w])=>[BY[i],w]).filter(x=>x[0]))}
       // Districts that assign by application also run district-wide middle schools with no attendance area (Berkeley: Longfellow)
       if(DPOL[s.dist]&&steps.length>1){const zoned=new Set(steps[1].map(x=>x[0].id));mx=S.filter(x=>x.sec==='Public'&&x.dist===s.dist&&x.lo>=6&&x.lo<=7&&x.hi===8&&!ZB[x.id]&&!zoned.has(x.id))}
@@ -1483,7 +1565,7 @@ function pathView(s,kid){const p=schoolPath(s);const H=[];const C={E:'var(--rt-e
     const trk=one?`background:linear-gradient(90deg,var(--rt-e) 0 46%,var(--rt-m) 46% 69%,var(--rt-h) 69%)`:`background:${col}`;
     // Each school on the path opens its own details. Several possible schools branch off the line, one per row.
     const btn=(z,txt)=>z===s?`<b>${txt}</b>`:`<button type="button" class="sch" data-detail="${z.id}" title="See ${esc(z.n)}">${txt}</button>`;
-    const branch=[...opts.map(([z,w])=>[z,opts.length>1?(w?Math.round(w*100)+'%':'by address'):'']),...(i===1&&p.mx?p.mx.map(z=>[z,'by choice']):[])];
+    const branch=[...opts.map(([z,w])=>[z,w===-1?'zone on the district map':w===-2?'by request':opts.length>1?(w?Math.round(w*100)+'%':'zone priority'):'']),...(i===1&&p.mx?p.mx.map(z=>[z,p.steps[1].some(o=>o[1]===-1)?'by request':'zone priority']):[])];
     const nm=branch.length===1?btn(x,label(x,false)):`<div class="fork">${branch.map(([z,t])=>`<div class="fk">${btn(z,esc(shortN(z.n)))}${t?` <small>${t}</small>`:''}</div>`).join('')}</div>`;
     H.push(`<div class="stop${i===0?' cur':''}${branch.length>1?' br':''}" style="color:${col};${one?'flex-grow:2':branch.length>1?'flex-grow:1.3':''}"><div class="trk" style="${trk}"><span class="dot"></span></div><div class="t">${branch.length>1?nm:`<span class="nm1">${nm}</span>`}<span>Grades ${lo===0?'K':lo}-${x.hi}${p.app&&i>0?' · '+((DPOL[s.dist].lv||{})[lvOf(x)]||'by district application'):branch.length>1?' · depends on address':kid&&kid.grade<=x.hi?' · '+yr(lo):''}</span></div></div>`)});
   if(p.kind==='apply'){const pn=publicNext(s);const g=s.hi+1;
@@ -1746,7 +1828,7 @@ function openDetail(id){
     ${sec('College outcomes',col)}
     ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
     ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
-    ${L2!=='H'?sec('Potential school path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?'<p class="sub">Middle and high schools are assigned by the district from its attendance maps. Confirm with the district.</p>':''}`)+sec('Path to high school',path):''}
+    ${L2!=='H'?sec('Potential school path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?`<p class="sub">${DPOL[s.dist]?esc(DPOL[s.dist].head):'Middle and high schools are assigned by the district from its attendance maps.'} <button type="button" class="lnk" data-dguide="${esc(s.dist)}">How ${esc(s.dist)} works</button></p>`:''}`)+sec('Path to high school',path):''}
     ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span. ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
     ${sec('Cost and eligibility',cost)}
     ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
@@ -1890,6 +1972,7 @@ root.addEventListener('click',e=>{
   else if(t.dataset.i){const id=t.dataset.i;k.ints.has(id)?k.ints.delete(id):k.ints.add(id);if(k.ints.size&&!k.w.interest)k.w.interest=5;soft()}
   else if(t.dataset.more){st.showN[st.active]=(st.showN[st.active]||10)+10;renderList();renderMap()}
   else if(t.dataset.detail){openDetail(t.dataset.detail)}
+  else if(t.dataset.dguide){openDistrict(t.dataset.dguide)}
   else if(t.dataset.showmap){showOnMap(t.dataset.showmap)}
   else if(t.dataset.planmap){st.mapPlan=+t.dataset.planmap;renderMap();$('mapcard').scrollIntoView({behavior:'smooth',block:'start'})}
   else if(t.id==='mapBack'){st.mapPlan=null;renderMap()}
