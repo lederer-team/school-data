@@ -871,6 +871,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .znote{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--amber);padding:14px 16px;display:grid;gap:8px;font-size:13.5px;color:var(--ink2)}
 .bx .znote b{color:var(--ink)}
 .bx .znote .warn{color:var(--amber);font-weight:700}
+.bx .znote.pol{border-left-color:var(--amber);background:var(--amber-soft)}
 .bx .znote ul{margin:0;padding-left:18px;display:grid;gap:4px}
 .bx .znote a{color:var(--teal)}
 .bx .special{background:var(--teal-soft);border:1px solid var(--teal);padding:14px 16px;display:grid;gap:6px;font-size:13.5px;color:var(--ink2)}
@@ -1064,6 +1065,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
    <section id="m-public"><h3>Which public schools appear</h3>
     <p>By default the Explorer shows only the public schools a family could attend without a transfer: the schools whose attendance areas cover each location you enter. Attendance areas come from each district’s own school locator map. For an address or neighborhood, that’s the elementary, middle and high school zoned for that spot. For a whole city, it’s every school zoned for at least 3% of the city’s area, labeled with its share, so a school that covers only the hills on one side of town says so.</p>
     <p>Mapped so far: Oakland, Berkeley, West Contra Costa, Alameda, Mt. Diablo, San Ramon Valley, Pleasanton, Hayward, Newark and the Acalanes high schools. Schools in other districts show for any home in the district until their maps are added, and say so on the card. District programs without their own attendance area are listed as by application. You can widen the list to every school in your district (an intradistrict transfer, subject to space) or to every public school within your radius. Private and charter schools always use the radius, since they enroll from anywhere.</p>
+    <p>Some districts don’t assign schools by address at all. Berkeley Unified assigns every seat through its enrollment application, and Oakland Unified uses an enrollment application where living in an attendance area gives priority but not a guarantee. The Explorer flags these districts at the top of the results and on every school card.</p>
     <p>Elementary and middle schools are scored on the high school their attendance area feeds. When an area splits between two high schools, the path is weighted by how much of the area each one serves, unless you entered an address, which settles it.</p>
     <p>A zoned school is never a guarantee. Districts redraw boundaries, make exceptions, and when a school is full they can place newly enrolling students at another school. For a whole city, the Explorer lists every school that serves part of it, so a school listed for a city may not serve a particular home there. Always get the school assignment for a specific address from the district, in writing, before choosing a home.</p>
    </section>
@@ -1189,7 +1191,15 @@ const zsrc=d=>ZSRC[d]||`${d}’s school locator`;
 const NOGUAR='This isn’t a guarantee. Districts redraw lines, and a full school can place newly enrolling students at another school.';
 // A city result that covers only part of the city
 const partial=(s,p)=>{if(!p||!isCity(p))return null;const z=zoneFor(s,p);return z&&z.k==='zone'&&!z.pt&&z.share<0.95?z.share:null};
-function zoneText(s,long){const b=zoneBest(s);const D=esc(s.dist);
+// Districts where an address doesn't decide the school. Shown up front, on the cards and in the detail panel.
+const DPOL={'Berkeley Unified':{short:'Assigned by application · not guaranteed by address',
+  long:'Berkeley Unified assigns every public school seat through its enrollment application. No school is guaranteed by address. Elementary families rank the schools in their attendance zone, and the district assigns seats by priorities and space; middle schools are assigned by zone. Living in a zone or near a school does not guarantee a place there.',
+  head:'Berkeley public schools are assigned by application, not by address.'},
+ 'Oakland Unified':{short:'Assigned by enrollment application · area gives priority, not a guarantee',
+  long:'Oakland Unified enrolls students through an enrollment application where families rank schools. Living in a school’s attendance area gives priority, but a seat isn’t guaranteed when the school is full.',
+  head:'Oakland public schools are assigned through an enrollment application.'}};
+function zoneText(s,long){const b=zoneBest(s);const D=esc(s.dist);const pol=DPOL[s.dist];
+  if(pol&&b&&b.z.k==='zone')return long?`${esc(pol.long)} ${b.z.pt?'On the district map, this location falls in '+esc(s.n)+'’s attendance area.':''} Confirm with the district.`:`${b.z.pt?'In this location’s area':'In the area for part of '+esc(b.p.city||b.p.label)} · ${pol.short}`;
   if(!b)return long?`Run by ${D}. Families outside its attendance area can request a transfer, subject to space.`:`${D} · by transfer`;
   const z=b.z,nm=esc(b.p.city||b.p.label);
   if(z.k==='zone'){const bz=s.dist==='Berkeley Unified'&&s.hi<=8?(long?' Berkeley Unified assigns elementary students within three zones, so families rank the schools in their zone.':' zone'):'';
@@ -1299,7 +1309,8 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const warns=st.places.map(p=>[p,addrWarn(p)]).filter(x=>x[1]);
   const host=w=>w.replace(/^https?:\/\//,'').replace(/\/$/,'');
   const contact=[...ds].map(d=>{const c=(G.dinfo||{})[d]||{};return`<li><b>${esc(d)}</b>${c.ph?` · ${esc(c.ph)}`:''}${c.w?` · <a href="https://${esc(host(c.w))}" target="_blank" rel="noopener">${esc(host(c.w))}</a>`:''}</li>`}).join('');
-  el.innerHTML=`<div class="znote">${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
+  const pols=[...ds].filter(d=>DPOL[d]);
+  el.innerHTML=`${pols.map(d=>`<div class="znote pol"><p><span class="warn">${esc(DPOL[d].head)}</span> ${esc(DPOL[d].long)}</p></div>`).join('')}<div class="znote">${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
    ${st.places.filter(isCity).map(p=>`<p><b>${esc(p.n)}:</b> these are all the public schools that serve some part of ${esc(p.n)}. Which school a home attends depends on its exact address and on the district. Add an address to narrow the results, then confirm with the district.</p>`).join('')}
    <p><b>Homes for sale:</b> ${st.places.map(p=>homesLink(homesUrl(placeBox(p)),(p.kind==='address'?'near ':'in ')+esc(p.label))).join(' \u00b7 ')}. Check each home\u2019s assigned school with the district.</p>
    <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
@@ -1344,7 +1355,7 @@ function pathYears(s,kid){const p=schoolPath(s);const out=[];let g=kid.grade;
     out.push(`${y}-${String(y+1).slice(2)} (${GRADES[g]}): ${opts.length>1?opts.map(([z,w])=>`${z.n} ${Math.round(w*100)}%`).join(' or '):x.n}`);g=x.hi+1}
   if(g<=12)out.push(`${YEAR+(g-kid.grade)}-${String(YEAR+(g-kid.grade)+1).slice(2)} (${GRADES[g]}): ${p.kind==='public'?'next school depends on the district':'apply to the next school'}`);
   return out}
-const tbadge=s=>{if(s.sec==='Charter')return'<span class="tbadge t-ch">Charter \u00b7 lottery</span>';if(s.sec==='Private')return'<span class="tbadge t-pr">Private \u00b7 apply</span>';const b=zoneBest(s);return b&&b.z.k==='zone'?'<span class="tbadge t-zone">Zoned public</span>':b&&b.z.k==='prog'?'<span class="tbadge t-pub">District program</span>':'<span class="tbadge t-pub">Public</span>'};
+const tbadge=s=>{if(s.sec==='Charter')return'<span class="tbadge t-ch">Charter \u00b7 lottery</span>';if(s.sec==='Private')return'<span class="tbadge t-pr">Private \u00b7 apply</span>';const b=zoneBest(s);return b&&b.z.k==='zone'&&DPOL[s.dist]?'<span class="tbadge t-pub">Public \u00b7 by application</span>':b&&b.z.k==='zone'?'<span class="tbadge t-zone">Zoned public</span>':b&&b.z.k==='prog'?'<span class="tbadge t-pub">District program</span>':'<span class="tbadge t-pub">Public</span>'};
 const shortN=n=>n.replace(/\b(Elementary|Middle|High|Intermediate|School|Academy|Senior)\b/g,'').replace(/\s+/g,' ').replace(/[\s,]+$/,'').trim()||n;
 // The school path as a row of steps: grades, school, school year the child starts there, and how it ends
 // For a school that ends before 12th grade: the public school at the next level for the family's location
