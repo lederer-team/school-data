@@ -1132,6 +1132,16 @@ function placeDists(p){const k=p.label+'|'+p.lat+'|'+p.lng;if(DCACHE.has(k))retu
   if(p.kind==='city'&&p.n===p.city||!out.size)(G.cityDist[p.city]||[]).forEach(d=>out.add(d));DCACHE.set(k,out);return out}
 function servesHome(s,p){if(s.sec!=='Public')return true;return placeDists(p).has(s.dist)}
 // Attendance areas (district school-locator maps). ZB: school id -> its zone polygons; G.cityZ: city -> {id: share of the city's area}
+// Zones that serve a point. Geocoded addresses near a shoreline or a map edge can land just outside every mapped area;
+// then the nearest attendance area of that district and level within SNAP_FT is used and flagged for a district check.
+const SNAP_FT=1000,ZHC=new Map();
+function zoneHits(p){const k=p.lat+'|'+p.lng;if(ZHC.has(k))return ZHC.get(k);const x=+p.lng,y=+p.lat,ids=new Set(),edge=new Set(),snaps=[];const ds=placeDists(p);
+  const byKey={};(G.zones||[]).forEach(z=>{if(ds.has(z[0]))(byKey[z[0]+'|'+z[1]]=byKey[z[0]+'|'+z[1]]||[]).push(z)});
+  for(const zs of Object.values(byKey)){const hit=zs.filter(z=>inPolys(z[3],x,y));
+    if(hit.length){hit.forEach(z=>z[2].forEach(i=>ids.add(i)));continue}
+    let best=null;for(const z of zs){const f=edgeFeet(z[3],x,y);if(!best||f<best.f)best={z,f}}
+    if(best&&best.f<=SNAP_FT){best.z[2].forEach(i=>{ids.add(i);edge.add(i)});snaps.push({what:best.z[2].map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area (the address falls just outside the mapped areas)',f:best.f})}}
+  const r={ids,edge,snaps};ZHC.set(k,r);return r}
 const ZB={},ZL={};for(const[d,lv,ids,polys]of(G.zones||[]))for(const i of ids){(ZB[i]=ZB[i]||[]).push(polys);(ZL[i]=ZL[i]||new Set()).add(lv)}
 const inPolys=(polys,x,y)=>polys.some(poly=>inRing(x,y,poly[0])&&!poly.slice(1).some(h=>inRing(x,y,h)));
 const levels=s=>[s.lo<=5?'E':'',s.hi>=6&&s.lo<=8?'M':'',s.hi>=9?'H':''].join('');
@@ -1140,7 +1150,7 @@ function mapped(s){const z=(G.zmap||{})[s.dist]||'';return [...levels(s)].some(l
 // How a public school relates to a location: {k:'zone',share,pt} | {k:'prog'} (district-wide program) | {k:'dist'} (not mapped yet) | null
 function zoneFor(s,p){if(s.sec!=='Public')return null;
   if(ZB[s.id]){if(isCity(p)&&G.cityZ&&G.cityZ[p.n]){const v=G.cityZ[p.n][s.id];return v?{k:'zone',share:v}:null}
-    return ZB[s.id].some(polys=>inPolys(polys,+p.lng,+p.lat))?{k:'zone',share:1,pt:true}:null}
+    const h=zoneHits(p);return h.ids.has(s.id)?{k:'zone',share:1,pt:true,edge:h.edge.has(s.id)}:null}
   if(!servesHome(s,p))return null;return mapped(s)?{k:'prog'}:{k:'dist'}}
 function pubOk(s,p){if(st.pub==='dist')return servesHome(s,p);return !!zoneFor(s,p)}
 function zoneBest(s){let b=null;for(const p of st.places){const z=zoneFor(s,p);if(z&&(!b||(z.share||0)>(b.z.share||0)))b={p,z}}return b}
@@ -1253,6 +1263,7 @@ function addrWarn(p){if(isCity(p))return null;if(p._w!==undefined)return p._w;co
     const f=edgeFeet(polys,x,y);if(f<NEAR_FT)w.near.push({what:n+' district line',f});
     const cs=[...new Set((G.distCity[n]||[]).map(c=>c.replace(/,.*$/,'')))];if(p.kind==='address'&&p.city&&cs.length&&!cs.includes(p.city)&&t!=='H')w.other.push({d:n,cs})}
   for(const[d,lv,ids,polys]of(G.zones||[])){if(!inPolys(polys,x,y))continue;const f=edgeFeet(polys,x,y);if(f<NEAR_FT)w.near.push({what:ids.map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area',f})}
+  zoneHits(p).snaps.forEach(q=>w.near.push(q));
   p._w=(w.near.length||w.other.length)?w:null;return p._w}
 function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector==='Private'||st.pub==='radius'){el.innerHTML='';return}
   const ds=new Set();st.places.forEach(p=>placeDists(p).forEach(d=>{if(S.some(s=>s.dist===d&&s.sec==='Public'&&k.grade>=s.lo&&k.grade<=s.hi))ds.add(d)}));
@@ -1263,8 +1274,8 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
    ${st.places.filter(isCity).map(p=>`<p><b>${esc(p.n)}:</b> these are all the public schools that serve some part of ${esc(p.n)}. Which school a home attends depends on its exact address and on the district. Add an address to narrow the results, then confirm with the district.</p>`).join('')}
    <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
 // When a home is an address or neighborhood inside this school's attendance area, the zoned high school at that point is known
-function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p)||!ZB[s.id].some(pl=>inPolys(pl,+p.lng,+p.lat)))continue;
-  for(const[d,lv,ids,polys]of G.zones)if(lv==='H'&&d===s.dist&&inPolys(polys,+p.lng,+p.lat))return ids[0]}return null}
+function hsAtHome(s){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
+  for(const[d,lv,ids]of G.zones)if(lv==='H'&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids[0]}return null}
 function homeFor(s){const lim=s.sec==='Public'&&st.pub!=='radius';let best=null;for(const p of st.places){if(lim&&!pubOk(s,p))continue;const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}
   if(!best)for(const p of st.places){const d=mi(pt(p),s);if(!best||d<best.d)best={p,c:p.label,d}}return best}
 function baseOk(s,kid){
@@ -1588,7 +1599,7 @@ function renderList(){
     $('list').innerHTML=`<div class="empty"><b>Start with where you might live.</b><span>Type an address or a city in the box above. Add several cities to compare them. Each child gets a ranked list, and with two or more children you'll also see family plans.</span><button type="button" class="btn line" data-example="1">See an example family</button></div>`;return}
   const R=rankKid(k);
   // Zoned (or district) public schools first, then charter and private schools by radius, each ranked on its own
-  const grp=st.pub!=='radius';const pubs=grp?order(R.filter(r=>r.s.sec==='Public')):[];
+  const grp=st.pub!=='radius';const isZ=r=>{const b=zoneBest(r.s);return !!b&&b.z.k==='zone'};const pubs=grp?[...order(R.filter(r=>r.s.sec==='Public'&&isZ(r))),...order(R.filter(r=>r.s.sec==='Public'&&!isZ(r)))]:[]; // zoned schools before district-wide programs
   const rest=grp?order(R.filter(r=>r.s.sec!=='Public')):order(R);
   const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
