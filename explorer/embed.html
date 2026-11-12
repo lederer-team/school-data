@@ -774,6 +774,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .kdhead .top b{color:var(--ink2)}
 .bx .dgcard{display:grid;gap:12px}
 .bx .znote.dgcard{border-left:1px solid var(--line)}
+.bx .ztop:not(:empty){margin:16px 0 4px}
+.bx .ztop .dgc{padding:10px 12px}
+.bx .ztop .dggrid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 .bx .dgc .more{border:0!important;padding:0!important;background:none!important}
 .bx .dgcard .dghead b{font-size:15px;color:var(--ink)}
 .bx .dggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
@@ -1120,6 +1123,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <button type="button" class="tlink" id="reset">Start over</button>
     </div>
   </section>
+  <div id="znote" class="ztop"></div>
   <div class="grid">
     <aside>
       <div class="kids" role="tablist" id="kidtabs"></div>
@@ -1133,7 +1137,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
       </div>
       <div id="supnote"></div>
       <div id="planwrap" class="res"></div>
-      <div id="znote"></div>
       <div id="kdabove"></div>
       <div class="kdrawer" id="kdactive">
        <div class="reshead"><div class="rt"><h3 class="h2" id="ktitle"></h3><span class="sub" id="ksub"></span></div><button type="button" class="kdtog" id="kdtog" aria-expanded="true" aria-controls="kdbody">Collapse</button></div>
@@ -1486,7 +1489,7 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const L=k.grade<=5?'e':k.grade<=8?'m':'h';
   const rule=d=>{if(DPOL[d])return DPOL[d].head;const g=DGUIDE[d];if(!g||!g.levels)return 'Schools are generally assigned by home address.';const lv=g.levels.find(x=>x[0]===L)||g.levels.find(x=>x[0]==='k8')||g.levels[0];return (lv[2]||'').split(/(?<=\.)\s/)[0]};
   const town=d=>st.places.filter(p=>[...placeDists(p)].includes(d)).map(p=>p.n||p.label).join(', ');
-  el.innerHTML=`<div class="znote dgcard"><div class="dghead"><b>How public schools work where you're looking</b><br><span class="sub">Each district assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} seats its own way. Open a district for the full guide, maps and links.</span></div>
+  el.innerHTML=`<div class="znote dgcard"><div class="dghead"><b>How public schools work in the places you picked</b><br><span class="sub">Each district assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} seats its own way. Open a district for the full guide, maps and links.</span></div>
    <div class="dggrid">${[...ds].map(d=>`<button type="button" class="dgc${DPOL[d]?' pol':''}" data-dguide="${esc(d)}"><span class="dn">${esc(d)}</span><span class="dw">${esc(town(d))}</span><span>${esc(rule(d))}</span><span class="more">How it works →</span></button>`).join('')}</div>
    ${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
    <details class="dgmore"><summary>Boundaries, homes for sale and district phone numbers</summary>
