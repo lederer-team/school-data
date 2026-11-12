@@ -734,6 +734,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .sugg .pw{font-size:10.5px;color:var(--muted);padding:6px 12px 2px;justify-content:flex-end;cursor:default}
 .bx .tbar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;border-top:1px solid var(--line);margin:0 -20px -18px;padding:11px 20px;background:var(--sunk)}
 .bx .tbar .sp{flex:1}
+.bx .tbar:not(:has(.dgstrip)){display:none}
 .bx .tlink{background:none;border:0;padding:0;cursor:pointer;font-size:12px;letter-spacing:1.1px;text-transform:uppercase;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:7px;border-radius:0}
 .bx .tlink:hover{color:var(--ink)}
 .bx .tlink.strong{color:var(--teal)}
@@ -1246,7 +1247,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
     <div class="tbar">
       <div id="znote" class="ztop"></div>
       <span class="sp"></span>
-      <button type="button" class="tlink" id="example">Load an example family</button>
     </div>
   </section>
   <div class="grid">
