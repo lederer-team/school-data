@@ -2042,7 +2042,7 @@ function bindLv(el){el.querySelectorAll('[data-lh]').forEach(a=>a.addEventListen
 /* ---------- What private school costs, in house ----------
    Each child's top private pick (its tuition for next fall) turned into the home that the same monthly money would pay for:
    30-year fixed at the market rate (Freddie Mac weekly average, pulled at build), property tax about 1.18% of price. */
-const TAXR=0.0118;const tgr=()=>(st.tg||4)/100;
+const TAXR=0.0118;const TGS=[3,3.5,4,4.5,5,5.5,6];const tgr=()=>(st.tg||4)/100;
 const mortF=rate=>{const r=rate/100/12;return r/(1-Math.pow(1+r,-360))};
 function houseFor(pay,dp,rate){const f=mortF(rate),H=pay/((1-dp)*f+TAXR/12);return{H,loan:H*(1-dp),down:H*dp,pi:H*(1-dp)*f,tax:H*TAXR/12}}
 const fM=v=>v>=995000?'$'+(Math.round(v/1e5)/10).toFixed(v>=9.95e6?0:1).replace(/\.0$/,'')+'M':'$'+Math.round(v/1000)+'k';
@@ -2080,7 +2080,7 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
       return`<g class="col" data-y="${y}">`+`<rect class="hit" x="${(10+y*slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${H}" fill="transparent"/>`+seg+`<text x="${(x+bw/2).toFixed(1)}" y="${(yy-6).toFixed(1)}" text-anchor="middle" class="tot">${Math.round(tot/1000)}k</text><text x="${(x+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${String(fall+y).slice(2)}-${String(fall+y+1).slice(2)}</text></g>`}).join('')}</svg>`;
   const legend=`<div class="mq-hd"><div class="mq-stat"><span>Next year</span><b>${fD(annual)}</b></div><div class="mq-stat"><span>Through ${lastY}</span><b>${fM(total)}</b></div><div class="mq-leg">${P.map(p=>`<span><i style="background:${kc(p)}"></i><b>${esc(kname(p.k,p.i))}</b> ${esc(p.s.n)} · ${fM(p.t)}</span>`).join('')}</div></div>`;
   const years=`<div class="mq-block mq-yrs">${legend}<div class="mq-chart">${svg}<div class="mq-tip" hidden></div></div>
-    <p class="mq-note">Each bar is one school year. Tuition rises <select class="mq-tg" data-tg="1" aria-label="Yearly tuition increase">${[3,4,5,6,7,8].map(v=>`<option value="${v}"${(st.tg||4)===v?' selected':''}>${v}%</option>`).join('')}</select> a year; many private schools raise tuition 4% to 6%. Hover over or tap a year for details and the running total.</p></div>`;
+    <p class="mq-note">Each bar is one school year. Tuition rises <select class="mq-tg" data-tg="1" aria-label="Yearly tuition increase">${TGS.map(v=>`<option value="${v}"${(st.tg||4)===v?' selected':''}>${v}%</option>`).join('')}</select> a year; many private schools raise tuition 4% to 6%. Hover over or tap a year for details and the running total.</p></div>`;
   // D: prices in your cities (median of homes for sale that match the filters), with the same money added
   let cities='';
   if(LST.mode==='area'&&LST.state==='done'){const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
@@ -2363,7 +2363,7 @@ function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
     sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12}));
   if(Array.isArray(o.h)){const[a,b,c,d,e,t]=o.h;n.hf={pmin:+a||0,pmax:+b||0,bd:+c||0,ba:+d||0,sf:+e||0,ty:['sf','condo'].includes(t)?t:''}}
-  n.dp=[10,20,30].includes(o.dp)?o.dp:20;n.tg=[3,4,5,6,7,8].includes(o.tg)?o.tg:4;
+  n.dp=[10,20,30].includes(o.dp)?o.dp:20;n.tg=TGS.includes(o.tg)?o.tg:4;
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
 function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
