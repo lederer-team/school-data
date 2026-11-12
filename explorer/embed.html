@@ -1228,6 +1228,17 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-steps li::before{content:counter(st);position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--onink);font-size:12px;font-weight:800;display:grid;place-items:center}
 .bx .mq-steps b{color:var(--ink)}
 .bx .mq-yrs{margin-top:16px}
+.bx .mq-hd{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 28px;margin-bottom:6px}
+.bx .mq-stat{display:grid;gap:2px}
+.bx .mq-stat span{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.bx .mq-stat b{font-family:var(--serif);font-weight:400;font-size:clamp(26px,3vw,34px);line-height:1;color:var(--ink)}
+.bx .mq-hd .mq-leg{margin:0 0 2px auto;flex-direction:column;align-items:flex-start;gap:4px}
+.bx .mq-hd .mq-leg b{color:var(--ink);margin-right:2px}
+@media (max-width:720px){.bx .mq-hd .mq-leg{margin-left:0}
+.bx .mq-chart{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.bx .mq-years{min-width:620px}
+.bx .mq-adv summary b{font-size:18px}
+.bx .mq-adv summary{padding:14px 16px}}
 .bx .mq-chart{position:relative}
 .bx .mq-years .in{fill:#fff;font-size:11px;font-weight:700}
 .bx .mq-years .tot{fill:var(--ink);font-size:11.5px;font-weight:800}
@@ -2034,9 +2045,9 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();if(
   const svg=`<svg class="mq-years" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tuition by school year until ${lastY}">${cols.map((c,y)=>{const x=10+y*slot+(slot-bw)/2;let yy=H-pb;const tot=c.reduce((a,b)=>a+b,0);
       const seg=c.map((v,j)=>{if(!v)return'';const hh=v/mx*(H-pb-pt);yy-=hh;const lab=hh>=16&&bw>=30?`<text class="in" x="${(x+bw/2).toFixed(1)}" y="${(yy+hh/2+4).toFixed(1)}" text-anchor="middle">${Math.round(v/1000)}k</text>`:'';return`<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" fill="${kc(P[j])}"/>${lab}`}).join('');
       return`<g class="col" data-y="${y}">`+`<rect class="hit" x="${(10+y*slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${H}" fill="transparent"/>`+seg+`<text x="${(x+bw/2).toFixed(1)}" y="${(yy-6).toFixed(1)}" text-anchor="middle" class="tot">${Math.round(tot/1000)}k</text><text x="${(x+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${String(fall+y).slice(2)}-${String(fall+y+1).slice(2)}</text></g>`}).join('')}</svg>`;
-  const legend=`<div class="mq-leg">${P.map(p=>`<span><i style="background:${kc(p)}"></i>${esc(kname(p.k,p.i))} · ${esc(p.s.n)}</span>`).join('')}</div>`;
-  const years=`<div class="mq-block mq-yrs"><h4>Year by year</h4>${legend}<div class="mq-chart">${svg}<div class="mq-tip" hidden></div></div>
-    <p class="mq-note">Hover over or tap a year to see each child’s grade and tuition.</p></div>`;
+  const legend=`<div class="mq-hd"><div class="mq-stat"><span>Next year</span><b>${fD(annual)}</b></div><div class="mq-stat"><span>Through ${lastY}</span><b>${fM(total)}</b></div><div class="mq-leg">${P.map(p=>`<span><i style="background:${kc(p)}"></i><b>${esc(kname(p.k,p.i))}</b> ${esc(p.s.n)} · ${fM(p.t)}</span>`).join('')}</div></div>`;
+  const years=`<div class="mq-block mq-yrs">${legend}<div class="mq-chart">${svg}<div class="mq-tip" hidden></div></div>
+    <p class="mq-note">Tuition rises about 4% a year. Hover over or tap a year for each child’s grade and tuition.</p></div>`;
   // D: prices in your cities (median of homes for sale that match the filters), with the same money added
   let cities='';
   if(LST.mode==='area'&&LST.state==='done'){const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
@@ -2047,11 +2058,9 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();if(
       ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n} homes for sale</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b><small>up to</small> ${fM(r.md+h.H)}</b></div>`).join('')}</div>`}}
   const rateCtl=`<label class="mq-rate">Interest rate <input type="number" step="0.05" min="2" max="15" value="${rate.toFixed(2)}" data-rt="1">%</label>${st.rt?`<button type="button" class="lnk" data-rtreset="1">Use market rate (${mkt.toFixed(2)}%)</button>`:`<span class="sub">Market rate, Freddie Mac weekly average${rd?`, week of ${rd}`:''}</span>`}`;
   el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school costs</div></div>
-    <h3>What private school would cost</h3><p class="sub">Tuition for each child’s top private pick, from next fall through 12th grade.</p></div>
-    <div class="mq-sum"><div><div class="mq-big">${fD(annual)}<small> next year</small></div><ul class="mq-kids">${P.map(p=>`<li style="--kc:${kc(p)}"><i></i><b>${esc(kname(p.k,p.i))}</b><span>${esc(p.s.n)}</span><em>${fD(p.t)}</em></li>`).join('')}</ul></div>
-      <div class="mq-tot"><div class="mq-big">${fM(total)}</div><span>in total through ${lastY}, with tuition rising about 4% a year</span></div></div>
+    <h3>What private school would cost</h3><p class="sub">Each child’s top private pick, from next fall through 12th grade.</p></div>
     ${years}
-    <details class="mq-adv"${st.mqOpen?' open':''}><summary><span><b>Compare it to buying more house</b><em>The same money as a mortgage payment buys about ${fM(h.H)} more home.</em></span><span class="mq-open">Open</span></summary>
+    <details class="mq-adv"${st.mqOpen?' open':''}><summary><span><b>Public school instead? See how much more house you could buy</b><em>Put the tuition toward a mortgage: about ${fM(h.H)} more home.</em></span><span class="mq-open">Open</span></summary>
       <div class="mq-advb"><div class="mq-ctl"><div class="mq-dp" role="group" aria-label="Down payment"><span>Down payment</span>${[10,20,30].map(v=>`<button type="button" data-dp="${v}" aria-pressed="${(st.dp||20)===v}">${v}%</button>`).join('')}</div>${rateCtl}</div>
       ${eq}${steps}${cities}
       <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. Tuition is our best figure from each school and changes yearly; after a child’s current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></div></details></section>`;
