@@ -2508,13 +2508,21 @@ const fmtPhone=v=>{let d=String(v).replace(/\D/g,'');if(d.length===11&&d[0]==='1
 const bindPhone=el=>{if(!el)return;el.setAttribute('placeholder','(510) 555-0123');el.setAttribute('inputmode','tel');el.addEventListener('input',e=>{if(e.inputType&&e.inputType.startsWith('delete'))return;el.value=fmtPhone(el.value)});el.addEventListener('blur',()=>{el.value=fmtPhone(el.value)})};
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function teamBypass(){if(/[?&#]team=lederer\b/.test(location.search+location.hash)){lsSet('bx_team','1');return true}return lsGet('bx_team')==='1'}
+// Send a lead through the site's own contact form. It runs inside a hidden frame of the home page,
+// because the form sends its page to the home page after submitting; the visitor stays in the Explorer.
 function lpLead(name,email,phone,places,msg){try{
-  const f=[...document.querySelectorAll('form')].find(x=>!root.contains(x)&&x.querySelector('[name=phoneNumber]')&&x.querySelector('[name=message]')&&x.querySelector('[name=email]'));if(!f)return;
-  const set=(el,v)=>{if(!el)return;const P=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(P,'value').set.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};
-  set(f.querySelector('[name=name]'),name);set(f.querySelector('[name=email]'),email);set(f.querySelector('[name=phoneNumber]'),phone);
-  set(f.querySelector('[name=message]'),msg||('Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.'));
-  const t=f.querySelector('[name=termsAccepted]');if(t&&!t.checked)t.click();
-  setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
+  const fr=document.createElement('iframe');fr.setAttribute('aria-hidden','true');fr.tabIndex=-1;
+  fr.style.cssText='position:fixed;width:1px;height:1px;left:-9999px;top:0;border:0;opacity:0;pointer-events:none';
+  fr.src=location.origin+'/?bxlead=1';document.body.appendChild(fr);let done=false;
+  const run=()=>{if(done)return;let d;try{d=fr.contentDocument}catch(e){return}if(!d)return;
+    const f=[...d.querySelectorAll('form')].find(x=>x.querySelector('[name=phoneNumber]')&&x.querySelector('[name=message]')&&x.querySelector('[name=email]'));if(!f)return;done=true;
+    const W=fr.contentWindow;const set=(el,v)=>{if(!el)return;const P=el.tagName==='TEXTAREA'?W.HTMLTextAreaElement.prototype:W.HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(P,'value').set.call(el,v);el.dispatchEvent(new W.Event('input',{bubbles:true}));el.dispatchEvent(new W.Event('change',{bubbles:true}))};
+    set(f.querySelector('[name=name]'),name);set(f.querySelector('[name=email]'),email);set(f.querySelector('[name=phoneNumber]'),phone);
+    set(f.querySelector('[name=message]'),msg||('Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.'));
+    const t=f.querySelector('[name=termsAccepted]');if(t&&!t.checked)t.click();
+    setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},400)};
+  fr.addEventListener('load',()=>{let n=0;const iv=setInterval(()=>{run();if(done||++n>40)clearInterval(iv)},500)});
+  setTimeout(()=>{try{fr.remove()}catch(e){}},45000)}catch(e){}}
 function gate(){
   if(!CFG.gate||/luxurypresence|localhost/.test(location.hostname)||teamBypass()||lsGet('bx_signed'))return;
   const g=$('gate');g.hidden=false;const gsync=()=>{const ok=$('gterms').checked&&$('gconsent').checked;$('gbtn').disabled=!ok;$('ghint').hidden=ok};['gterms','gconsent'].forEach(id=>$(id).addEventListener('change',gsync));gsync();bindPhone($('gphone'));g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
