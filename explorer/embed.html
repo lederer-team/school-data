@@ -763,7 +763,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .supnote{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:2px solid var(--kcur);border-left-width:6px;background:var(--surface);padding:12px 14px;font-size:14px;color:var(--ink2);margin-top:14px}
 .bx .supnote>div{flex:1 1 280px;min-width:0}
 .bx .supnote .dot{width:10px;height:10px;border-radius:50%;background:var(--kcur);flex:none}
-.bx .supnote .lbtn.sm{padding:8px 12px;font-size:12px;color:var(--ink);border-color:var(--ink);flex:none}
+.bx .supnote .lbtn.sm{cursor:pointer;padding:8px 12px;font-size:12px;color:var(--ink);border-color:var(--ink);flex:none}
 .bx #special{scroll-margin-top:90px}
 .bx .kdrawer{border:1px solid var(--line);background:var(--surface);margin-top:14px;scroll-margin-top:90px}
 .bx .kdrawer .reshead{margin:0;border-left:6px solid var(--kcur);padding:12px 14px;background:var(--sunk);align-items:center;flex-wrap:nowrap}
@@ -848,6 +848,65 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .tlroute .stop .t{padding-right:8px}
 @media (max-width:560px){.bx .tlh{display:none}}
 .bx .tls.tg b{color:var(--teal);font-size:12px}
+.bx .hctl{flex-wrap:wrap}
+.bx .hsaved{flex-basis:100%;font-size:12px}
+.bx .hsec{display:grid;gap:12px;margin-top:22px}
+.bx .hsech{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
+.bx .hsech h4{font-family:var(--serif);font-weight:400;font-size:26px;margin:0;color:var(--ink)}
+.bx .hsech .lnk{margin-left:auto}
+.bx .hmore{text-align:center}
+.bx #lview{position:fixed;inset:0;z-index:2147483000;background:rgba(11,11,11,.72);overflow-y:auto;padding:24px max(12px,env(safe-area-inset-left,0px))}
+.bx .lv-in{position:relative;max-width:1180px;margin:0 auto;background:var(--surface);color:var(--ink)}
+.bx .lv-x{position:absolute;top:10px;right:10px;z-index:3;width:42px;height:42px;border:0;background:rgba(11,11,11,.6);color:#fff;font-size:26px;line-height:1;cursor:pointer}
+.bx .lv-main{position:relative;height:min(62vh,620px);background:#111 center/cover no-repeat}
+.bx .lv-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:1px solid rgba(255,255,255,.8);background:rgba(11,11,11,.35);color:#fff;font-size:28px;line-height:1;cursor:pointer}
+.bx .lv-nav.prev{left:16px}
+.bx .lv-nav.next{right:16px}
+.bx .lv-cnt{position:absolute;right:16px;bottom:14px;background:rgba(11,11,11,.6);color:#fff;font-size:12px;letter-spacing:1px;padding:4px 10px}
+.bx .lv-thumbs{display:flex;gap:4px;overflow-x:auto;background:#111;padding:4px}
+.bx .lv-th{flex:0 0 120px;height:78px;border:2px solid transparent;background:#222 center/cover no-repeat;cursor:pointer;opacity:.7}
+.bx .lv-th.on,.bx .lv-th:hover{opacity:1;border-color:#fff}
+.bx .lv-body{padding:28px clamp(16px,4vw,48px) 36px;display:grid;gap:28px}
+.bx .lv-head{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:20px}
+.bx .lv-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(30px,4vw,44px);margin:0;line-height:1.1}
+.bx .lv-addr{font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700;margin-top:8px;color:var(--ink2)}
+.bx .lv-price{font-size:22px;font-weight:800;margin-top:12px}
+.bx .lv-cta{display:flex;gap:10px;flex-wrap:wrap}
+.bx .lvbtn{display:inline-block;border:1px solid var(--ink);color:var(--ink);text-decoration:none;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;font-weight:800;padding:13px 20px;background:var(--surface)}
+.bx .lvbtn.dark{background:var(--dark);color:#fff;border-color:var(--dark)}
+.bx .lvbtn.light{border-color:#fff;color:#fff;background:transparent}
+.bx .lv-two{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:40px}
+.bx .lv-desc p{font-size:15px;line-height:1.75;margin:0 0 12px;color:var(--ink2)}
+.bx .lv-stats{display:grid;gap:18px;align-content:start;border-left:1px solid var(--line);padding-left:28px}
+.bx .lv-stats div{display:flex;gap:14px;align-items:center;color:var(--muted)}
+.bx .lv-stats span{display:grid;font-size:11px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--ink2)}
+.bx .lv-stats b{font-size:16px;color:var(--ink);letter-spacing:0}
+.bx .lvsec{display:grid;gap:12px}
+.bx .lvsec h3,.bx .lvh{font-family:var(--serif);font-weight:400;font-size:28px;margin:0}
+.bx .lvk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.6}
+.bx .lvk .dot{width:10px;height:10px;border-radius:50%;margin-top:7px;flex:none}
+.bx .lv-agent{background:var(--dark);color:#fff;padding:28px clamp(16px,3vw,32px);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;margin:0 calc(-1 * clamp(16px,4vw,48px))}
+.bx .lv-agent h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:6px 0}
+.bx .lv-agent p{margin:0;color:rgba(255,255,255,.8);font-size:14px}
+.bx .lv-agent .eyebrow{color:rgba(255,255,255,.7)}
+.bx .lv-agent-c{display:grid;gap:10px;justify-items:start}
+.bx .lv-agent-c .ph{font-size:20px;font-weight:700;letter-spacing:.5px;user-select:all}
+.bx .lvfs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 48px}
+.bx .lvf h4{font-family:var(--serif);font-weight:400;font-size:21px;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.bx .lvf div{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:7px 0;font-size:13.5px}
+.bx .lvf span{font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.bx .lvm{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;background:var(--sunk);padding:24px;gap:24px}
+.bx .lvmi{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px}
+.bx .lvmi label{display:grid;gap:4px;font-size:11.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.bx .lvpay{display:grid;justify-items:center;text-align:center;gap:4px;background:var(--surface);border:1px solid var(--line);padding:22px}
+.bx .lvpay b{font-family:var(--serif);font-weight:400;font-size:40px;color:var(--ink)}
+.bx .lvpay span{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.bx .lvpay em{font-style:normal;font-size:12.5px;color:var(--ink2)}
+@media (max-width:760px){.bx .lv-two,.bx .lvfs,.bx .lvm{grid-template-columns:minmax(0,1fr)}
+.bx .lv-stats{border-left:0;padding-left:0;grid-template-columns:repeat(2,minmax(0,1fr))}
+.bx .lv-main{height:46vh}
+.bx #lview{padding:0}
+.bx .lvf div{grid-template-columns:120px minmax(0,1fr)}}
 .bx .reshead.flash{animation:khl 1.2s ease}
 @keyframes khl{.bx 0%{background:var(--teal-soft)}
 .bx 100%{background:var(--sunk)}}
@@ -1594,7 +1653,7 @@ function parseListings(doc){const seen=new Set(),out=[];
     out.push({href,price:num(/\$([\d,]+)/),bd:num(/(\d+)\s*bd/),ba:num(/([\d.]+)\s*ba/),sf:num(/([\d,]+)\s*sqft/),ad,mls:(t.match(/MLS\D{0,3}\s*([A-Z0-9-]+)/)||[])[1]||'',st:t.split('\n')[0].trim(),img:im.currentSrc||im.src||''})}
   return out}
 // Same data source as the site's home search and MLS grid widgets: the site's own listings service
-const LQ=`query BxListings($filter: MlsListingsFilterInput, $options: MlsListingsOptionsInput, $pagination: MlsListingsPaginationInput, $sort: [MlsListingsSortInput!], $websiteId: UUID!){ mlsListings(filter:$filter, options:$options, pagination:$pagination, sort:$sort){ items { id lpListingId lpListingSlug latitude longitude lpDisplayAddress city postalCode lpShowAddress lpPropertyType bedroomsTotal lpTotalDecimalBath lpSqft lpLotSqft lpYearBuilt listPrice lpListingStatus listOfficeName lpPrimaryPhoto{ photoUrl } lpPhotos{ photoUrl } mlsProvider(websiteId:$websiteId){ mlsProviderName searchResultsDisclaimer } } } }`;
+const LQ=`query BxListings($filter: MlsListingsFilterInput, $options: MlsListingsOptionsInput, $pagination: MlsListingsPaginationInput, $sort: [MlsListingsSortInput!], $websiteId: UUID!){ mlsListings(filter:$filter, options:$options, pagination:$pagination, sort:$sort){ items { id lpListingId lpListingSlug latitude longitude lpDisplayAddress city postalCode lpShowAddress lpPropertyType bedroomsTotal lpTotalDecimalBath lpSqft lpLotSqft lpYearBuilt listPrice lpListingStatus listOfficeName propertySubType numberOfUnitsTotal publicRemarks associationFee garageSpaces stories architecturalStyle daysOnMarket lpVirtualTourUrl lpPrimaryPhoto{ photoUrl } lpPhotos{ photoUrl } mlsProvider(websiteId:$websiteId){ mlsProviderName searchResultsDisclaimer } } } }`;
 async function fetchBox(box,c){const[s0,w0,n0,e0]=box;
   const r=await fetch('/federation',{method:'POST',headers:{'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify({operationName:'BxListings',query:LQ,variables:{
     filter:{lpLocation:{boundingBox:{topLeftLat:n0,topLeftLon:w0,bottomRightLat:s0,bottomRightLon:e0}},feedIds:['rapattoni_bareis','cws_mlsl','bridge_bear'],lpSaleLease:'SALE',lpListingStatus:['ACTIVE','COMING_SOON']},
@@ -1608,7 +1667,7 @@ async function fetchBox(box,c){const[s0,w0,n0,e0]=box;
     const ph=[x.lpPrimaryPhoto&&x.lpPrimaryPhoto.photoUrl,...(x.lpPhotos||[]).map(q=>q.photoUrl)].filter(Boolean);
     return{href:'/home-search/listings/'+x.lpListingSlug,price:x.listPrice,bd:x.bedroomsTotal,ba:x.lpTotalDecimalBath,sf:x.lpSqft,lot:x.lpLotSqft,yr:x.lpYearBuilt,
       ty:x.lpPropertyType||'',ad:[tc(x.lpDisplayAddress||''),x.city].filter(Boolean).join(', ')+(x.postalCode?' CA '+x.postalCode:''),street:x.lpDisplayAddress||'',city:x.city||'',mls:x.lpListingId||'',
-      st:x.lpListingStatus==='COMING_SOON'?'Coming soon':'For sale',img:ph[0]||'',imgs:ph.slice(0,4),office:x.listOfficeName||'',lat:x.latitude,lng:x.longitude,
+      st:x.lpListingStatus==='COMING_SOON'?'Coming soon':'For sale',img:ph[0]||'',imgs:[...new Set(ph)].slice(0,40),office:x.listOfficeName||'',sub:x.propertySubType||'',units:x.numberOfUnitsTotal||0,desc:x.publicRemarks||'',hoa:x.associationFee||null,gar:x.garageSpaces||null,sto:x.stories||null,style:x.architecturalStyle||'',dom:x.daysOnMarket,vt:x.lpVirtualTourUrl||'',zip:x.postalCode||'',lat:x.latitude,lng:x.longitude,
       km:x.latitude&&c?km(+c.lat,+c.lng,x.latitude,x.longitude):99}})}
 // A whole city: the area its schools cover, then only homes whose listing says that city
 function cityBox(p){const xs=S.filter(x=>x.c===p.n&&x.sec==='Public');if(xs.length<2)return placeBox(p);
@@ -1629,6 +1688,20 @@ function listingsViaFrame(p,k){
     if(items.length&&items.length===last)same++;else same=0;last=items.length;
     if((items.length&&same>=2)||++n>22){LST.items=items;LST.state='done';f.remove();renderHomes()}else setTimeout(poll,700)};
   f.addEventListener('load',()=>setTimeout(poll,1500))}
+// Homes only: no apartment buildings, duplex-to-fourplex, commercial or land listings
+const isHome=x=>{const t=String(x.ty||'').toUpperCase(),sub=String(x.sub||'').toLowerCase();if(/MULTI|COMMERCIAL|LAND/.test(t))return false;
+  if(/multi|units|duplex|triplex|quad|apt|apartment|commercial|mixed|business|office|land|lot|income/.test(sub))return false;return !((x.units||0)>1)};
+const HF=()=>st.hf||(st.hf={pmin:0,pmax:0,bd:0,ba:0,sf:0,ty:''});
+const isCondo=x=>/CONDO/.test(x.ty||'')||/condo|town/i.test(x.sub||'');
+const hfOk=x=>{const f=HF();return(!f.pmin||(x.price||0)>=f.pmin)&&(!f.pmax||(x.price||0)<=f.pmax)&&(!f.bd||(x.bd||0)>=f.bd)&&(!f.ba||(x.ba||0)>=f.ba)&&(!f.sf||(x.sf||0)>=f.sf)&&(!f.ty||(f.ty==='sf'?!isCondo(x):isCondo(x)))};
+const PMIN=[0,500000,750000,1000000,1250000,1500000,2000000,2500000,3000000,4000000],PMAX=[0,750000,1000000,1250000,1500000,2000000,2500000,3000000,4000000,5000000,7500000];
+const money2=v=>v>=1e6?'$'+(+(v/1e6).toFixed(2)).toString()+'M':'$'+Math.round(v/1000)+'k';
+function homeCtl(count){const f=HF();const sel=(k,opts,lab)=>`<label>${lab} <select data-hf2="${k}">${opts.map(([v,t])=>`<option value="${v}"${String(f[k])===String(v)?' selected':''}>${t}</option>`).join('')}</select></label>`;
+  return`<div class="hctl">${sel('pmin',PMIN.map(v=>[v,v?money2(v):'No min']),'Price')}${sel('pmax',PMAX.map(v=>[v,v?money2(v):'No max']),'to')}
+   ${sel('bd',[0,1,2,3,4,5].map(n=>[n,n?n+'+':'Any']),'Beds')}${sel('ba',[0,1,1.5,2,2.5,3,4].map(n=>[n,n?n+'+':'Any']),'Baths')}
+   ${sel('sf',[0,1000,1500,2000,2500,3000,4000].map(n=>[n,n?n.toLocaleString()+'+ sq ft':'Any size']),'Size')}${sel('ty',[['','Houses and condos'],['sf','Single-family houses'],['condo','Condos and townhomes']],'Type')}
+   ${count!=null?`<span class="cnt">${count} home${count===1?'':'s'}</span>`:''}<span class="sub hsaved">These choices are saved in the family link.</span></div>`}
+function bindHomeCtl(el){el.querySelectorAll('[data-hf2]').forEach(b=>b.addEventListener('change',()=>{const k=b.dataset.hf2;HF()[k]=k==='ty'?b.value:+b.value;LST.np={};renderHomes();syncHash()}))}
 const PRB=[['','Any price'],['0-1000000','Under $1M'],['1000000-1500000','$1M to $1.5M'],['1500000-2000000','$1.5M to $2M'],['2000000-3000000','$2M to $3M'],['3000000-1e12','$3M and up']];
 function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){el.innerHTML='';return}
   const p=st.places.find(x=>x.kind==='address');
@@ -1638,31 +1711,78 @@ function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){e
   const head=(t,sub,ctl)=>`<div class="hh"><div><div class="eyebrow">Active listings · from our home search</div><h3>${t}</h3>${sub?`<p class="sub" style="margin-top:6px">${sub}</p>`:''}</div><a class="lnkall" href="${esc(all)}" target="_blank" rel="noopener">See every home in this area</a></div>${ctl||''}`;
   const spec=x=>[x.bd&&x.bd+' bd',x.ba&&x.ba+' ba',x.sf&&x.sf.toLocaleString()+' sqft'].filter(Boolean).join(' · ');
   const bg=x=>x.img?` style="background-image:url('${esc(x.img)}')"`:'';
-  const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener"><div class="ph"${bg(x)}>${x.st!=='For sale'?`<span class="stt">${x.st}</span>`:''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span><span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
+  const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener" data-lh="${esc(x.href)}"><div class="ph"${bg(x)}>${x.st!=='For sale'?`<span class="stt">${x.st}</span>`:''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span><span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
   const discs=Object.values(LST.discs||{});
   const foot=`<p class="ml">Listings come from the MLS through our home search and can change at any time. ${p?'The schools above are for the address you entered; check':'A home’s assigned schools depend on its exact address; check'} each home’s schools with the district.</p>${discs.length?`<details class="disc"><summary>MLS information and disclaimers</summary>${discs.map(d=>`<p>${esc(d)}</p>`).join('')}</details>`:''}`;
   const sk=n=>`<div class="hgrid">${'<div class="hcard sk"><div class="ph"></div><div class="bd"><span></span><span style="width:60%"></span></div></div>'.repeat(n)}</div>`;
   if(LST.state==='loading'){el.innerHTML=`<section class="homes">${head('Homes for sale '+where)}${sk(4)}</section>`;return}
   if(LST.state==='offsite'||LST.state==='error'){el.innerHTML=`<section class="homes">${head('Homes for sale '+where,LST.state==='offsite'?'Active listings appear here on theledererteam.com.':'Listings didn’t load. Use the button to open our home search.')}</section>`;return}
-  if(LST.mode==='area'){const f=LST.f;const multi=st.places.length>1;
-    const [lo,hi]=f.pr?f.pr.split('-').map(Number):[0,Infinity];
-    const xs=LST.items.filter(x=>(!f.c||x.place===f.c)&&(!f.pr||(x.price>=lo&&x.price<hi))&&(!f.bd||(x.bd||0)>=f.bd));
-    const ctl=`<div class="hctl">${multi?`<div class="seg">${['',...st.places.map(q=>q.n||q.label)].map(c=>`<button type="button" class="${f.c===c?'on':''}" data-hf="c" data-v="${esc(c)}">${c?esc(c):'All places'}</button>`).join('')}</div>`:''}
-      <label>Price <select data-hf="pr">${PRB.map(([v,t])=>`<option value="${v}"${f.pr===v?' selected':''}>${t}</option>`).join('')}</select></label>
-      <label>Bedrooms <select data-hf="bd">${[0,1,2,3,4,5].map(n=>`<option value="${n}"${f.bd===n?' selected':''}>${n?n+'+':'Any'}</option>`).join('')}</select></label>
-      <span class="cnt">${xs.length} home${xs.length===1?'':'s'}</span></div>`;
-    el.innerHTML=`<section class="homes">${head('Homes for sale '+where,'Newest listings first. Add an address above to see whether a home is listed and find similar homes.',ctl)}
-      ${xs.length?`<div class="hgrid">${xs.slice(0,LST.n).map(card).join('')}</div>`:'<p class="sub">No active listings match. Try a wider price range.</p>'}
-      ${xs.length>LST.n?`<div style="text-align:center"><button type="button" class="lnkall" data-hmore="1">Show more homes</button></div>`:''}${foot}</section>`;
-    el.querySelectorAll('[data-hf]').forEach(b=>b.addEventListener(b.tagName==='SELECT'?'change':'click',()=>{const k=b.dataset.hf;f[k]=k==='bd'?+b.value:(b.tagName==='SELECT'?b.value:b.dataset.v);LST.n=12;renderHomes()}));
-    const m=el.querySelector('[data-hmore]');if(m)m.addEventListener('click',()=>{LST.n+=12;renderHomes()});return}
+  if(LST.mode==='area'){LST.np=LST.np||{};
+    const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
+    const secs=st.places.map(q=>{const nm=q.n||q.label;const xs=ok.filter(x=>x.place===nm);const n=LST.np[nm]||4;
+      return`<div class="hsec"><div class="hsech"><h4>${esc(nm)}</h4><span class="sub">${xs.length} home${xs.length===1?'':'s'} match</span><a class="lnk" href="${esc(homesUrl(isCity(q)?cityBox(q):placeBox(q)))}" target="_blank" rel="noopener">See all in ${esc(nm)} →</a></div>
+       ${xs.length?`<div class="hgrid">${xs.slice(0,n).map(card).join('')}</div>${xs.length>n?`<div class="hmore"><button type="button" class="lnkall" data-hmore2="${esc(nm)}">Show 4 more in ${esc(nm)}</button></div>`:''}`:'<p class="sub">No active listings here match these choices.</p>'}</div>`}).join('');
+    el.innerHTML=`<section class="homes">${head('Homes for sale '+where,'Newest listings first, grouped by location. Single-family homes, condos and townhomes only.',homeCtl(ok.length))}${secs}${foot}</section>`;
+    bindHomeCtl(el);el.querySelectorAll('[data-hmore2]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.hmore2;LST.np[k]=(LST.np[k]||4)+4;renderHomes()}));bindLv(el);return}
   const key=addrKey(p.label);const me=LST.items.find(x=>key&&addrKey(x.ad)===key);
-  let others=LST.items.filter(x=>x!==me&&!/LAND|LOT/i.test(x.ty||''));
+  let others=LST.items.filter(x=>x!==me&&isHome(x)&&hfOk(x));
   if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd)d+=x.bd?Math.abs(x.bd-me.bd)*0.5:0.6;if(me.sf)d+=x.sf?Math.abs(Math.log(x.sf/me.sf))*2:0.6;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
   const list=others.slice(0,8);
-  const feat=me?`<a class="feat" href="${esc(me.href)}" target="_blank" rel="noopener"><div class="ph"${bg(me)}></div><div class="bd"><span class="badge">This home is for sale</span><span class="pr">${me.price?'$'+me.price.toLocaleString():''}</span><span class="ad">${esc(me.ad)}</span><span class="sp">${spec(me)}</span>${me.imgs&&me.imgs.length>1?`<span class="thumbs">${me.imgs.slice(1,4).map(u=>`<i style="background-image:url('${esc(u)}')"></i>`).join('')}</span>`:''}<span class="ml">${me.office?'Listed by '+esc(me.office)+(me.mls?' · ':''):''}${me.mls?'MLS® '+esc(me.mls):''}</span><span class="go">View this listing →</span></div></a>`:'';
+  const feat=me?`<a class="feat" href="${esc(me.href)}" target="_blank" rel="noopener" data-lh="${esc(me.href)}"><div class="ph"${bg(me)}></div><div class="bd"><span class="badge">This home is for sale</span><span class="pr">${me.price?'$'+me.price.toLocaleString():''}</span><span class="ad">${esc(me.ad)}</span><span class="sp">${spec(me)}</span>${me.imgs&&me.imgs.length>1?`<span class="thumbs">${me.imgs.slice(1,4).map(u=>`<i style="background-image:url('${esc(u)}')"></i>`).join('')}</span>`:''}<span class="ml">${me.office?'Listed by '+esc(me.office)+(me.mls?' · ':''):''}${me.mls?'MLS® '+esc(me.mls):''}</span><span class="go">View this listing →</span></div></a>`:'';
   el.innerHTML=`<section class="homes">${head(me?esc(p.label.replace(/,.*$/,''))+' is for sale':'Homes for sale near '+esc(p.label),me?'Plus similar homes nearby, closest in price, bedrooms and size.':LST.items.length?'This address isn’t an active listing right now. Here are homes for sale nearby.':'No active listings found near this address right now.')}
-    ${feat}${me&&list.length?`<div class="eyebrow">Similar homes nearby</div>`:''}${list.length?`<div class="hgrid">${list.map(card).join('')}</div>`:''}${foot}</section>`}
+    ${homeCtl(null)}${feat}${me&&list.length?`<div class="eyebrow">Similar homes nearby</div>`:''}${list.length?`<div class="hgrid">${list.map(card).join('')}</div>`:'<p class="sub">No nearby listings match these choices.</p>'}${foot}</section>`;bindHomeCtl(el);bindLv(el)}
+
+/* ---------- listing view: a full page for one home, styled like the team's own property pages ---------- */
+const IC={bed:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 18V8m0 6h18v4M3 11h7v3m11 0v-2a2 2 0 0 0-2-2h-9"/></svg>',
+ bath:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 12h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5zM6 12V6a2 2 0 0 1 4 0M7 19l-1 2m11-2 1 2"/></svg>',
+ sf:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="4" y="4" width="16" height="16"/><path d="M9 15l6-6m-5 0h5v5"/></svg>',
+ lot:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5M8 8l3 3m5-3-3 3m-5 5 3-3m5 3-3-3"/></svg>'};
+let LV=null;
+function bindLv(el){el.querySelectorAll('[data-lh]').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey)return;const x=LST.items.find(i=>i.href===a.dataset.lh);if(!x)return;e.preventDefault();openListing(x)}))}
+function lvSchools(x){if(!x.lat||!x.lng)return'';const p={label:x.ad,n:x.ad,lat:x.lat,lng:x.lng,kind:'address',city:x.city};
+  const rows=st.kids.map((k,i)=>{const L=k.grade>=9?9:k.grade>=6?6:0;
+    const zs=S.filter(s=>s.sec==='Public'&&k.grade>=s.lo&&k.grade<=s.hi&&(()=>{try{const z=zoneFor(s,p);return z&&z.k==='zone'}catch(e){return false}})());
+    const ds=[...new Set(zs.map(s=>s.dist))];const pol=ds.filter(d=>DPOL[d]).map(d=>DPOL[d].head);
+    const list=zs.length?zs.map(s=>{let f=null;try{const r=scoreFor(s,k,p);f=r.score}catch(e){}return`<button type="button" class="lnk" data-detail="${s.id}">${esc(s.n)}</button>${f!=null?` <b class="fitb" style="--kc:${css(KC[i])}">${f.toFixed(1)} fit</b>`:''}`}).join(' · '):'<span class="sub">No attendance area on file here. Ask the district which school serves this address.</span>';
+    return`<div class="lvk"><span class="dot" style="background:${css(KC[i])}"></span><div><b>${esc(kname(k,i))}</b> (${GRADES[k.grade]}): ${list}${pol.length?`<div class="sub">${esc(pol.join(' '))}</div>`:''}</div></div>`}).join('');
+  return`<section class="lvsec"><h3>Schools for this home</h3><p class="sub">Public schools whose attendance area covers this address, for each child's grade next fall. Boundaries can change and a seat isn't guaranteed: confirm with the district before you buy.</p>${rows}</section>`}
+function lvGal(){const x=LV.x,n=x.imgs.length||1,i=((LV.i%n)+n)%n;LV.i=i;
+  const m=document.querySelector('#lview .lv-main');if(!m)return;m.style.backgroundImage=x.imgs[i]?`url('${x.imgs[i]}')`:'none';m.querySelector('.lv-cnt').textContent=`${i+1} / ${n}`;
+  document.querySelectorAll('#lview .lv-th').forEach((t,j)=>t.classList.toggle('on',j===i));const on=document.querySelector('#lview .lv-th.on');if(on)on.scrollIntoView({block:'nearest',inline:'nearest'})}
+function lvMort(){const x=LV.x;const g=id=>+(document.getElementById(id)||{}).value||0;const price=x.price||0,dp=g('lvDp')/100,rate=g('lvRate')/100/12,n=360;
+  const loan=price*(1-dp),pi=rate?loan*rate/(1-Math.pow(1+rate,-n)):loan/n,tax=price*0.0118/12,hoa=x.hoa||0,tot=pi+tax+hoa;
+  const o=document.getElementById('lvPay');if(o)o.innerHTML=`<b>$${Math.round(tot).toLocaleString()}</b><span>a month</span><em>Principal and interest $${Math.round(pi).toLocaleString()} · property tax about $${Math.round(tax).toLocaleString()}${hoa?` · HOA $${Math.round(hoa).toLocaleString()}`:''}</em>`}
+function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
+  const t=v=>v==null||v===''?null:v;const sqm=x.price&&x.sf?Math.round(x.price/x.sf):null;
+  const rowsI=[['Bedrooms',t(x.bd)],['Bathrooms',t(x.ba)],['Living area',x.sf?x.sf.toLocaleString()+' sq ft':null]];
+  const rowsE=[['Stories',t(x.sto)],['Garage spaces',t(x.gar)],['Lot size',x.lot?x.lot.toLocaleString()+' sq ft':null],['Style',t(x.style)]];
+  const rowsA=[['Status',x.st],['Days on market',t(x.dom)],['Year built',t(x.yr)],['Property type',t(x.sub)||t(x.ty)],['MLS® number',t(x.mls)]];
+  const rowsF=[['List price',x.price?'$'+x.price.toLocaleString():null],['Price per sq ft',sqm?'$'+sqm.toLocaleString():null],['HOA dues',x.hoa?'$'+Math.round(x.hoa).toLocaleString()+' a month':'None listed']];
+  const grid=(h,r)=>{const z=r.filter(q=>q[1]!=null&&q[1]!=='');return z.length?`<div class="lvf"><h4>${h}</h4>${z.map(([a,b])=>`<div><span>${a}</span><b>${esc(String(b))}</b></div>`).join('')}</div>`:''};
+  const tc=v=>String(v||'').toLowerCase().replace(/\b[a-z]/g,c=>c.toUpperCase());
+  const street=tc(x.street)||x.ad;const desc=String(x.desc||'').trim();
+  el.innerHTML=`<div class="lv-in"><button type="button" class="lv-x" data-lvx="1" aria-label="Close">×</button>
+   <div class="lv-gal"><div class="lv-main"><button type="button" class="lv-nav prev" data-lvn="-1" aria-label="Previous photo">‹</button><button type="button" class="lv-nav next" data-lvn="1" aria-label="Next photo">›</button><span class="lv-cnt"></span></div>
+    <div class="lv-thumbs">${x.imgs.map((u,j)=>`<button type="button" class="lv-th" data-lvt="${j}" style="background-image:url('${esc(u)}')" aria-label="Photo ${j+1}"></button>`).join('')}</div></div>
+   <div class="lv-body">
+    <div class="lv-head"><div><h2>${esc(street)}</h2><div class="lv-addr">${esc([x.city,'CA',x.zip].filter(Boolean).join(', ').replace(', CA,',', CA'))}</div><div class="lv-price">${x.price?'$'+x.price.toLocaleString():''}</div>${x.st!=='For sale'?`<span class="tag warn">${esc(x.st)}</span>`:''}</div>
+     <div class="lv-cta"><a class="lvbtn dark" href="${esc(x.href)}" target="_blank" rel="noopener">Request a showing</a>${x.vt?`<a class="lvbtn" href="${esc(x.vt)}" target="_blank" rel="noopener">Virtual tour</a>`:''}</div></div>
+    <div class="lv-two"><div class="lv-desc">${desc?desc.split(/\n+/).map(q=>`<p>${esc(q)}</p>`).join(''):'<p class="sub">The listing description isn’t available here. Open the full listing for details.</p>'}</div>
+     <div class="lv-stats">${[[IC.bed,x.bd,'Beds'],[IC.bath,x.ba,'Baths'],[IC.sf,x.sf&&x.sf.toLocaleString(),'Sq ft living area'],[IC.lot,x.lot&&x.lot.toLocaleString(),'Sq ft lot']].filter(q=>q[1]).map(([i,v,l])=>`<div>${i}<span><b>${v}</b>${l}</span></div>`).join('')}</div></div>
+    ${lvSchools(x)}
+    <div class="lv-agent"><div><div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3><p>Ask us about this home, its schools and the neighborhood. We'll set up a showing.</p></div>
+     <div class="lv-agent-c"><span class="ph">(510) 774-4231</span><a class="lvbtn light" href="${esc(x.href)}" target="_blank" rel="noopener">Contact us about this home</a></div></div>
+    <section class="lvsec"><h3 class="lvh">Features &amp; amenities</h3><div class="lvfs">${grid('Interior',rowsI)}${grid('Exterior',rowsE)}${grid('Area &amp; listing',rowsA)}${grid('Financial',rowsF)}</div></section>
+    ${x.price?`<section class="lvsec lvm"><div><h3 class="lvh">Payment estimate</h3><p class="sub">A rough monthly cost for a 30-year fixed loan. Taxes use about 1.18% of the price a year. Ask your lender for real numbers.</p>
+     <div class="lvmi"><label>Down payment <select id="lvDp">${[10,15,20,25,30,40,50].map(v=>`<option value="${v}"${v===20?' selected':''}>${v}%</option>`).join('')}</select></label><label>Interest rate <select id="lvRate">${[5,5.5,6,6.25,6.5,6.75,7,7.5].map(v=>`<option value="${v}"${v===6.5?' selected':''}>${v}%</option>`).join('')}</select></label></div></div><div class="lvpay" id="lvPay"></div></section>`:''}
+    <p class="ml">${x.office?'Listed by '+esc(x.office)+'. ':''}Listing information comes from the MLS through our home search and can change at any time. <a class="lnk" href="${esc(x.href)}" target="_blank" rel="noopener">Open the full listing</a></p>
+   </div></div>`;
+  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();lvMort();
+  el.querySelectorAll('select').forEach(q=>q.addEventListener('change',lvMort));
+  el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
+  el.querySelector('.lv-x').focus()}
+function closeListing(){const el=document.getElementById('lview');if(el){el.hidden=true;el.innerHTML=''}document.documentElement.style.overflow='';LV=null}
+document.addEventListener('keydown',e=>{if(!LV)return;if(e.key==='Escape'&&$('drawer').hidden)closeListing();else if(e.key==='ArrowRight'){LV.i++;lvGal()}else if(e.key==='ArrowLeft'){LV.i--;lvGal()}});
 const homesLink=(url,txt)=>`<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener" title="Opens our home search for this map area. Check each home's assigned school with the district.">${txt}</a>`;
 // Where a school leads as a child grows: public feeder chain, private continuation, or a new application
 function schoolPath(s){
@@ -1785,7 +1905,7 @@ function plans(){
   const out=[];
   for(const home of st.places){
     const hp=pt(home);
-    const lists=K.map(k=>order(rankKid(k,home).filter(r=>r.s.sec!=='Public'||pubOk(r.s,home))).slice(0,8));
+    const lists=K.map(k=>{if(k.support){const sl=specList(k,'ld').filter(r=>mi(pt(home),r.s)<=Math.max(st.radius,SPEC_MI)).map(r=>({...r,spec:true}));if(sl.length)return sl.slice(0,8)}return order(rankKid(k,home).filter(r=>r.s.sec!=='Public'||pubOk(r.s,home))).slice(0,8)});
     if(lists.some(l=>!l.length))continue;
     const tops=lists.map(l=>l[0]);
     const rec=(i,acc)=>{if(i===K.length){const pl=evalPlan(home,hp,acc);pl.tops=tops;out.push(pl);return}for(const r of lists[i])rec(i+1,[...acc,r])};
@@ -1831,6 +1951,7 @@ function timeline(p){
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
 function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['zone','dist','radius'].indexOf(st.pub),a:st.active,
+  h:(()=>{const f=HF();return[f.pmin,f.pmax,f.bd,f.ba,f.sf,f.ty]})(),
   k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||'',k.k12?1:0])}}
 function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
@@ -1838,6 +1959,7 @@ function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset,k12])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
     sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12}));
+  if(Array.isArray(o.h)){const[a,b,c,d,e,t]=o.h;n.hf={pmin:+a||0,pmax:+b||0,bd:+c||0,ba:+d||0,sf:+e||0,ty:['sf','condo'].includes(t)?t:''}}
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
 function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
@@ -2047,7 +2169,7 @@ function renderPlans(){
   $('planwrap').innerHTML=`<div class="reshead"><h3 class="h2">Family plans</h3><span class="sub">The best combination for each location${P.length<st.places.length?`. No plan fits in ${esc(st.places.filter(x=>!P.some(q=>q.home===x)).map(x=>x.label).join(', '))} with these settings`:''}</span></div>`+
    P.map((p,j)=>`<article class="plan${j===0?' best':''}">
     <div class="ph"><div class="live"><i style="display:inline-block;width:10px;height:10px;background:${pc(p.home)};margin-right:8px;vertical-align:0"></i>${j===0&&P.length>1?'Best overall · ':''}If you live ${p.home.kind==='address'?'at':'in'} <b>${esc(p.home.label)}</b>${(()=>{const ps=[...new Map(p.picks.map(r=>[r.s.id,r.s])).values()].map(x=>[x,partial(x,p.home)]).filter(x=>x[1]!=null);return ps.length?`, <b>only in the part zoned for ${esc(ps.map(x=>x[0].n).join(' and '))}</b>`:''})()}</div><div class="big fsb">${p.score.toFixed(1)}<small>family score</small></div></div>
-    <div class="assign">${p.picks.map((r,i)=>`<div class="as"><span class="dot" style="background:${css(KC[i])}"></span><span class="who"><b>${esc(kname(st.kids[i],i))}</b> (${GRADES[st.kids[i].grade]}) at <button type="button" class="lnk sname" data-detail="${r.s.id}">${esc(r.s.n)}</button> <b class="fitb" style="--kc:${css(KC[i])}">${r.score.toFixed(1)} fit</b>${(()=>{const t=tuition(r.s,st.kids[i].grade);return t==null?'<span class="cost unk" title="Tuition not yet collected; ask the school">Tuition n/a</span>':t===0?'<span class="cost free">Free · public</span>':`<span class="cost" title="Approximate tuition for ${GRADES[st.kids[i].grade]} grade">$${Math.round(t/1000)}k<small>/yr</small></span>`})()}${(()=>{const v=partial(r.s,p.home);return v==null?'':`<br><span class="sub" style="color:var(--amber)">Zoned for only part of ${esc(p.home.city)} (about ${Math.round(v*100)}% of the city). Add an address to narrow results.</span>`})()}</span><span class="fit">${isAddr(p.home)?`<span title="Estimated morning drive from ${esc(p.home.label)} to the school">${drive(pt(p.home),r.s)} min drive</span>`:''}</span></div>${(()=>{const al=(p.lists&&p.lists[i]||[]).filter(x=>x.s.id!==r.s.id&&(x.s.org||x.s.id)!==(r.s.org||r.s.id)).slice(0,2);return al.length?`<div class="alts">Also worth a visit for ${esc(kname(st.kids[i],i))}: ${al.map(x=>`<button type="button" class="lnk" data-detail="${x.s.id}">${esc(x.s.n)}</button> <span class="mini" style="--kc:${css(KC[i])}">${x.score.toFixed(1)}</span>${Math.abs(x.score-r.score)<0.1?' <span class="nt">nearly tied</span>':''}`).join(' \u00b7 ')}</div>`:''})()}`).join('')}</div>
+    <div class="assign">${p.picks.map((r,i)=>`<div class="as"><span class="dot" style="background:${css(KC[i])}"></span><span class="who"><b>${esc(kname(st.kids[i],i))}</b> (${GRADES[st.kids[i].grade]}) at <button type="button" class="lnk sname" data-detail="${r.s.id}">${esc(r.s.n)}</button> <b class="fitb" style="--kc:${css(KC[i])}">${r.score.toFixed(1)} fit</b>${r.spec?'<span class="cost free" title="Ranked among specialized schools">Learning support</span>':''}${(()=>{const t=tuition(r.s,st.kids[i].grade);return t==null?'<span class="cost unk" title="Tuition not yet collected; ask the school">Tuition n/a</span>':t===0?'<span class="cost free">Free · public</span>':`<span class="cost" title="Approximate tuition for ${GRADES[st.kids[i].grade]} grade">$${Math.round(t/1000)}k<small>/yr</small></span>`})()}${(()=>{const v=partial(r.s,p.home);return v==null?'':`<br><span class="sub" style="color:var(--amber)">Zoned for only part of ${esc(p.home.city)} (about ${Math.round(v*100)}% of the city). Add an address to narrow results.</span>`})()}</span><span class="fit">${isAddr(p.home)?`<span title="Estimated morning drive from ${esc(p.home.label)} to the school">${drive(pt(p.home),r.s)} min drive</span>`:''}</span></div>${(()=>{const al=(p.lists&&p.lists[i]||[]).filter(x=>x.s.id!==r.s.id&&(x.s.org||x.s.id)!==(r.s.org||r.s.id)).slice(0,2);return al.length?`<div class="alts">Also worth a visit for ${esc(kname(st.kids[i],i))}: ${al.map(x=>`<button type="button" class="lnk" data-detail="${x.s.id}">${esc(x.s.n)}</button> <span class="mini" style="--kc:${css(KC[i])}">${x.score.toFixed(1)}</span>${Math.abs(x.score-r.score)<0.1?' <span class="nt">nearly tied</span>':''}`).join(' \u00b7 ')}</div>`:''})()}`).join('')}</div>
     ${!p.together?`<p class="sub" style="margin:0">${new Set(p.picks.map(r=>r.s.org||r.s.id)).size} separate drop-offs: ${p.picks.map((r,i)=>isAddr(p.home)?`about ${drive(pt(p.home),r.s)} min to ${esc(r.s.n)} for ${esc(kname(st.kids[i],i))}`:`${esc(r.s.n)} for ${esc(kname(st.kids[i],i))}`).join('; ')}.</p>`:''}
     <div class="tags">
       ${isAddr(p.home)?`<span class="tag ${p.route<=25?'good':p.route>40?'warn':''}">${p.together?'Morning drive':'Total morning drive'} about ${p.route} min</span>`:`<span class="tag" title="Drive times need a starting point. Add a street address above.">Add an address for drive times</span>`}
@@ -2073,7 +2195,7 @@ function renderList(){
   {const t3=[...scored].sort((a,b)=>b.score-a.score).slice(0,3);PICK={};const L3=['Top pick','Runner-up','Also strong'];t3.forEach((r,j)=>{PICK[r.s.id]={n:j+1,t:L3[j],tie:j>0&&t3[0].score-r.score<0.1}})}
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
-    $('supnote').innerHTML=`<div class="supnote"><span class="dot"></span><div><b>Learning support is on for ${esc(nm)}.</b> ${sp.length?`${sp.length} specialized or one-to-one school${sp.length>1?'s':''} within ${Math.max(st.radius,SPEC_MI)} miles serve ${GRADES[k.grade]} grade${np.length?`, plus ${np.length} nonpublic school${np.length>1?'s':''} reached through an IEP`:''}.`:`No specialized private schools serve ${GRADES[k.grade]} grade nearby${np.length?`, but ${np.length} nonpublic school${np.length>1?'s are':' is'} reached through an IEP`:''}.`} Family plans below still compare mainstream schools.</div><a href="#special" class="lbtn sm" data-jump="special">See ${esc(nm)}'s options</a></div>`;
+    $('supnote').innerHTML=`<div class="supnote"><span class="dot"></span><div><b>Learning support is on for ${esc(nm)}.</b> ${sp.length?`${sp.length} specialized or one-to-one school${sp.length>1?'s':''} within ${Math.max(st.radius,SPEC_MI)} miles serve ${GRADES[k.grade]} grade${np.length?`, plus ${np.length} nonpublic school${np.length>1?'s':''} reached through an IEP`:''}.`:`No specialized private schools serve ${GRADES[k.grade]} grade nearby${np.length?`, but ${np.length} nonpublic school${np.length>1?'s are':' is'} reached through an IEP`:''}.`} Specialized schools are ranked separately from other schools, on distance and grade span, because they don't publish comparable results. Family plans below use ${esc(nm)}'s specialized options.</div><button type="button" class="lbtn sm" data-jump="special">See ${esc(nm)}'s options</button></div>`;
     $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, plus small or one-to-one private schools with built-in learning support, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
      ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized private schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.${k.grade<2?' Most East Bay schools built for learning differences start in 2nd grade or later, so younger children are usually served through district special education and early intervention.':''} Try a larger radius, or ask us for help.</div>`}
      <div class="special"><b>Also available through your district</b>
@@ -2161,7 +2283,7 @@ root.addEventListener('change',e=>{const k=st.kids[st.active];
   if(e.target.id==='kpreset'&&e.target.value){k.preset=e.target.value;Object.assign(k.w,PRESETS[k.preset]);soft();return}
   if(e.target.id==='kgrade'){k.grade=+e.target.value;st.showN[st.active]=10;soft()}
   if(e.target.id==='kk12'){k.k12=e.target.checked;soft();return}
-  if(e.target.id==='ksupport'){k.support=e.target.checked;renderList();renderMap();syncHash()}
+  if(e.target.id==='ksupport'){k.support=e.target.checked;renderPlans();renderList();renderMap();syncHash()}
   if(e.target.id==='radius'){st.radius=+e.target.value;soft()}
   if(e.target.id==='pub'){st.pub=e.target.value;st.mapPlan=null;render();syncHash()}
   if(e.target.id==='budget'){st.budget=+e.target.value;renderPlans();renderMap();syncHash()}});
