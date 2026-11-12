@@ -1213,6 +1213,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-sum{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:16px}
 .bx .mq-sum>div{background:var(--surface);border:1px solid var(--line);padding:18px 20px;display:grid;gap:10px;align-content:start}
 .bx .mq-tot span{font-size:14px;color:var(--ink2)}
+.bx .mq-src{margin:12px 0 0;font-size:12.5px;color:var(--muted)}
+.bx .mq-src a{color:var(--teal);font-weight:700;text-decoration:none;white-space:nowrap}
+.bx .mq-src a:hover{text-decoration:underline}
 .bx .mq-adv{margin-top:16px;border:1px solid var(--line);background:var(--surface)}
 .bx .mq-adv summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:16px 20px}
 .bx .mq-adv summary::-webkit-details-marker{display:none}
@@ -2046,6 +2049,7 @@ const TAXR=0.0118;const TGS=[3,3.5,4,4.5,5,5.5,6];const tgr=()=>(st.tg||4)/100;
 const mortF=rate=>{const r=rate/100/12;return r/(1-Math.pow(1+r,-360))};
 function houseFor(pay,dp,rate){const f=mortF(rate),H=pay/((1-dp)*f+TAXR/12);return{H,loan:H*(1-dp),down:H*dp,pi:H*(1-dp)*f,tax:H*TAXR/12}}
 const fM=v=>v>=995000?'$'+(Math.round(v/1e5)/10).toFixed(v>=9.95e6?0:1).replace(/\.0$/,'')+'M':'$'+Math.round(v/1000)+'k';
+const fM2=v=>v>=995000?'$'+(v/1e6).toFixed(2).replace(/\.?0+$/,'')+'M':'$'+Math.round(v/1000)+'k';
 const fD=v=>'$'+Math.round(v).toLocaleString();
 function privPicks(){return st.kids.map((k,i)=>{if(k.sector==='Public'||k.sector==='Charter')return null;let r=null;
   try{if(k.support)r=specList(k,'ld').find(x=>x.s.sec==='Private'&&tuition(x.s,k.grade))||null;
@@ -2082,13 +2086,14 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
   const years=`<div class="mq-block mq-yrs">${legend}<div class="mq-chart">${svg}<div class="mq-tip" hidden></div></div>
     <p class="mq-note">Each bar is one school year. Tuition rises <select class="mq-tg" data-tg="1" aria-label="Yearly tuition increase">${TGS.map(v=>`<option value="${v}"${(st.tg||4)===v?' selected':''}>${v}%</option>`).join('')}</select> a year; many private schools raise tuition 4% to 6%. Hover over or tap a year for details and the running total.</p></div>`;
   // D: prices in your cities (median of homes for sale that match the filters), with the same money added
-  let cities='';
-  if(LST.mode==='area'&&LST.state==='done'){const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
-    const rows=st.places.map(q=>{const nm=q.n||q.label;const ps=ok.filter(x=>x.place===nm&&x.price).map(x=>x.price).sort((a,b)=>a-b);if(ps.length<2)return null;const md=ps[Math.floor(ps.length/2)];return{nm,md,n:ps.length}}).filter(Boolean);
+  // D: median house sale price per city (our price map, team-compiled MLS data), with the same money added
+  let cities='';const MED=G.med&&G.med.c||{};
+  {const seen=new Set();const rows=st.places.map(q=>{const nm=MED[q.city]?q.city:MED[q.n]?q.n:null;if(!nm||seen.has(nm))return null;seen.add(nm);return{nm,md:MED[nm][0],n:MED[nm][1]}}).filter(Boolean);
     if(rows.length){const mx2=Math.max(...rows.map(r=>r.md))+h.H;
-      cities=`<div class="mq-block"><h4>If they went to public school instead</h4><p class="mq-note" style="margin-top:0">For each city: the median price of homes for sale that match your filters, plus how much more home the private school money could buy if your children attended public school.</p>
-      <div class="mq-leg"><span><i style="background:var(--ink)"></i>Median price of homes for sale</span><span><i class="hatch"></i>More home with the tuition money (${fM(h.H)})</span></div>
-      ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n} homes for sale</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b><small>up to</small> ${fM(r.md+h.H)}</b></div>`).join('')}</div>`}}
+      cities=`<div class="mq-block"><h4>If they went to public school instead</h4><p class="mq-note" style="margin-top:0">For each city: the median sale price of houses over the past year, plus how much more home the private school money could buy if your children attended public school.</p>
+      <div class="mq-leg"><span><i style="background:var(--ink)"></i>Median house sale price${G.med.per?', '+esc(G.med.per):''}</span><span><i class="hatch"></i>More home with the tuition money (${fM(h.H)})</span></div>
+      ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n.toLocaleString()} sales</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM2(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b><small>up to</small> ${fM(r.md+h.H)}</b></div>`).join('')}
+      <p class="mq-src">Source: Bay Area MLS data, compiled by The Lederer Team. <a href="/bay-area-home-price-map" target="_blank" rel="noopener">See prices for 106 Bay Area cities on our home price map →</a></p></div>`}}
   const rateCtl=`<label class="mq-rate">Interest rate <input type="number" step="0.05" min="2" max="15" value="${rate.toFixed(2)}" data-rt="1">%</label>${st.rt?`<button type="button" class="lnk" data-rtreset="1">Use market rate (${mkt.toFixed(2)}%)</button>`:`<span class="sub">Market rate, Freddie Mac weekly average${rd?`, week of ${rd}`:''}</span>`}`;
   el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school costs</div></div>
     <h3>What private school would cost</h3><p class="sub">Each child’s top private pick, from next fall through 12th grade.</p></div>
