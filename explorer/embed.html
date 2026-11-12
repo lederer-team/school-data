@@ -989,6 +989,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lbtn:hover{background:#fff;color:var(--ink)}
 .bx .cta .ph{margin-top:18px;font-family:var(--serif);font-size:22px;color:#fff}
 .bx .fine{display:grid;gap:10px;max-width:900px}
+.bx .notesb .in{padding-top:8px;padding-bottom:8px}
+.bx .notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0}
+.bx .notes h4{margin:0 0 6px;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:900;color:var(--ink)}
+.bx .notes p{margin:0;font-size:13px;line-height:1.6;color:var(--muted)}
+@media (max-width:760px){.bx .notes{grid-template-columns:minmax(0,1fr)}}
+.bx .cta .eho{margin:26px auto 0;max-width:720px;font-size:11.5px;line-height:1.6;opacity:.65}
 .bx .fine p{font-size:12.5px;line-height:1.65;color:var(--muted)}
 .bx .fine b{color:var(--ink2)}
 .bx .card{cursor:pointer}
@@ -1170,6 +1176,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
  </div>
 </div></div>
 
+<div class="band plain notesb"><div class="in"><div class="notes">
+  <div><h4>Please verify</h4><p>Attendance boundaries, programs, tuition and enrollment rules change. Confirm eligibility with the school or district before relying on it in a purchase decision.</p></div>
+  <div><h4>About our scores</h4><p>Scores are The Lederer Team's own calculation from public data and what schools publish. They don't measure teaching quality or school culture, and we don't recommend specific schools. This page is for research.</p></div>
+  <div><h4>Your family link</h4><p>It stores your settings, including any address and children's names you typed, in the link itself. Nothing is saved on our servers. Share it only with people you choose.</p></div>
+</div></div></div>
 <div class="band plain suggest"><div class="in">
   <p><b>Don’t see a school, or spot something out of date?</b> Tell us and we’ll research it and add it.</p>
   <a class="sbtn" href="#" data-type="CONTACT_US" data-suggest="">Suggest a school</a>
@@ -1181,13 +1192,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <h3>We'll match the schools you like to homes that fit your family.</h3>
   <p>School assignment depends on the exact address. Send us your family link and we'll show you the neighborhoods and homes that work for every child.</p>
   <div class="ctabtns"><a class="lbtn" href="/buyer-representation">Buyer Representation</a><a class="lbtn" href="/neighborhoods">Explore Neighborhoods</a></div>
+  <p class="eho">The Lederer Team at Red Oak Realty is committed to fair housing and Equal Housing Opportunity. We serve every client without regard to race, color, religion, sex, disability, familial status, national origin or any other protected class.</p>
 </div></div>
 
-<div class="band plain"><div class="in"><div class="fine">
-  <p><b>Please verify.</b> Attendance boundaries, programs, tuition and enrollment rules change. Confirm eligibility with the school or district before relying on it in a purchase decision. Scores are The Lederer Team's own calculation from public data and what schools publish. They do not measure teaching quality or school culture, and we do not recommend specific schools. This page is for research.</p>
-  <p><b>Your family link</b> stores your settings, including any address and children's names you typed, in the link itself. Nothing is saved on our servers. Share it only with people you choose.</p>
-  <p>The Lederer Team at Red Oak Realty is committed to fair housing and Equal Housing Opportunity. We serve every client without regard to race, color, religion, sex, disability, familial status, national origin or any other protected class.</p>
-</div></div></div>
+
 <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gtitle"><form class="gbox" id="gform" novalidate>
   <div class="eyebrow">The Lederer Team</div>
   <h3 id="gtitle">Before you start</h3>
