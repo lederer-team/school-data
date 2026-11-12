@@ -1624,10 +1624,10 @@ function order(list){const s=list.filter(r=>r.score!=null).sort((a,b)=>b.score-a
 function activeW(kid){const w={...kid.w};const L=level(kid.grade);
   if(L!=='H')w.college=0;else{w.path=0;w.lang=0;w.care=0;w.small=0}
   if(kid.sizePref==='any')w.size=0;if(![...kid.ints].some(k=>(L==='H'?HSI:K8I).has(k)))w.interest=0;return w}
-function rankKid(kid,home){return S.filter(s=>!s.spec&&eligible(s,kid)).map(s=>scoreFor(s,kid,home))}
+function rankKid(kid,home){return S.filter(s=>(!s.spec||s.spec.t==='flex')&&eligible(s,kid)).map(s=>scoreFor(s,kid,home))}
 // Specialized schools: ranked on what applies to them (distance, grade span, size). They don't publish comparable academic data.
 const SPEC_MI=25;
-function specList(kid,t){if(!st.places.length)return[];return S.filter(s=>s.spec&&s.spec.t===t&&kid.grade>=s.lo&&kid.grade<=s.hi).map(s=>{const h=homeFor(s);if(h.d>Math.max(st.radius,SPEC_MI))return null;
+function specList(kid,t){if(!st.places.length)return[];return S.filter(s=>s.spec&&(s.spec.t===t||(t==='ld'&&s.spec.t==='flex'))&&kid.grade>=s.lo&&kid.grade<=s.hi).map(s=>{const h=homeFor(s);if(h.d>Math.max(st.radius,SPEC_MI))return null;
   const m=drive(pt(h.p),s),parts=[];const add=(c,w,v)=>{if(w&&v!=null)parts.push({c,w,v})};
   add('commute',kid.w.commute||3,Math.max(0,Math.min(10,(45-m)/35*10)));
   if(kid.grade<9)add('path',kid.w.path||5,s.hi>=12?9.5:5);
@@ -1636,12 +1636,12 @@ function specList(kid,t){if(!st.places.length)return[];return S.filter(s=>s.spec
   return{s,score:parts.reduce((a,q)=>a+q.w*q.v,0)/tw,parts,min:m,from:h.c,mi:h.d}}).filter(Boolean).sort((a,b)=>b.score-a.score)}
 function specCard(r,i){const s=r.s,sp=s.spec,k=st.kids[st.active];
   return`<article class="card spec" id="c-${s.id}"><div class="rk">${i+1}</div>
-   <div><span class="badge">Specialized school · learning differences</span><div class="nm">${esc(s.n)}</div><div class="meta">${esc(s.c)} · Private · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
+   <div><span class="badge">${sp.t==='flex'?'One-to-one private school':'Specialized school · learning differences'}</span><div class="nm">${esc(s.n)}</div><div class="meta">${esc(s.c)} · Private · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
    <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
    <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])}"></span>`).join('')}</div>
     <div class="facts">${sp.serves?`<span><b>Serves:</b> ${esc(sp.serves)}</span>`:''}${sp.cls?`<span><b>Classes:</b> ${esc(sp.cls)}</span>`:''}${sp.out?`<span><b>After graduation:</b> ${esc(sp.out)}</span>`:''}</div>
     <div class="tags"><span class="tag">About ${r.min} min from ${esc(r.from)}</span>${s.e?`<span class="tag">${s.e} students</span>`:''}<span class="tag ${tuition(s,k.grade)==null?'warn':''}">${money(tuition(s,k.grade))}</span>${s.hi>=12&&k.grade<9?'<span class="tag good">Continues through 12th grade</span>':''}</div>
-    <div class="flag">Ranked on distance${k.grade<9?', grade span':''}${k.sizePref!=='any'?', size':''}. Academic and outcome data not published</div>
+    <div class="flag">${sp.t==='flex'?'Not a special education school. Also appears in the main list below. Ask how it supports your child.':`Ranked on distance${k.grade<9?', grade span':''}${k.sizePref!=='any'?', size':''}. Academic and outcome data not published`}</div>
     <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`}
 
 /* ---------- family plans ---------- */
@@ -1848,7 +1848,7 @@ function openDetail(id){
     ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
     ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
     ${L2!=='H'?sec('Potential school path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?`<p class="sub">${DPOL[s.dist]?esc(DPOL[s.dist].head):'Middle and high schools are assigned by the district from its attendance maps.'} <button type="button" class="lnk" data-dguide="${esc(s.dist)}">How ${esc(s.dist)} works</button></p>`:''}`)+sec('Path to high school',path):''}
-    ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span. ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
+    ${s.spec?sec('Learning support',s.spec.t==='nps'?`<p>A certified nonpublic special education school${s.spec.serves?` serving ${esc(s.spec.serves.toLowerCase())}`:''}. Students usually attend through a district placement written into their IEP, so start with your district's special education team.</p>`:`<p>${s.spec.serves?`<b>Serves:</b> ${esc(s.spec.serves)}.<br>`:''}${s.spec.cls?`<b>Classes:</b> ${esc(s.spec.cls)}.<br>`:''}${s.spec.out?`<b>After graduation:</b> ${esc(s.spec.out)}.`:''}</p><p class="sub">${s.spec.t==='flex'?'A mainstream private school that teaches one-to-one; it is not a special education school, so ask how it supports your child.':"Specialized schools don't take state tests or publish comparable outcomes, so they're ranked on distance and grade span."} ${s.spec.src?'Source: '+esc(s.spec.src)+'.':''}</p>`):''}
     ${sec('Cost and eligibility',cost)}
     ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
     ${sec('Contact',(d.a||d.ph?`<p>${esc(d.a||'')}${d.ph?'<br>'+esc(phone(d.ph)):''}</p>`:'')+(links?`<div class="dlinks">${links}</div>`:''))}
@@ -1927,8 +1927,8 @@ function renderList(){
   const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
-    $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
-     ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.</div>`}
+    $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, plus one-to-one private schools many families consider, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
+     ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized private schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.${k.grade<2?' Most East Bay schools built for learning differences start in 2nd grade or later, so younger children are usually served through district special education and early intervention.':''} Try a larger radius, or ask us for help.</div>`}
      <div class="special"><b>Also available through your district</b>
       ${np.length?`<span class="nps">Certified nonpublic special education schools nearby, usually reached through your child's IEP team rather than by applying: ${np.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, about ${r.min} min)`).join(' · ')}.</span>`:''}
       <span>Every public district must provide special education services, and many run dedicated autism programs. Ask each district on your list about its programs. Mainstream private schools aren't required to offer the same services, so ask each school what support it provides.</span></div>
