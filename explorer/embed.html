@@ -1252,7 +1252,20 @@ const levels=s=>[s.lo<=5?'E':'',s.hi>=6&&s.lo<=8?'M':'',s.hi>=9?'H':''].join('')
 const isCity=p=>p.kind==='city'&&p.n===p.city;
 function mapped(s){const z=(G.zmap||{})[s.dist]||'';return [...levels(s)].some(l=>z.includes(l))}
 // How a public school relates to a location: {k:'zone',share,pt} | {k:'prog'} (district-wide program) | {k:'dist'} (not mapped yet) | null
+// Livermore: the district publishes a street guide instead of a map. Match the address's street and house number.
+const LVD='Livermore Valley Joint Unified',LVC=new Map();
+function lvLookup(p){if(!G.lvsg||p.kind!=='address')return null;const k=p.lat+'|'+p.lng;if(LVC.has(k))return LVC.get(k);let r=null;
+  const m=String(p.label||'').match(/^\s*(\d+)\s+([^,]+)/);
+  if(m){const num=+m[1];const SUF=/\b(street|st|avenue|ave|road|rd|drive|dr|way|court|ct|lane|ln|place|pl|boulevard|blvd|terrace|ter|circle|cir|common|cmn|parkway|pkwy|loop|trail|tr|square|sq|highway|hwy)\.?$/;
+    let nm=m[2].toLowerCase().replace(/[^a-z0-9 ]/g,'').trim();const tries=[nm,nm.replace(SUF,'').trim(),nm.replace(/^(n|s|e|w|north|south|east|west) /,'').replace(SUF,'').trim()];
+    const rows=tries.map(t=>G.lvsg[t]).find(Boolean);
+    if(rows){const ids={E:new Set(),M:new Set(),H:new Set()},multi=new Set();let note=false;
+      const hit=rows.filter(r=>num>=r[0]&&num<=r[1]);
+      for(const[i,lv]of[[4,'E'],[5,'M'],[6,'H']]){const c=hit.filter(r=>r[i].length);c.forEach(r=>r[i].forEach(x=>ids[lv].add(x)));if(c.some(r=>r[2]||r[3])||ids[lv].size>1){ids[lv].forEach(x=>multi.add(x));note=true}}
+      if(ids.E.size||ids.M.size||ids.H.size)r={ids:new Set([...ids.E,...ids.M,...ids.H]),lv:ids,multi,note}}}
+  LVC.set(k,r);return r}
 function zoneFor(s,p){if(s.sec!=='Public')return null;
+  if(s.dist===LVD&&p.kind==='address'){const g=lvLookup(p);if(g){const L=s.lo>=9?'H':s.lo>=5?'M':'E';return g.lv[L].has(s.id)?{k:'zone',share:1,pt:true,sg:true,edge:g.multi.has(s.id)}:null}}
   if(ZB[s.id]){if(isCity(p)&&G.cityZ&&G.cityZ[p.n]){const v=G.cityZ[p.n][s.id];return v?{k:'zone',share:v}:null}
     const h=zoneHits(p);return h.ids.has(s.id)?{k:'zone',share:1,pt:true,edge:h.edge.has(s.id)}:null}
   if(!servesHome(s,p))return null;return mapped(s)?{k:'prog'}:{k:'dist'}}
@@ -1299,8 +1312,9 @@ function zoneText(s,long){const b=zoneBest(s);const D=esc(s.dist);const pol=DPOL
   if(z.k==='zone'){const bz=s.dist==='Berkeley Unified'&&s.hi<=8?(long?' Berkeley Unified assigns elementary students within three zones, so families rank the schools in their zone.':' zone'):'';
     const src=esc(zsrc(s.dist));
     if(z.pt){const ww=addrWarn(b.p);const here=b.p.kind==='address'?'this address':esc(b.p.label);
+      if(z.sg&&long)return`Livermore Valley Joint Unified’s street guide (September 2026) lists ${esc(s.n)} for this street and house number${z.edge?', though the assignment depends on which side of the street or a nearby landmark':''}. ${NOGUAR} Get the assignment from the district in writing before relying on it.`;
       return long?`On ${src} (checked November 2026), ${here} falls in ${esc(s.n)}’s attendance area. This narrows the results but doesn’t confirm a home’s school.${bz} ${NOGUAR}${ww?' This location is also near a boundary or in a district that mainly serves another city.':''} Get the assignment from the district in writing before relying on it.`
-        :(ww?`Near an attendance boundary on the district map · confirm with the district`:`In this area’s attendance zone on the district map · confirm with the district`)}
+        :z.sg?(z.edge?`Depends on which side of the street · district street guide · confirm`:`Listed for this street on the district street guide · confirm with the district`):(ww?`Near an attendance boundary on the district map · confirm with the district`:`In this area’s attendance zone on the district map · confirm with the district`)}
     if(z.share>=0.95)return long?`Per ${src} (checked November 2026), its attendance area covers all of ${nm}.${bz} ${NOGUAR} Confirm with the district.`:`Zoned school${bz} for all of ${nm}`;
     const pc=Math.round(z.share*100);
     return long?`Serves only some ${nm} homes: its attendance area covers about ${pc}% of the city’s land, per ${src} (checked November 2026). Whether a home is in it depends on the exact address. Adding an address narrows the results, but only the district can confirm a home\u2019s school. ${NOGUAR}`
@@ -1411,7 +1425,8 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
    <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
 // When a home is an address or neighborhood inside this school's attendance area, the zoned high school at that point is known
 // The zoned school of a level (M or H) for a home address inside this school's area, same district
-function atHome(s,lv){if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
+function atHome(s,lv){if(s.dist===LVD){for(const p of st.places){const g=lvLookup(p);if(g&&g.ids.has(s.id)&&g.lv[lv].size===1)return [...g.lv[lv]][0]}return null}
+  if(!ZB[s.id])return null;for(const p of st.places){if(isCity(p))continue;const h=zoneHits(p);if(!h.ids.has(s.id))continue;
   for(const[d,l,ids]of G.zones)if(l===lv&&d===s.dist&&ids.some(i=>h.ids.has(i)))return ids.find(i=>h.ids.has(i))}return null}
 const gr=s=>`${s.lo===0?'K':s.lo}-${s.hi}`;
 // Links into the site's own home search. It takes a map area (a rectangle), so results cover the area around a
