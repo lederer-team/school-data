@@ -812,7 +812,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .dgpop p,.bx .dgpop ul{margin:0}
 .bx .dgrow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;flex:1 1 100%;min-width:0}
 .bx .dgl{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);order:0}
-.bx .dgstrip .dgrow{order:2;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr))}
+.bx .dgstrip .dgrow{order:2;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}
+@media (max-width:900px){.bx .dgstrip .dgrow{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}}
 .bx .dgchip b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .bx .dgstrip>p{order:3}
 .bx .tbar .dgstrip .dgmore{order:1}
@@ -1155,6 +1156,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hcard .sp{font-size:13px;color:var(--ink2)}
 .bx .ml{font-size:11px;color:var(--muted)}
 .bx .mny{margin-top:clamp(28px,4vw,48px)}
+.bx .mqt{margin-top:clamp(20px,3vw,32px)}
+.bx #money{scroll-margin-top:110px}
+.bx .mqt-b{width:100%;display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;text-align:left;font:inherit;cursor:pointer;background:var(--dark);color:#fff;border:0;border-left:4px solid var(--teal);padding:14px 18px}
+.bx .mqt-t{flex:1 1 420px;font-size:14.5px;line-height:1.5;color:rgba(255,255,255,.85)}
+.bx .mqt-t b{color:#fff}
+.bx .mqt-go{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800;color:#fff;white-space:nowrap;border:1px solid rgba(255,255,255,.6);padding:8px 12px}
+.bx .mqt-b:hover .mqt-go{background:#fff;color:var(--dark)}
 .bx .mq-dp{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .bx .mq-dp span{margin-right:4px;letter-spacing:1px;text-transform:uppercase;font-weight:800;font-size:11px}
 .bx .mq-dp button{font:inherit;font-size:13px;font-weight:700;padding:5px 11px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
@@ -1489,8 +1497,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <p class="sub">Scores are The Lederer Team's own calculation from public data. See <a href="#method" data-view="method">how we score schools</a>. Public school attendance depends on district boundaries, which can change: confirm eligibility with the district before choosing a home.</p>
     </section>
   </div>
-  <div id="money"></div>
+  <div id="mqtease"></div>
   <div id="homes"></div>
+  <div id="money"></div>
 </div></div>
 
 <div class="band plain" id="v-method" hidden><div class="in">
@@ -1869,7 +1878,7 @@ function renderZoneNote(k){const el=$('znote');{const ex=$('example');if(ex)ex.h
   const town=d=>st.places.filter(p=>[...placeDists(p)].includes(d)).map(p=>p.n||p.label).join(', ');
   const cityChip=(p,i)=>{const dd=[...placeDists(p)].filter(d=>S.some(s=>s.dist===d&&s.sec==='Public'));const app=dd.some(d=>DPOL[d]);const nm=String(p.n||p.label).split(',')[0];
     return`<button type="button" class="dgchip${app?' app':''}" data-dcity="${i}" title="How public schools work in ${esc(nm)}: ${esc(dd.map(dName).join(', '))}"><span class="dgt"><b>${esc(nm)}</b><em>${dd.length} district${dd.length===1?'':'s'} · ${app?'some by application':'by home address'}</em></span><span class="dgm">How it works →</span></button>`};
-  el.innerHTML=`<div class="znote dgcard dgstrip"><span class="dgl">How public schools work in your selected ${st.places.length>1?'cities':'city'}</span><div class="dgrow">${st.places.map(cityChip).join('')}</div>
+  el.innerHTML=`<div class="znote dgcard dgstrip"><span class="dgl">How public schools work in your selected ${st.places.length>1?'cities':'city'}</span><div class="dgrow" style="--n:${Math.min(st.places.length,6)}">${st.places.map(cityChip).join('')}</div>
    ${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
    <details class="dgmore"><summary>Details: boundaries, homes and phone numbers</summary><div class="dgpop">
    ${st.places.some(isCity)?`<p>For each city, the list shows every public school that serves some part of it. Which school a home attends depends on its exact address, so add an address to narrow the results, then confirm with the district.</p>`:''}
@@ -2024,7 +2033,11 @@ function privPicks(){return st.kids.map((k,i)=>{if(k.sector==='Public'||k.sector
 function moneyCalc(){const P=st.places.length?privPicks():[];if(!P.length)return null;
   const mkt=(G.rate&&+G.rate[0])||7,rate=st.rt||mkt,dp=(st.dp||20)/100,annual=P.reduce((a,p)=>a+p.t,0);
   return{P,rate,mkt,dp,annual,h:houseFor(annual/12,dp,rate)}}
-function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();if(!M){el.innerHTML='';return}
+function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();const tz=$('mqtease');if(!M){el.innerHTML='';if(tz)tz.innerHTML='';return}
+  if(tz){const nms=M.P.map(p=>esc(kname(p.k,p.i)));const who=nms.length>1?nms.slice(0,-1).join(', ')+' and '+nms[nms.length-1]:nms[0];
+    let tot=0;{const now=new Date(),yrs=Math.max(...M.P.map(p=>13-p.k.grade));for(let y=0;y<yrs;y++)M.P.forEach(p=>{const g=p.k.grade+y;if(g>12)return;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;tot+=t*Math.pow(1+TGROW,y)})}
+    const endY=(new Date().getMonth()>=6?new Date().getFullYear()+1:new Date().getFullYear())+Math.max(...M.P.map(p=>13-p.k.grade));
+    tz.innerHTML=`<div class="mqt"><button type="button" class="mqt-b" data-mqgo="1"><span class="mqt-t"><b>Private school for ${who}: ${fD(M.annual)} next year, ${fM(tot)} through ${endY}.</b> Or about ${fM(M.h.H)} more house with public school.</span><span class="mqt-go">See the numbers ↓</span></button></div>`}
   const{P,rate,mkt,dp,annual,h}=M;const rd=G.rate&&G.rate[1]?new Date(G.rate[1]+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
   const now=new Date(),fall=now.getMonth()>=6?now.getFullYear()+1:now.getFullYear();
   // tuition by school year for each child through 12th grade, growing about 4% a year
@@ -2611,6 +2624,7 @@ root.addEventListener('click',e=>{
     $('tagree').textContent=a?'You agreed to these terms on '+new Date(a).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'.':'Everyone agrees to these terms when they open the Explorer.';d.hidden=false;d.querySelector('.tx').focus();return}
   if(e.target.closest('[data-tclose]')||e.target.id==='tdlg'){$('tdlg').hidden=true;return}
   if(e.target.closest('[data-rtreset]')){st.rt=0;renderMoney();return}
+  if(e.target.closest('[data-mqgo]')){const m=$('money');if(m)m.scrollIntoView({behavior:'smooth',block:'start'});return}
   const dpb=e.target.closest('[data-dp]');if(dpb){st.dp=+dpb.dataset.dp;renderMoney();syncHash();return}
   const vw=e.target.closest('[data-view]');if(vw){e.preventDefault();setView(vw.dataset.view);return}
   const ta=e.target.closest('.toc a');if(ta){e.preventDefault();const el=root.querySelector(ta.getAttribute('href'));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
