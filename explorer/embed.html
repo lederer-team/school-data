@@ -903,6 +903,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lv-stats b{font-size:16px;color:var(--ink);letter-spacing:0}
 .bx .lvsec{display:grid;gap:12px}
 .bx .lvsec h3,.bx .lvh{font-family:var(--serif);font-weight:400;font-size:28px;margin:0}
+.bx .lvmq{display:grid;gap:4px;margin:12px 0 0;background:var(--teal-soft);border:1px solid color-mix(in srgb,var(--teal) 35%,transparent);border-left:4px solid var(--teal);padding:12px 16px;font-size:14.5px;line-height:1.5;color:var(--ink2)}
+.bx .lvmq b{color:var(--ink)}
+.bx .lvmq-h{font-size:11px;letter-spacing:1.3px;text-transform:uppercase;font-weight:900;color:var(--teal)}
 .bx .lvschools .lvroute{margin:10px 0 0;font-size:14px;color:var(--ink2)}
 .bx .lvkids{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;margin-top:14px}
 .bx .lvkid{border:1px solid var(--line);border-top:4px solid var(--kc);background:var(--surface);padding:12px 14px;min-width:0}
@@ -2114,7 +2117,7 @@ function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label
     return`<div class="lvkid" style="--kc:${css(KC[i])}"><div class="lvkh"><span class="dot"></span><b>${esc(kname(k,i))}</b><span class="sub">${GRADES[k.grade]}${GRADES[k.grade]==='K'?'':' grade'} next fall${support?' · learning support':k.sector==='Private'?' · private schools':k.sector==='Public'?' · public schools':k.sector==='Charter'?' · charter schools':''}</span></div>
       ${html?`<ol class="lvsl">${html}</ol>`:'<p class="sub">No schools in range for this grade.</p>'}${showFb?`<p class="sub lvfb"><b>Assigned public school:</b> ${fb}</p>`:''}${pol.length?`<p class="sub lvfb">${esc(pol.join(' '))}</p>`:''}</div>`}).join('');
   const u=[...new Map(tops.map(t=>[t.id,t])).values()];let route=0,cur=null,left=[...u];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);cur=nx}
-  const MQ=moneyCalc();const mline=MQ?`<p class="lvroute"><b>Private school in house terms:</b> ${MQ.P.map(p=>esc(kname(p.k,p.i))+' at '+esc(p.s.n)).join(', ')} cost about ${fD(MQ.annual)} a year, the payment on about ${fM(MQ.h.H)} of home (${Math.round(MQ.dp*100)}% down, ${MQ.rate.toFixed(2)}% market rate).</p>`:'';
+  const MQ=moneyCalc();const mline=MQ?`<div class="lvmq"><span class="lvmq-h">Public school instead?</span><span>${MQ.P.map(p=>esc(kname(p.k,p.i))+' at '+esc(p.s.n)).join(', ')}: about <b>${fD(MQ.annual)} a year</b>. As a mortgage payment, that buys about <b>${fM(MQ.h.H)} more home</b> (${Math.round(MQ.dp*100)}% down, ${MQ.rate.toFixed(2)}% rate).</span></div>`:'';
   const sum=st.kids.length>1&&u.length?`<p class="lvroute"><b>Morning drop-off from this home:</b> about ${route} min to ${u.length>1?'reach every top pick, nearest first':'the shared top pick'}.</p>`:'';
   return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities. <span class="lvdn">Drive times are estimates for a weekday morning.</span></p>${sum}${mline}<div class="lvkids">${blocks}</div>${anyPub?`<div class="lvwarn"><b>About public school assignments.</b> The assigned public schools shown here come from district attendance maps, which can change. We don't guarantee a seat at any school. Please verify the school for this address with the school district before you buy.</div>`:''}</section>`}
 // Upgrade drive estimates to Google drive times when the Routes API is enabled for the site's key
