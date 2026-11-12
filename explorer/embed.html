@@ -748,7 +748,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .ok{font-size:12.5px;color:var(--teal);font-weight:700}
 .bx .grid{display:grid;grid-template-columns:370px minmax(0,1fr);gap:22px;align-items:start}
 @media (max-width:980px){.bx .grid{grid-template-columns:minmax(0,1fr)}}
-.bx .kids{display:flex;gap:4px;align-items:flex-end;overflow-x:auto;padding:6px 6px 0 0;border-bottom:3px solid var(--kcur,var(--line2))}
+.bx .kids{display:flex;gap:4px;align-items:flex-end;min-width:0;padding:6px 0 0 0;border-bottom:3px solid var(--kcur,var(--line2))}
 .bx .kt{border:1px solid var(--line2);border-bottom:0;background:var(--sunk);padding:9px 12px;cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:8px;border-radius:10px 10px 0 0;position:relative;top:0;transition:background .15s,color .15s}
 .bx .kt:hover{color:var(--ink);background:var(--surface)}
 .bx .kt .dot{width:9px;height:9px;border-radius:50%}
@@ -911,7 +911,15 @@ svg.leaflet-image-layer.leaflet-interactive path {
 @keyframes khl{.bx 0%{background:var(--teal-soft)}
 .bx 100%{background:var(--sunk)}}
 @media (prefers-reduced-motion:reduce){.bx .reshead.flash{animation:none}}
-.bx .kt.add{color:var(--teal)}
+.bx .kt.add{color:var(--teal);flex:none}
+.bx .kt{flex:0 1 auto;min-width:0}
+.bx .kt .kn{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bx .kt .dot,.bx .kt .x{flex:none}
+.bx .kt[aria-selected="true"]{flex-shrink:0;max-width:62%}
+.bx .kids.tight .kt{padding-left:10px;padding-right:10px}
+.bx .kids.tight .kt.add .al{display:none}
+.bx .kids.tight .kt:not([aria-selected="true"]) .kg,.bx .kids.tight .kt:not([aria-selected="true"]) .x{display:none}
+.bx .kids.tight .kt{gap:6px}
 .bx .kt .x{color:var(--muted);cursor:pointer;font-size:16px;padding:0 3px;margin-left:2px;line-height:1;border-radius:50%}
 .bx .kt .x:hover{color:var(--amber)}
 .bx .panel{background:var(--surface);border:2px solid var(--kcur,var(--line));border-top:0;padding:18px;display:grid;gap:20px}
@@ -2141,7 +2149,7 @@ function renderFamily(){
 }
 function renderKidControls(){
   const K=st.kids;
-  $('kidtabs').innerHTML=K.map((k,i)=>`<button class="kt" role="tab" aria-selected="${i===st.active}" data-tab="${i}" style="--kc:${css(KC[i])}"><span class="dot" style="background:${css(KC[i])}"></span><span class="kn">${esc(kname(k,i))} · ${GRADES[k.grade]}</span>${K.length>1?`<span role="button" tabindex="0" class="x" data-kx="${i}" aria-label="Remove ${esc(kname(k,i))}" title="Remove">×</span>`:''}</button>`).join('')+(K.length<4?`<button class="kt add" data-add="1">+ Add child</button>`:'');
+  $('kidtabs').innerHTML=K.map((k,i)=>`<button class="kt" role="tab" aria-selected="${i===st.active}" data-tab="${i}" style="--kc:${css(KC[i])}"><span class="dot" style="background:${css(KC[i])}"></span><span class="kn">${esc(kname(k,i))}<span class="kg"> · ${GRADES[k.grade]}</span></span>${K.length>1?`<span role="button" tabindex="0" class="x" data-kx="${i}" aria-label="Remove ${esc(kname(k,i))}" title="Remove">×</span>`:''}</button>`).join('')+(K.length<4?`<button class="kt add" data-add="1" title="Add a child" aria-label="Add a child">+<span class="al"> Add child</span></button>`:'');$('kidtabs').classList.toggle('tight',K.length>=3);
   const k=K[st.active],L2=level(k.grade),w=activeW(k);
   const tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
   const hasInt=[...k.ints].some(x=>(L2==='H'?HSI:K8I).has(x));const show=CK.filter(c=>L2==='H'?!['path','lang','care','small'].includes(c):c!=='college');
@@ -2280,7 +2288,7 @@ root.addEventListener('input',e=>{const k=st.kids[st.active];
     root.querySelectorAll('#kidpanel .sl').forEach(el=>{const c=el.querySelector('input').id.slice(2);el.querySelector('.pct').textContent=w[c]?Math.round(w[c]/tot*100)+'%':'off'});
     const ps=$('kpreset');if(ps&&ps.value){if(!ps.querySelector('option[value=""]'))ps.insertAdjacentHTML('afterbegin','<option value="">Custom</option>');ps.value=''}
     renderPlans();renderList();renderMap();syncHash()}
-  if(e.target.id==='kname'){k.name=e.target.value;root.querySelector(`[data-tab="${st.active}"] .kn`).textContent=`${kname(k,st.active)} · ${GRADES[k.grade]}`;renderPlans();$('ktitle').innerHTML=`Best fits for ${esc(kname(k,st.active))} (${GRADES[k.grade]})${k.support?'<span class="chip">Learning support</span>':''}`;const kp=root.querySelector('.kphead b');if(kp)kp.textContent=kname(k,st.active);syncHash()}});
+  if(e.target.id==='kname'){k.name=e.target.value;root.querySelector(`[data-tab="${st.active}"] .kn`).innerHTML=`${esc(kname(k,st.active))}<span class="kg"> · ${GRADES[k.grade]}</span>`;renderPlans();$('ktitle').innerHTML=`Best fits for ${esc(kname(k,st.active))} (${GRADES[k.grade]})${k.support?'<span class="chip">Learning support</span>':''}`;const kp=root.querySelector('.kphead b');if(kp)kp.textContent=kname(k,st.active);syncHash()}});
 root.addEventListener('change',e=>{const k=st.kids[st.active];
   if(e.target.id==='kpreset'&&e.target.value){k.preset=e.target.value;Object.assign(k.w,PRESETS[k.preset]);soft();return}
   if(e.target.id==='kgrade'){k.grade=+e.target.value;st.showN[st.active]=10;soft()}
