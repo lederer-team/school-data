@@ -864,7 +864,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lv-nav.prev{left:16px}
 .bx .lv-nav.next{right:16px}
 .bx .lv-cnt{position:absolute;right:16px;bottom:14px;background:rgba(11,11,11,.6);color:#fff;font-size:12px;letter-spacing:1px;padding:4px 10px}
-.bx .lv-thumbs{display:flex;gap:4px;overflow-x:auto;background:#111;padding:4px}
+.bx .lv-tw{position:relative;background:#111}
+.bx .lv-thumbs{display:flex;gap:4px;overflow-x:auto;padding:4px;scroll-behavior:smooth;scrollbar-width:none}
+.bx .lv-thumbs::-webkit-scrollbar{display:none}
+.bx .lv-ta{position:absolute;top:0;bottom:0;width:44px;border:0;background:rgba(17,17,17,.88);color:#fff;font-size:26px;line-height:1;cursor:pointer;z-index:2;display:grid;place-items:center}
+.bx .lv-ta:hover{background:#000}
+.bx .lv-ta.l{left:0}
+.bx .lv-ta.r{right:0}
+.bx .lv-ta[disabled]{display:none}
 .bx .lv-th{flex:0 0 120px;height:78px;border:2px solid transparent;background:#222 center/cover no-repeat;cursor:pointer;opacity:.7}
 .bx .lv-th.on,.bx .lv-th:hover{opacity:1;border-color:#fff}
 .bx .lv-body{padding:28px clamp(16px,4vw,48px) 36px;display:grid;gap:28px}
@@ -1812,7 +1819,8 @@ function lvSchools(x){if(!x.lat||!x.lng)return'';const p={label:x.ad,n:x.ad,lat:
   return`<section class="lvsec"><h3>Schools for this home</h3><p class="sub">Public schools whose attendance area covers this address, for each child's grade next fall. Boundaries can change and a seat isn't guaranteed: confirm with the district before you buy.</p>${rows}</section>`}
 function lvGal(){const x=LV.x,n=x.imgs.length||1,i=((LV.i%n)+n)%n;LV.i=i;
   const m=document.querySelector('#lview .lv-main');if(!m)return;m.style.backgroundImage=x.imgs[i]?`url('${x.imgs[i]}')`:'none';m.querySelector('.lv-cnt').textContent=`${i+1} / ${n}`;
-  document.querySelectorAll('#lview .lv-th').forEach((t,j)=>t.classList.toggle('on',j===i));const on=document.querySelector('#lview .lv-th.on');if(on)on.scrollIntoView({block:'nearest',inline:'nearest'})}
+  document.querySelectorAll('#lview .lv-th').forEach((t,j)=>t.classList.toggle('on',j===i));const on=document.querySelector('#lview .lv-th.on'),tb=document.querySelector('#lview .lv-thumbs');if(on&&tb){const pad=48,l=on.offsetLeft,r=l+on.offsetWidth;if(l<tb.scrollLeft+pad)tb.scrollLeft=l-pad;else if(r>tb.scrollLeft+tb.clientWidth-pad)tb.scrollLeft=r-tb.clientWidth+pad}lvTa()}
+function lvTa(){const tb=document.querySelector('#lview .lv-thumbs');if(!tb)return;const l=document.querySelector('#lview .lv-ta.l'),r=document.querySelector('#lview .lv-ta.r');setTimeout(()=>{l.disabled=tb.scrollLeft<4;r.disabled=tb.scrollLeft+tb.clientWidth>=tb.scrollWidth-4},350)}
 function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
   const t=v=>v==null||v===''?null:v;const sqm=x.price&&x.sf?Math.round(x.price/x.sf):null;
   const rowsI=[['Bedrooms',t(x.bd)],['Bathrooms',t(x.ba)],['Living area',x.sf?x.sf.toLocaleString()+' sq ft':null]];
@@ -1824,7 +1832,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
   const street=tc(x.street)||x.ad;const desc=String(x.desc||'').trim();
   el.innerHTML=`<div class="lv-in"><button type="button" class="lv-x" data-lvx="1" aria-label="Close">×</button>
    <div class="lv-gal"><div class="lv-main"><button type="button" class="lv-nav prev" data-lvn="-1" aria-label="Previous photo">‹</button><button type="button" class="lv-nav next" data-lvn="1" aria-label="Next photo">›</button><span class="lv-cnt"></span></div>
-    <div class="lv-thumbs">${x.imgs.map((u,j)=>`<button type="button" class="lv-th" data-lvt="${j}" style="background-image:url('${esc(u)}')" aria-label="Photo ${j+1}"></button>`).join('')}</div></div>
+    <div class="lv-tw"><button type="button" class="lv-ta l" data-lvs="-1" aria-label="Earlier photos">‹</button><div class="lv-thumbs">${x.imgs.map((u,j)=>`<button type="button" class="lv-th" data-lvt="${j}" style="background-image:url('${esc(u)}')" aria-label="Photo ${j+1}"></button>`).join('')}</div><button type="button" class="lv-ta r" data-lvs="1" aria-label="More photos">›</button></div></div>
    <div class="lv-body">
     <div class="lv-head"><div><h2>${esc(street)}</h2><div class="lv-addr">${esc([x.city,'CA',x.zip].filter(Boolean).join(', ').replace(', CA,',', CA'))}</div><div class="lv-price">${x.price?'$'+x.price.toLocaleString():''}</div>${x.st!=='For sale'?`<span class="tag warn">${esc(x.st)}</span>`:''}</div>
      <div class="lv-cta"><button type="button" class="lvbtn dark" data-lvask="1">Request a showing</button>${x.vt?`<a class="lvbtn" href="${esc(x.vt)}" target="_blank" rel="noopener">Virtual tour</a>`:''}</div></div>
@@ -1838,7 +1846,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     <section class="lvsec"><h3 class="lvh">Features &amp; amenities</h3><div class="lvfs">${grid('Interior',rowsI)}${grid('Exterior',rowsE)}${grid('Area &amp; listing',rowsA)}${grid('Financial',rowsF)}</div></section>
     <p class="ml">${x.office?'Listed by '+esc(x.office)+'. ':''}Listing information comes from the MLS through our home search and can change at any time. <a class="lnk" href="${esc(x.href)}" target="_blank" rel="noopener">Open the full listing</a></p>
    </div></div>`;
-  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();
+  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();{const tb=el.querySelector('.lv-thumbs');let q;tb.addEventListener('scroll',()=>{clearTimeout(q);q=setTimeout(lvTa,60)},{passive:true})}
   const fm=el.querySelector('.lv-form');fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':phone.replace(/\D/g,'').length<10?'Please add a phone number so we can set up the showing.':'';
     out.textContent=err;if(err)return;lsSet('bx_name',name);lsSet('bx_email',email);lsSet('bx_phone',phone);
@@ -1846,7 +1854,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     try{fetch(GF,{method:'POST',mode:'no-cors',body:new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Showing request '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:'Showing request: '+full,[GE.page]:x.href||''})})}catch(_){}
     lpLead(name,email,phone,'',full);
     fm.innerHTML='<p class="lv-sent"><b>Thanks, '+esc(name.split(' ')[0])+'.</b> Your note about '+esc(street)+' is on its way to our team. We\'ll be in touch soon.</p>'});
-  el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvask){const f=el.querySelector('#lvAsk');f.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{const i=[...f.querySelectorAll('input')].find(q=>!q.value)||f.querySelector('textarea');i&&i.focus({preventScroll:true})},450);return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
+  el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvask){const f=el.querySelector('#lvAsk');f.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{const i=[...f.querySelectorAll('input')].find(q=>!q.value)||f.querySelector('textarea');i&&i.focus({preventScroll:true})},450);return}if(b&&b.dataset.lvs){const tb=el.querySelector('.lv-thumbs');tb.scrollLeft+=+b.dataset.lvs*tb.clientWidth*.85;lvTa();return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
   el.querySelector('.lv-x').focus()}
 function closeListing(){const el=document.getElementById('lview');if(el){el.hidden=true;el.innerHTML=''}document.documentElement.style.overflow='';LV=null}
 document.addEventListener('keydown',e=>{if(!LV)return;if(/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'')&&e.key!=='Escape')return;if(e.key==='Escape'&&$('drawer').hidden)closeListing();else if(e.key==='ArrowRight'){LV.i++;lvGal()}else if(e.key==='ArrowLeft'){LV.i--;lvGal()}});
