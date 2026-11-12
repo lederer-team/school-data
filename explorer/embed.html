@@ -1144,6 +1144,54 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hcard .ad{font-size:14px;color:var(--ink);font-weight:700}
 .bx .hcard .sp{font-size:13px;color:var(--ink2)}
 .bx .ml{font-size:11px;color:var(--muted)}
+.bx .mny{margin-top:clamp(28px,4vw,48px)}
+.bx .mq-dp{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.bx .mq-dp span{margin-right:4px;letter-spacing:1px;text-transform:uppercase;font-weight:800;font-size:11px}
+.bx .mq-dp button{font:inherit;font-size:13px;font-weight:700;padding:5px 11px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.bx .mq-dp button[aria-pressed="true"]{background:var(--ink);color:var(--onink);border-color:var(--ink)}
+.bx .mq-eq{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:stretch;margin-top:18px}
+.bx .mq-card{background:var(--surface);border:1px solid var(--line);padding:20px 22px;display:grid;gap:10px;align-content:start;min-width:0}
+.bx .mq-big{font-family:var(--serif);font-size:clamp(34px,4.4vw,52px);line-height:1;color:var(--ink)}
+.bx .mq-big small{font-family:inherit;font-size:.38em;color:var(--muted);margin-left:4px}
+.bx .mq-sub{font-size:13px;color:var(--muted)}
+.bx .mq-kids{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.bx .mq-kids li{display:grid;grid-template-columns:10px auto minmax(0,1fr) auto;gap:8px;align-items:baseline;font-size:14px}
+.bx .mq-kids i{width:10px;height:10px;border-radius:50%;background:var(--kc);align-self:center}
+.bx .mq-kids span{color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx .mq-kids em{font-style:normal;font-weight:800}
+.bx .mq-eqs{align-self:center;font-family:var(--serif);font-size:44px;color:var(--muted);line-height:1}
+.bx .mq-house{background:var(--dark);border-color:var(--dark);color:#fff}
+.bx .mq-house .eyebrow{color:rgba(255,255,255,.7)}
+.bx .mq-house .mq-big{color:#fff}
+.bx .mq-house .mq-big small,.bx .mq-house .mq-sub{color:rgba(255,255,255,.7)}
+.bx .mq-hrow{display:flex;align-items:center;gap:14px}
+.bx .mq-hico{width:58px;flex:none;color:#fff}
+.bx .mq-stack{display:flex;height:44px;font-size:11px;letter-spacing:.6px;text-transform:uppercase;font-weight:800}
+.bx .mq-stack span{display:flex;flex-direction:column;justify-content:center;padding:0 10px;min-width:0;overflow:hidden;white-space:nowrap}
+.bx .mq-stack b{font-size:15px;letter-spacing:0;text-transform:none}
+.bx .mq-stack .dn{background:rgba(255,255,255,.18);color:#fff}
+.bx .mq-stack .ln{background:#fff;color:var(--dark)}
+.bx .mq-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:16px;margin-top:16px}
+.bx .mq-block{background:var(--surface);border:1px solid var(--line);padding:18px 20px;min-width:0}
+.bx .mq-block h4{margin:0 0 12px;font-family:var(--serif);font-weight:400;font-size:22px;color:var(--ink)}
+.bx .mq-bar,.bx .mq-city{display:grid;grid-template-columns:84px minmax(0,1fr) auto;gap:10px;align-items:center;margin:10px 0}
+.bx .mq-bar .lab,.bx .mq-city .lab{font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--muted);display:grid}
+.bx .mq-city .lab small{font-size:11px;letter-spacing:0;text-transform:none;font-weight:600}
+.bx .mq-bar .track{display:flex;height:38px;gap:2px}
+.bx .mq-bar .track span{display:flex;align-items:center;min-width:0;overflow:hidden;padding:0 8px}
+.bx .mq-bar .track em,.bx .mq-city em{font-style:normal;font-size:12px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx .mq-bar b,.bx .mq-city b{font-size:14px;font-variant-numeric:tabular-nums}
+.bx .mq-years{width:100%;height:auto;display:block}
+.bx .mq-years text{font-size:11px;fill:var(--muted);font-family:inherit}
+.bx .mq-years .mq-ytop{font-size:12px;fill:var(--ink2);font-weight:700}
+.bx .mq-note{font-size:13.5px;line-height:1.55;color:var(--ink2);margin:10px 0 0}
+.bx .mq-city .track{display:flex;height:30px}
+.bx .mq-city .md{background:var(--ink);display:flex;align-items:center;padding:0 8px;min-width:0}
+.bx .mq-city .plus{background:repeating-linear-gradient(45deg,var(--teal) 0 6px,color-mix(in srgb,var(--teal) 70%,#fff) 6px 12px);display:flex;align-items:center;padding:0 8px;min-width:0}
+.bx .mny .ml{margin-top:14px;line-height:1.55}
+@media (max-width:720px){.bx .mq-eq{grid-template-columns:minmax(0,1fr)}
+.bx .mq-eqs{justify-self:center;font-size:34px;margin:-6px 0}
+.bx .mq-bar,.bx .mq-city{grid-template-columns:70px minmax(0,1fr) auto}}
 .bx .hrows{display:grid;margin-top:14px;border-top:1px solid var(--line)}
 .bx .hrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:16px 0;border-bottom:1px solid var(--line);align-items:start}
 .bx .hrl{display:grid;gap:4px;align-content:start;padding-top:2px}
@@ -1260,10 +1308,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .cta .ph{margin-top:18px;font-family:var(--serif);font-size:22px;color:#fff}
 .bx .fine{display:grid;gap:10px;max-width:900px}
 .bx .notesb .in{padding-top:8px;padding-bottom:8px}
-.bx .notes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0}
+.bx .notes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0}
 .bx .notes h4{margin:0 0 6px;font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:900;color:var(--ink)}
 .bx .notes p{margin:0;font-size:13px;line-height:1.6;color:var(--muted)}
+@media (max-width:1000px){.bx .notes{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:760px){.bx .notes{grid-template-columns:minmax(0,1fr)}}
+.bx .notes .lnk{font:inherit;font-size:13px;font-weight:700;color:var(--teal);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+.bx .tdlg{position:fixed;inset:0;z-index:2147483002;background:rgba(11,11,11,.72);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.bx .tdlg[hidden]{display:none}
+.bx .tdlg .gbox{position:relative}
+.bx .tdlg .gbox .terms{max-height:none}
+.bx .tdlg .tx{position:absolute;right:12px;top:10px;font-size:26px;line-height:1;background:none;border:0;cursor:pointer;color:var(--muted)}
+.bx .tdlg .tagree{font-size:13px;color:var(--ink2);margin:0}
+.bx .hero .title .beta{cursor:pointer}
 .bx .cta .eho{margin:26px auto 0;max-width:720px;font-size:11.5px;line-height:1.6;opacity:.65}
 .bx .fine p{font-size:12.5px;line-height:1.65;color:var(--muted)}
 .bx .fine b{color:var(--ink2)}
@@ -1323,7 +1380,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="band dark hero"><div class="in">
   <div class="htools"><button type="button" class="hbtn" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span id="shareLbl">Copy family link</span></button><button type="button" class="hbtn" id="reset">Start over</button><span class="ok" id="shareOk" aria-live="polite" hidden></span><span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span></div>
   <div class="eyebrow">The Lederer Team · Alameda and Contra Costa counties</div>
-  <h2 class="title">Bay Area School Explorer<span class="beta" title="We are still adding and checking data. Please verify anything important with the school or district.">Beta</span></h2>
+  <h2 class="title">Bay Area School Explorer<button type="button" class="beta" data-terms="1" title="Beta version: we are still adding and checking data. Click to read the terms of use.">Beta</button></h2>
   <p class="lede">Compare 750 public, charter and private schools by what matters to your family. Add each child with their own grade and priorities, then see ranked schools, a map, family plans that keep everyone's commute in check, and where each school leads for high school.</p>
   <div class="views" role="tablist" aria-label="Explorer sections"><button type="button" role="tab" data-view="plan" aria-selected="true">Plan for my family</button><button type="button" role="tab" data-view="method" aria-selected="false">How we score schools</button></div>
 </div></div>
@@ -1366,6 +1423,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <p class="sub">Scores are The Lederer Team's own calculation from public data. See <a href="#method" data-view="method">how we score schools</a>. Public school attendance depends on district boundaries, which can change: confirm eligibility with the district before choosing a home.</p>
     </section>
   </div>
+  <div id="money"></div>
   <div id="homes"></div>
 </div></div>
 
@@ -1458,6 +1516,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 <div class="band plain notesb"><div class="in"><div class="notes">
   <div><h4>Please verify</h4><p>Attendance boundaries, programs, tuition and enrollment rules change. Confirm eligibility with the school or district before relying on it in a purchase decision.</p></div>
   <div><h4>About our scores</h4><p>Scores are The Lederer Team's own calculation from public data and what schools publish. They don't measure teaching quality or school culture, and we don't recommend specific schools. This page is for research.</p></div>
+  <div><h4>Beta version</h4><p>The Explorer is new and we’re still adding and checking schools, boundaries and features. Expect some gaps and errors, and tell us when you find one. <button type="button" class="lnk" data-terms="1">Read the terms of use</button></p></div>
   <div><h4>Your family link</h4><p>It stores your settings, including any address and children's names you typed, in the link itself. Nothing is saved on our servers. Share it only with people you choose.</p></div>
 </div></div></div>
 <div class="band plain suggest"><div class="in">
@@ -1481,12 +1540,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <p>Compare every public, charter and private school in Alameda and Contra Costa counties, build a plan for each child, and see homes for sale near the schools that fit. Enter your name and email and accept the terms to open it.</p>
   <div class="row2"><label class="f">Name<input type="text" id="gname" autocomplete="name" required></label><label class="f">Email<input type="email" id="gemail" autocomplete="email" required></label></div>
   <label class="f">Phone (optional, for a call or text from our team)<input type="tel" id="gphone" autocomplete="tel"></label>
-  <div class="terms"><b>Terms of use.</b> The Explorer is for research only. Attendance areas, district boundaries, programs, tuition and scores change, and the information here can be incomplete or wrong. Do not act on anything here, including buying, selling or renting a home, without first confirming school assignment and eligibility directly with the school district and the city. The Lederer Team does not guarantee school assignment, admission or enrollment, and does not recommend specific schools. Scores are our own calculation from public data. See the full <a href="/terms-and-conditions" target="_blank" rel="noopener">terms and conditions</a>.</div>
+  <div class="terms"><b>Terms of use.</b> The Explorer is a beta version: we are still adding and checking schools, boundaries and features, so errors and gaps are more likely, and things may change without notice. It is for research only. Attendance areas, district boundaries, programs, tuition and scores change, and the information here can be incomplete or wrong. Do not act on anything here, including buying, selling or renting a home, without first confirming school assignment and eligibility directly with the school district and the city. The Lederer Team does not guarantee school assignment, admission or enrollment, and does not recommend specific schools. Scores are our own calculation from public data. See the full <a href="/terms-and-conditions" target="_blank" rel="noopener">terms and conditions</a>.</div>
   <label class="check"><input type="checkbox" id="gterms" required><span>I agree to the terms of use, and I’ll confirm school information with the district and city before acting on it.</span></label>
   <label class="check"><input type="checkbox" id="gconsent" required><span>I agree to be contacted by The Lederer Team via call, email, and text for real estate services. To opt out, reply ‘stop’ at any time or click the unsubscribe link in emails. Message and data rates may apply. Message frequency may vary. <a href="/terms-and-conditions" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
   <div class="err" id="gerr" aria-live="polite"></div>
   <button type="submit" class="btn" id="gbtn" disabled>Open the Explorer</button><span class="ghint" id="ghint">Check both boxes above to continue.</span>
 </form></div>
+<div class="tdlg" id="tdlg" hidden role="dialog" aria-modal="true" aria-labelledby="tdh"><div class="gbox"><button type="button" class="tx" data-tclose="1" aria-label="Close">×</button><div class="eyebrow">Bay Area School Explorer · Beta</div><h3 id="tdh">Terms of use</h3><p class="tagree" id="tagree"></p><div class="terms" id="tbody"></div><button type="button" class="btn" data-tclose="1">Close</button></div></div>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" hidden></aside>
 </div>
@@ -1781,7 +1841,7 @@ function listingsFor(p){const k=p.lat+','+p.lng;if(LST.key===k)return;LST={key:k
 function listingsArea(){const k=areaKey();if(LST.key===k)return;LST={key:k,mode:'area',state:'loading',items:[],discs:{},f:{c:'',pr:'',bd:0},n:12};renderHomes();
   if(!/theledererteam\.com$/.test(location.hostname)){LST.state='offsite';renderHomes();return}
   Promise.all(st.places.map(p=>fetchBox(isCity(p)?cityBox(p):placeBox(p),p).then(xs=>xs.map(x=>({...x,place:p.n||p.label})).filter(x=>!isCity(p)||x.city.toLowerCase()===String(p.n).toLowerCase()))))
-    .then(all=>{if(LST.key!==k)return;const seen=new Set(),sk=x=>[x.href,addrKey(x.ad)+'|'+x.price];LST.items=all.flat().filter(x=>!sk(x).some(k=>seen.has(k))&&(sk(x).forEach(k=>seen.add(k)),1)&&!/LAND|LOT/i.test(x.ty||''));LST.state='done';renderHomes()})
+    .then(all=>{if(LST.key!==k)return;const seen=new Set(),sk=x=>[x.href,addrKey(x.ad)+'|'+x.price];LST.items=all.flat().filter(x=>!sk(x).some(k=>seen.has(k))&&(sk(x).forEach(k=>seen.add(k)),1)&&!/LAND|LOT/i.test(x.ty||''));LST.state='done';renderHomes();renderMoney()})
     .catch(()=>{if(LST.key!==k)return;LST.state='error';renderHomes()})}
 function listingsViaFrame(p,k){
   const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.tabIndex=-1;f.style.cssText='position:fixed;left:0;top:0;width:min(1200px,100vw);height:900px;border:0;opacity:0;pointer-events:none;z-index:-1';
@@ -1851,6 +1911,65 @@ const IC={bed:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" strok
  lot:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5M8 8l3 3m5-3-3 3m-5 5 3-3m5 3-3-3"/></svg>'};
 let LV=null;
 function bindLv(el){el.querySelectorAll('[data-lh]').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey)return;const x=LST.items.find(i=>i.href===a.dataset.lh);if(!x)return;e.preventDefault();openListing(x)}))}
+
+/* ---------- What private school costs, in house ----------
+   Each child's top private pick (its tuition for next fall) turned into the home that the same monthly money would pay for:
+   30-year fixed at the market rate (Freddie Mac weekly average, pulled at build), property tax about 1.18% of price. */
+const TAXR=0.0118,TGROW=0.04;
+const mortF=rate=>{const r=rate/100/12;return r/(1-Math.pow(1+r,-360))};
+function houseFor(pay,dp,rate){const f=mortF(rate),H=pay/((1-dp)*f+TAXR/12);return{H,loan:H*(1-dp),down:H*dp,pi:H*(1-dp)*f,tax:H*TAXR/12}}
+const fM=v=>v>=995000?'$'+(Math.round(v/1e5)/10).toFixed(v>=9.95e6?0:1).replace(/\.0$/,'')+'M':'$'+Math.round(v/1000)+'k';
+const fD=v=>'$'+Math.round(v).toLocaleString();
+function privPicks(){return st.kids.map((k,i)=>{if(k.sector==='Public'||k.sector==='Charter')return null;let r=null;
+  try{if(k.support)r=specList(k,'ld').find(x=>x.s.sec==='Private'&&tuition(x.s,k.grade))||null;
+    if(!r)r=order(rankKid(k)).find(x=>x.s.sec==='Private'&&tuition(x.s,k.grade))||null}catch(e){}
+  return r?{k,i,s:r.s,t:tuition(r.s,k.grade)}:null}).filter(Boolean)}
+function moneyCalc(){const P=st.places.length?privPicks():[];if(!P.length)return null;
+  const rate=(G.rate&&+G.rate[0])||7,dp=(st.dp||20)/100,annual=P.reduce((a,p)=>a+p.t,0);
+  return{P,rate,dp,annual,h:houseFor(annual/12,dp,rate)}}
+function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();if(!M){el.innerHTML='';return}
+  const{P,rate,dp,annual,h}=M;const rd=G.rate&&G.rate[1]?new Date(G.rate[1]+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+  const now=new Date(),fall=now.getMonth()>=6?now.getFullYear()+1:now.getFullYear();
+  // tuition by school year for each child through 12th grade, growing about 4% a year
+  const yrs=Math.max(...P.map(p=>13-p.k.grade));const cols=[];let total=0;
+  for(let y=0;y<yrs;y++){const parts=P.map(p=>{const g=p.k.grade+y;if(g>12)return 0;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;return t*Math.pow(1+TGROW,y)});cols.push(parts);total+=parts.reduce((a,b)=>a+b,0)}
+  const lastY=fall+yrs;
+  const kc=p=>css(KC[p.i]);
+  // A: the equation
+  const eq=`<div class="mq-eq">
+    <div class="mq-card"><div class="eyebrow">Private school, next fall</div><div class="mq-big">${fD(annual)}<small> a year</small></div>
+      <ul class="mq-kids">${P.map(p=>`<li style="--kc:${kc(p)}"><i></i><b>${esc(kname(p.k,p.i))}</b><span>${esc(p.s.n)}</span><em>${fM(p.t)}</em></li>`).join('')}</ul>
+      <div class="mq-sub">${fD(annual/12)} a month</div></div>
+    <div class="mq-eqs" aria-hidden="true">=</div>
+    <div class="mq-card mq-house"><div class="eyebrow">The same money as a mortgage</div>
+      <div class="mq-hrow"><svg class="mq-hico" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 27 32 5l26 22" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><path d="M13 23v29h38V23" fill="currentColor" opacity=".14"/><path d="M13 23v29h38V23" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><rect x="27" y="35" width="10" height="17" fill="currentColor"/></svg>
+      <div class="mq-big">${fM(h.H)}<small> of home</small></div></div>
+      <div class="mq-stack"><span class="dn" style="flex:${h.down}">${Math.round(dp*100)}% down<b>${fM(h.down)}</b></span><span class="ln" style="flex:${h.loan}">Loan<b>${fM(h.loan)}</b></span></div>
+      <div class="mq-sub">at ${rate.toFixed(2)}%, the market rate${rd?` (week of ${rd})`:''}</div></div></div>`;
+  // B: one month, two ways
+  const mo=annual/12;const bars=`<div class="mq-block"><h4>One month, two ways</h4>
+    <div class="mq-bar"><span class="lab">Tuition</span><div class="track">${P.map(p=>`<span style="flex:${p.t};background:${kc(p)}" title="${esc(kname(p.k,p.i))}: ${fD(p.t/12)} a month"><em>${esc(kname(p.k,p.i))} ${fD(p.t/12)}</em></span>`).join('')}</div><b>${fD(mo)}</b></div>
+    <div class="mq-bar"><span class="lab">Mortgage</span><div class="track"><span style="flex:${h.pi};background:var(--ink)"><em>Principal and interest ${fD(h.pi)}</em></span><span style="flex:${h.tax};background:var(--muted)"><em>Tax ${fD(h.tax)}</em></span></div><b>${fD(h.pi+h.tax)}</b></div><p class="mq-note">The same ${fD(mo)} a month either pays private tuition or carries a ${fM(h.loan)} loan plus property tax on a ${fM(h.H)} home. Tuition is spent each year; mortgage payments pay down a loan on a home you own.</p></div>`;
+  // C: over the school years (SVG columns)
+  const W=640,H=200,pb=26,pt=26,bw=Math.min(40,(W-20)/cols.length-8),mx=Math.max(...cols.map(c=>c.reduce((a,b)=>a+b,0)));
+  const svg=`<svg class="mq-years" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tuition by school year until ${lastY}">${cols.map((c,y)=>{const x=10+y*((W-20)/cols.length)+(((W-20)/cols.length)-bw)/2;let yy=H-pb;
+      const seg=c.map((v,j)=>{if(!v)return'';const hh=v/mx*(H-pb-pt);yy-=hh;return`<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" fill="${kc(P[j])}"><title>${fall+y}-${String(fall+y+1).slice(2)}: ${esc(kname(P[j].k,P[j].i))} ${fD(v)}</title></rect>`}).join('');
+      return seg+`<text x="${(x+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${String(fall+y).slice(2)}-${String(fall+y+1).slice(2)}</text>`}).join('')}
+      <text x="10" y="14" class="mq-ytop">${fM(mx)} a year at the peak</text></svg>`;
+  const years=`<div class="mq-block"><h4>Over the school years</h4>${svg}
+    <p class="mq-note"><b>About ${fM(total)}</b> in tuition through ${lastY}, growing about 4% a year. Tuition ends when ${P.length>1?'the youngest finishes':esc(kname(P[0].k,P[0].i))+' finishes'} 12th grade; a mortgage keeps going, but you own the home and build equity as you pay it down.</p></div>`;
+  // D: prices in your cities (median of homes for sale that match the filters), with the same money added
+  let cities='';
+  if(LST.mode==='area'&&LST.state==='done'){const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
+    const rows=st.places.map(q=>{const nm=q.n||q.label;const ps=ok.filter(x=>x.place===nm&&x.price).map(x=>x.price).sort((a,b)=>a-b);if(ps.length<2)return null;const md=ps[Math.floor(ps.length/2)];return{nm,md,n:ps.length}}).filter(Boolean);
+    if(rows.length){const mx2=Math.max(...rows.map(r=>r.md))+h.H;
+      cities=`<div class="mq-block"><h4>Prices in your cities</h4><p class="mq-note" style="margin-top:0">Middle price of the homes for sale that match your choices, and the same with the tuition money added as house.</p>
+      ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n} homes</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b>${fM(r.md+h.H)}</b></div>`).join('')}</div>`}}
+  el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school or more house</div>
+    <div class="mq-dp" role="group" aria-label="Down payment"><span>Down payment</span>${[10,20,30].map(v=>`<button type="button" data-dp="${v}" aria-pressed="${(st.dp||20)===v}">${v}%</button>`).join('')}</div></div>
+    <h3>What private school costs, in house</h3><p class="sub">Tuition for each child's top private pick, shown as the home the same money could pay for instead.</p></div>
+    ${eq}<div class="mq-two">${bars}${years}</div>${cities}
+    <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan at the Freddie Mac weekly average rate, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. Tuition is our best figure from each school and changes yearly; after a child's current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></section>`}
 function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label:x.ad,n:x.ad,lat:x.lat,lng:x.lng,kind:'address',city:x.city};const hp=pt(p);
   const costC=(sc,g)=>{const t=tuition(sc,g);return t==null?'<span class="cost unk" title="Tuition not yet collected; ask the school">Tuition n/a</span>':t===0?`<span class="cost free">Free · ${sc.sec==='Charter'?'charter':'public'}</span>`:`<span class="cost">$${Math.round(t/1000)}k<small>/yr</small></span>`};
   const L3=['Top pick','Runner-up','Also strong'],tops=[];
@@ -1880,8 +1999,9 @@ function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label
     return`<div class="lvkid" style="--kc:${css(KC[i])}"><div class="lvkh"><span class="dot"></span><b>${esc(kname(k,i))}</b><span class="sub">${GRADES[k.grade]}${GRADES[k.grade]==='K'?'':' grade'} next fall${support?' · learning support':k.sector==='Private'?' · private schools':k.sector==='Public'?' · public schools':k.sector==='Charter'?' · charter schools':''}</span></div>
       ${html?`<ol class="lvsl">${html}</ol>`:'<p class="sub">No schools in range for this grade.</p>'}${showFb?`<p class="sub lvfb"><b>Assigned public school:</b> ${fb}</p>`:''}${pol.length?`<p class="sub lvfb">${esc(pol.join(' '))}</p>`:''}</div>`}).join('');
   const u=[...new Map(tops.map(t=>[t.id,t])).values()];let route=0,cur=null,left=[...u];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);cur=nx}
+  const MQ=moneyCalc();const mline=MQ?`<p class="lvroute"><b>Private school in house terms:</b> ${MQ.P.map(p=>esc(kname(p.k,p.i))+' at '+esc(p.s.n)).join(', ')} cost about ${fD(MQ.annual)} a year, the payment on about ${fM(MQ.h.H)} of home (${Math.round(MQ.dp*100)}% down, ${MQ.rate.toFixed(2)}% market rate).</p>`:'';
   const sum=st.kids.length>1&&u.length?`<p class="lvroute"><b>Morning drop-off from this home:</b> about ${route} min to ${u.length>1?'reach every top pick, nearest first':'the shared top pick'}.</p>`:'';
-  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities. <span class="lvdn">Drive times are estimates for a weekday morning.</span></p>${sum}<div class="lvkids">${blocks}</div>${anyPub?`<div class="lvwarn"><b>About public school assignments.</b> The assigned public schools shown here come from district attendance maps, which can change. We don't guarantee a seat at any school. Please verify the school for this address with the school district before you buy.</div>`:''}</section>`}
+  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities. <span class="lvdn">Drive times are estimates for a weekday morning.</span></p>${sum}${mline}<div class="lvkids">${blocks}</div>${anyPub?`<div class="lvwarn"><b>About public school assignments.</b> The assigned public schools shown here come from district attendance maps, which can change. We don't guarantee a seat at any school. Please verify the school for this address with the school district before you buy.</div>`:''}</section>`}
 // Upgrade drive estimates to Google drive times when the Routes API is enabled for the site's key
 async function lvRealTimes(x){try{if(!window.google||!google.maps||!google.maps.importLibrary)return;const el=document.querySelectorAll('#lview .lvdr');if(!el.length)return;
   const ids=[...new Map([...el].map(e=>[e.dataset.drs,[+e.dataset.lat,+e.dataset.lng]])).entries()];const lib=await google.maps.importLibrary('routes');if(!lib.RouteMatrix)return;
@@ -1929,7 +2049,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
   el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvask){const f=el.querySelector('#lvAsk');f.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{const i=[...f.querySelectorAll('input')].find(q=>!q.value)||f.querySelector('textarea');i&&i.focus({preventScroll:true})},450);return}if(b&&b.dataset.lvs){const tb=el.querySelector('.lv-thumbs');tb.scrollLeft+=+b.dataset.lvs*tb.clientWidth*.85;lvTa();return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
   el.querySelector('.lv-x').focus()}
 function closeListing(){const el=document.getElementById('lview');if(el){el.hidden=true;el.innerHTML=''}document.documentElement.style.overflow='';LV=null}
-document.addEventListener('keydown',e=>{if(!LV)return;if(/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'')&&e.key!=='Escape')return;if(e.key==='Escape'&&$('drawer').hidden)closeListing();else if(e.key==='ArrowRight'){LV.i++;lvGal()}else if(e.key==='ArrowLeft'){LV.i--;lvGal()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){const d=document.getElementById('tdlg');if(d&&!d.hidden){d.hidden=true;return}}if(!LV)return;if(/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'')&&e.key!=='Escape')return;if(e.key==='Escape'&&$('drawer').hidden)closeListing();else if(e.key==='ArrowRight'){LV.i++;lvGal()}else if(e.key==='ArrowLeft'){LV.i--;lvGal()}});
 const homesLink=(url,txt)=>`<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener" title="Opens our home search for this map area. Check each home's assigned school with the district.">${txt}</a>`;
 // Where a school leads as a child grows: public feeder chain, private continuation, or a new application
 function schoolPath(s){
@@ -2098,7 +2218,7 @@ function timeline(p){
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
 function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['zone','dist','radius'].indexOf(st.pub),a:st.active,
-  h:(()=>{const f=HF();return[f.pmin,f.pmax,f.bd,f.ba,f.sf,f.ty]})(),
+  h:(()=>{const f=HF();return[f.pmin,f.pmax,f.bd,f.ba,f.sf,f.ty]})(),dp:st.dp||20,
   k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||'',k.k12?1:0])}}
 function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
@@ -2107,6 +2227,7 @@ function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
     sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12}));
   if(Array.isArray(o.h)){const[a,b,c,d,e,t]=o.h;n.hf={pmin:+a||0,pmax:+b||0,bd:+c||0,ba:+d||0,sf:+e||0,ty:['sf','condo'].includes(t)?t:''}}
+  n.dp=[10,20,30].includes(o.dp)?o.dp:20;
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
 function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
@@ -2378,12 +2499,16 @@ function renderList(){
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
    (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
 }
-function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();renderHomes();syncHash()}
-function soft(){renderKidControls();renderPlans();renderList();renderMap();syncHash()}
+function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();renderHomes();renderMoney();syncHash()}
+function soft(){renderKidControls();renderPlans();renderList();renderMap();renderMoney();syncHash()}
 function setView(v){const m=v==='method';$('v-plan').hidden=m;$('v-method').hidden=!m;root.querySelectorAll('.views [data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));
   if(!m&&map)setTimeout(()=>map.resize(),0);root.querySelector('.views').scrollIntoView({behavior:'smooth',block:'start'})}
 
 root.addEventListener('click',e=>{
+  const tb=e.target.closest('[data-terms]');if(tb){e.preventDefault();const d=$('tdlg');$('tbody').innerHTML=root.querySelector('#gform .terms').innerHTML;const a=lsGet('bx_signed');
+    $('tagree').textContent=a?'You agreed to these terms on '+new Date(a).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'.':'Everyone agrees to these terms when they open the Explorer.';d.hidden=false;d.querySelector('.tx').focus();return}
+  if(e.target.closest('[data-tclose]')||e.target.id==='tdlg'){$('tdlg').hidden=true;return}
+  const dpb=e.target.closest('[data-dp]');if(dpb){st.dp=+dpb.dataset.dp;renderMoney();syncHash();return}
   const vw=e.target.closest('[data-view]');if(vw){e.preventDefault();setView(vw.dataset.view);return}
   const ta=e.target.closest('.toc a');if(ta){e.preventDefault();const el=root.querySelector(ta.getAttribute('href'));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
   const kx=e.target.closest('[data-kx]');if(kx){e.stopPropagation();const i=+kx.dataset.kx;st.kids.splice(i,1);st.active=Math.max(0,Math.min(i<=st.active?st.active-1:st.active,st.kids.length-1));st.mapPlan=null;soft();return}
