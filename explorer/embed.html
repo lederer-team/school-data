@@ -742,14 +742,31 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .ok{font-size:12.5px;color:var(--teal);font-weight:700}
 .bx .grid{display:grid;grid-template-columns:370px minmax(0,1fr);gap:22px;align-items:start}
 @media (max-width:980px){.bx .grid{grid-template-columns:minmax(0,1fr)}}
-.bx .kids{display:flex;gap:0;border-bottom:1px solid var(--line2);overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-bottom-color:var(--line2)}
-.bx .kt{border:0;background:none;padding:11px 11px;cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;border-bottom:3px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:8px;border-radius:0}
+.bx .kids{display:flex;gap:4px;align-items:flex-end;overflow-x:auto;padding:6px 6px 0 0;border-bottom:3px solid var(--kcur,var(--line2))}
+.bx .kt{border:1px solid var(--line2);border-bottom:0;background:var(--sunk);padding:9px 12px;cursor:pointer;color:var(--muted);font-weight:700;font-size:14px;white-space:nowrap;display:flex;align-items:center;gap:8px;border-radius:10px 10px 0 0;position:relative;top:0;transition:background .15s,color .15s}
+.bx .kt:hover{color:var(--ink);background:var(--surface)}
 .bx .kt .dot{width:9px;height:9px;border-radius:50%}
-.bx .kt[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--kc)}
+.bx .kt[aria-selected="true"]{color:var(--onink);background:var(--kc);border-color:var(--kc);padding-top:12px;padding-bottom:10px}
+.bx .kt[aria-selected="true"] .dot{background:var(--onink)!important}
+.bx .kt[aria-selected="true"] .x{color:var(--onink)}
+.bx .kphead{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:-4px 0 -6px}
+.bx .kphead b{color:var(--ink);font-size:15px}
+.bx .kphead .dot{width:10px;height:10px;border-radius:50%;background:var(--kcur)}
+.bx .reshead.kid{border-left:6px solid var(--kcur);padding:8px 0 8px 12px;background:var(--sunk)}
+.bx .reshead .chip{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--onink);background:var(--kcur);padding:3px 8px;margin-left:8px;vertical-align:middle}
+.bx .supnote{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:2px solid var(--kcur);border-left-width:6px;background:var(--surface);padding:12px 14px;font-size:14px;color:var(--ink2);margin-top:14px}
+.bx .supnote>div{flex:1 1 280px;min-width:0}
+.bx .supnote .dot{width:10px;height:10px;border-radius:50%;background:var(--kcur);flex:none}
+.bx .supnote .lbtn.sm{padding:8px 12px;font-size:12px;color:var(--ink);border-color:var(--ink);flex:none}
+.bx #special{scroll-margin-top:90px}
+.bx .reshead.flash{animation:khl 1.2s ease}
+@keyframes khl{.bx 0%{background:var(--teal-soft)}
+.bx 100%{background:var(--sunk)}}
+@media (prefers-reduced-motion:reduce){.bx .reshead.flash{animation:none}}
 .bx .kt.add{color:var(--teal)}
 .bx .kt .x{color:var(--muted);cursor:pointer;font-size:16px;padding:0 3px;margin-left:2px;line-height:1;border-radius:50%}
 .bx .kt .x:hover{color:var(--amber)}
-.bx .panel{background:var(--surface);border:1px solid var(--line);border-top:0;padding:18px;display:grid;gap:20px}
+.bx .panel{background:var(--surface);border:2px solid var(--kcur,var(--line));border-top:0;padding:18px;display:grid;gap:20px}
 .bx .row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .bx .sec{display:grid;gap:9px;align-content:start}
 .bx .sl{display:grid;grid-template-columns:12px 1fr 52px;gap:3px 10px;align-items:center}
@@ -1079,6 +1096,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
         <div class="lmap" id="map" role="region" aria-label="Map of schools"></div>
         <div class="mapkey" id="mapKey"></div>
       </div>
+      <div id="supnote"></div>
       <div id="planwrap" class="res"></div>
       <div class="reshead"><h3 class="h2" id="ktitle"></h3><span class="sub" id="ksub"></span></div>
       <div id="znote"></div>
@@ -1878,7 +1896,9 @@ function renderKidControls(){
   const k=K[st.active],L2=level(k.grade),w=activeW(k);
   const tot=Object.values(w).reduce((a,b)=>a+b,0)||1;
   const hasInt=[...k.ints].some(x=>(L2==='H'?HSI:K8I).has(x));const show=CK.filter(c=>L2==='H'?!['path','lang','care','small'].includes(c):c!=='college');
+  document.querySelector('.grid').style.setProperty('--kcur',css(KC[st.active]));
   $('kidpanel').innerHTML=`
+   <div class="kphead"><span class="dot"></span><span>Settings for <b>${esc(kname(k,st.active))}</b>. Changes here update ${esc(kname(k,st.active))}'s schools on the right.</span></div>
    <div class="row2"><div class="sec"><label class="lab" for="kname">Name (optional)</label><input type="text" id="kname" value="${esc(k.name)}" maxlength="20" placeholder="Child ${st.active+1}"></div>
    <div class="sec"><label class="lab" for="kgrade">Grade next fall</label><select id="kgrade">${GRADES.map((g,i)=>`<option value="${i}" ${i===k.grade?'selected':''}>${g}  \u00B7  age ${i+5}-${i+6}</option>`).join('')}</select><span class="sub">Most ${GRADES[k.grade]==='K'?'kindergartners':GRADES[k.grade]+' graders'} are ${k.grade+5} or ${k.grade+6} in fall ${YEAR}</span></div></div>
    <label class="check support"><input type="checkbox" id="ksupport" ${k.support?'checked':''}><span>Needs learning support<br><span class="sub">Autism, ADHD, dyslexia or another learning difference. Shows specialized schools first without changing other rankings.</span></span></label>
@@ -1916,8 +1936,8 @@ function renderPlans(){
 }
 function renderList(){
   const k=st.kids[st.active];const nm=kname(k,st.active);lastSpec=[];
-  $('ktitle').textContent=`Best fits for ${nm} (${GRADES[k.grade]})`;
-  if(!st.places.length){lastList={scored:[],un:[]};$('ksub').textContent='';$('special').innerHTML='';$('znote').innerHTML='';
+  $('ktitle').innerHTML=`Best fits for ${esc(nm)} (${GRADES[k.grade]})${k.support?'<span class="chip">Learning support</span>':''}`;const rh=$('ktitle').parentNode;rh.classList.add('kid');rh.classList.remove('flash');void rh.offsetWidth;rh.classList.add('flash');
+  if(!st.places.length){lastList={scored:[],un:[]};$('ksub').textContent='';$('special').innerHTML='';$('supnote').innerHTML='';$('znote').innerHTML='';
     $('list').innerHTML=`<div class="empty"><b>Start with where you might live.</b><span>Type an address or a city in the box above. Add several cities to compare them. Each child gets a ranked list, and with two or more children you'll also see family plans.</span><button type="button" class="btn line" data-example="1">See an example family</button></div>`;return}
   const R=rankKid(k);
   // Zoned (or district) public schools first, then charter and private schools by radius, each ranked on its own
@@ -1927,13 +1947,14 @@ function renderList(){
   const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
+    $('supnote').innerHTML=`<div class="supnote"><span class="dot"></span><div><b>Learning support is on for ${esc(nm)}.</b> ${sp.length?`${sp.length} specialized or one-to-one school${sp.length>1?'s':''} within ${Math.max(st.radius,SPEC_MI)} miles serve ${GRADES[k.grade]} grade${np.length?`, plus ${np.length} nonpublic school${np.length>1?'s':''} reached through an IEP`:''}.`:`No specialized private schools serve ${GRADES[k.grade]} grade nearby${np.length?`, but ${np.length} nonpublic school${np.length>1?'s are':' is'} reached through an IEP`:''}.`} Family plans below still compare mainstream schools.</div><a href="#special" class="lbtn sm" data-jump="special">See ${esc(nm)}'s options</a></div>`;
     $('special').innerHTML=`<div class="spechead"><h3 class="h2">Specialized schools for ${esc(nm)}</h3><p>Private schools built for students with learning differences, plus one-to-one private schools many families consider, within ${Math.max(st.radius,SPEC_MI)} miles. Families apply directly. Confirm each school's fit, services and tuition with the school.</p></div>
      ${sp.length?sp.map(specCard).join(''):`<div class="empty">No specialized private schools in our data serve ${GRADES[k.grade]} grade within ${Math.max(st.radius,SPEC_MI)} miles.${k.grade<2?' Most East Bay schools built for learning differences start in 2nd grade or later, so younger children are usually served through district special education and early intervention.':''} Try a larger radius, or ask us for help.</div>`}
      <div class="special"><b>Also available through your district</b>
       ${np.length?`<span class="nps">Certified nonpublic special education schools nearby, usually reached through your child's IEP team rather than by applying: ${np.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, about ${r.min} min)`).join(' · ')}.</span>`:''}
       <span>Every public district must provide special education services, and many run dedicated autism programs. Ask each district on your list about its programs. Mainstream private schools aren't required to offer the same services, so ask each school what support it provides.</span></div>
      <div class="reshead"><h3 class="h2">All schools for ${esc(nm)}</h3></div>`;
-  }else $('special').innerHTML='';
+  }else{$('special').innerHTML='';$('supnote').innerHTML=''}
   lastSpec=k.support?specList(k,'ld'):[];renderZoneNote(k);
   const n=pubs.length+(st.showN[st.active]||10);lastList={scored,un,n};
   const mi_=st.radius>50?'at any distance':`within ${st.radius} miles`;
@@ -1993,6 +2014,7 @@ root.addEventListener('click',e=>{
   else if(t.dataset.detail){openDetail(t.dataset.detail)}
   else if(t.dataset.dguide){openDistrict(t.dataset.dguide)}
   else if(t.dataset.showmap){showOnMap(t.dataset.showmap)}
+  else if(t.dataset.jump){e.preventDefault();$(t.dataset.jump).scrollIntoView({behavior:'smooth',block:'start'})}
   else if(t.dataset.planmap){st.mapPlan=+t.dataset.planmap;renderMap();$('mapcard').scrollIntoView({behavior:'smooth',block:'start'})}
   else if(t.id==='mapBack'){st.mapPlan=null;renderMap()}
   else if(t.id==='example'||t.dataset.example){st=example();$('sharebox').hidden=true;render()}
@@ -2007,7 +2029,7 @@ root.addEventListener('input',e=>{const k=st.kids[st.active];
     root.querySelectorAll('#kidpanel .sl').forEach(el=>{const c=el.querySelector('input').id.slice(2);el.querySelector('.pct').textContent=w[c]?Math.round(w[c]/tot*100)+'%':'off'});
     const ps=$('kpreset');if(ps&&ps.value){if(!ps.querySelector('option[value=""]'))ps.insertAdjacentHTML('afterbegin','<option value="">Custom</option>');ps.value=''}
     renderPlans();renderList();renderMap();syncHash()}
-  if(e.target.id==='kname'){k.name=e.target.value;root.querySelector(`[data-tab="${st.active}"] .kn`).textContent=`${kname(k,st.active)} · ${GRADES[k.grade]}`;renderPlans();$('ktitle').textContent=`Best fits for ${kname(k,st.active)} (${GRADES[k.grade]})`;syncHash()}});
+  if(e.target.id==='kname'){k.name=e.target.value;root.querySelector(`[data-tab="${st.active}"] .kn`).textContent=`${kname(k,st.active)} · ${GRADES[k.grade]}`;renderPlans();$('ktitle').innerHTML=`Best fits for ${esc(kname(k,st.active))} (${GRADES[k.grade]})${k.support?'<span class="chip">Learning support</span>':''}`;const kp=root.querySelector('.kphead b');if(kp)kp.textContent=kname(k,st.active);syncHash()}});
 root.addEventListener('change',e=>{const k=st.kids[st.active];
   if(e.target.id==='kpreset'&&e.target.value){k.preset=e.target.value;Object.assign(k.w,PRESETS[k.preset]);soft();return}
   if(e.target.id==='kgrade'){k.grade=+e.target.value;st.showN[st.active]=10;soft()}
