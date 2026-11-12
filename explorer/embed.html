@@ -1286,6 +1286,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .gbox .check a{color:var(--teal)}
 .bx .gbox .err{color:var(--amber);font-size:13px;font-weight:700;min-height:1em}
 .bx .gbox .btn{justify-self:start;padding:13px 22px}
+.bx .gbox .btn[disabled]{opacity:.35;cursor:not-allowed;pointer-events:none}
+.bx .gbox .ghint{font-size:12.5px;color:var(--muted);margin-top:-6px}
 @media (max-width:480px){.bx .gbox{padding:20px 18px}
 .bx .gbox .row2{grid-template-columns:minmax(0,1fr)}}
 .bx .scrim{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2147483000}
@@ -1483,7 +1485,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <label class="check"><input type="checkbox" id="gterms" required><span>I agree to the terms of use, and I’ll confirm school information with the district and city before acting on it.</span></label>
   <label class="check"><input type="checkbox" id="gconsent" required><span>I agree to be contacted by The Lederer Team via call, email, and text for real estate services. To opt out, reply ‘stop’ at any time or click the unsubscribe link in emails. Message and data rates may apply. Message frequency may vary. <a href="/terms-and-conditions" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
   <div class="err" id="gerr" aria-live="polite"></div>
-  <button type="submit" class="btn">Open the Explorer</button>
+  <button type="submit" class="btn" id="gbtn" disabled>Open the Explorer</button><span class="ghint" id="ghint">Check both boxes above to continue.</span>
 </form></div>
 <div class="scrim" id="scrim" hidden></div>
 <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dname" hidden></aside>
@@ -2513,7 +2515,7 @@ function lpLead(name,email,phone,places,msg){try{
   setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
 function gate(){
   if(!CFG.gate||/luxurypresence|localhost/.test(location.hostname)||teamBypass()||lsGet('bx_signed'))return;
-  const g=$('gate');g.hidden=false;g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
+  const g=$('gate');g.hidden=false;const gsync=()=>{const ok=$('gterms').checked&&$('gconsent').checked;$('gbtn').disabled=!ok;$('ghint').hidden=ok};['gterms','gconsent'].forEach(id=>$(id).addEventListener('change',gsync));gsync();g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
   root.querySelectorAll('.hero a[href^="#"],.hero button:not(.hbtn)').forEach(b=>b.addEventListener('click',e=>{if(!root.classList.contains('gated'))return;e.preventDefault();e.stopPropagation();g.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>$('gname').focus({preventScroll:true}),400)},true));
   $('gform').addEventListener('submit',e=>{e.preventDefault();
     const name=$('gname').value.trim(),email=$('gemail').value.trim(),phone=$('gphone').value.trim();
