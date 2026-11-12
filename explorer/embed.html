@@ -1270,6 +1270,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .card{cursor:pointer}
 .bx .card:hover{border-color:var(--line2)}
 .bx .gate{position:fixed;inset:0;z-index:2147483002;background:rgba(11,11,11,.72);display:grid;place-items:center;padding:16px;overflow-y:auto}
+.bx.gated>*:not(.hero):not(#gate){display:none!important}
+.bx.gated .htools{display:none}
+.bx.gated .gate{position:static;inset:auto;z-index:auto;background:var(--bg,transparent);display:block;padding:clamp(28px,5vw,56px) max(16px,env(safe-area-inset-left,0px)) clamp(40px,6vw,72px) max(16px,env(safe-area-inset-right,0px));overflow:visible}
+.bx.gated .gbox{margin:0 auto;max-width:640px;box-shadow:none;border:1px solid var(--line);border-top:4px solid var(--ink);padding:32px clamp(18px,4vw,40px) 28px}
+.bx.gated .gbox h3{font-size:clamp(26px,3vw,34px)}
+.bx.gated .gbox .terms{max-height:none}
 .bx .gbox{background:var(--surface);max-width:520px;width:100%;padding:28px 28px 24px;display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.4)}
 .bx .gbox h3{font-family:var(--serif);font-weight:400;font-size:28px;color:var(--ink);line-height:1.15}
 .bx .gbox p{font-size:14px;line-height:1.6;color:var(--ink2)}
@@ -1469,10 +1475,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gtitle"><form class="gbox" id="gform" novalidate>
   <div class="eyebrow">The Lederer Team</div>
-  <h3 id="gtitle">Before you start</h3>
-  <p>The Bay Area School Explorer is free. Tell us who you are and agree to the terms of use to open it.</p>
+  <h3 id="gtitle">Get free access to the Explorer</h3>
+  <p>Compare every public, charter and private school in Alameda and Contra Costa counties, build a plan for each child, and see homes for sale near the schools that fit. Enter your name and email and accept the terms to open it.</p>
   <div class="row2"><label class="f">Name<input type="text" id="gname" autocomplete="name" required></label><label class="f">Email<input type="email" id="gemail" autocomplete="email" required></label></div>
-  <label class="f">Phone (optional)<input type="tel" id="gphone" autocomplete="tel"></label>
+  <label class="f">Phone (optional, for a call or text from our team)<input type="tel" id="gphone" autocomplete="tel"></label>
   <div class="terms"><b>Terms of use.</b> The Explorer is for research only. Attendance areas, district boundaries, programs, tuition and scores change, and the information here can be incomplete or wrong. Do not act on anything here, including buying, selling or renting a home, without first confirming school assignment and eligibility directly with the school district and the city. The Lederer Team does not guarantee school assignment, admission or enrollment, and does not recommend specific schools. Scores are our own calculation from public data. See the full <a href="/terms-and-conditions" target="_blank" rel="noopener">terms and conditions</a>.</div>
   <label class="check"><input type="checkbox" id="gterms" required><span>I agree to the terms of use, and I’ll confirm school information with the district and city before acting on it.</span></label>
   <label class="check"><input type="checkbox" id="gconsent" required><span>I agree to be contacted by The Lederer Team via call, email, and text for real estate services. To opt out, reply ‘stop’ at any time or click the unsubscribe link in emails. Message and data rates may apply. Message frequency may vary. <a href="/terms-and-conditions" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
@@ -2507,7 +2513,8 @@ function lpLead(name,email,phone,places,msg){try{
   setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
 function gate(){
   if(!CFG.gate||/luxurypresence|localhost/.test(location.hostname)||teamBypass()||lsGet('bx_signed'))return;
-  const g=$('gate');g.hidden=false;document.documentElement.style.overflow='hidden';setTimeout(()=>$('gname').focus(),50);
+  const g=$('gate');g.hidden=false;g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
+  root.querySelectorAll('.hero a[href^="#"],.hero button:not(.hbtn)').forEach(b=>b.addEventListener('click',e=>{if(!root.classList.contains('gated'))return;e.preventDefault();e.stopPropagation();g.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>$('gname').focus({preventScroll:true}),400)},true));
   $('gform').addEventListener('submit',e=>{e.preventDefault();
     const name=$('gname').value.trim(),email=$('gemail').value.trim(),phone=$('gphone').value.trim();
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':(phone&&phone.replace(/\D/g,'').length<10)?'Please check the phone number, or leave it blank.':!$('gterms').checked?'Please agree to the terms of use.':!$('gconsent').checked?'Please agree to be contacted to use the Explorer.':'';
@@ -2516,8 +2523,8 @@ function gate(){
     const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:places,[GE.page]:location.origin+location.pathname});
     try{fetch(GF,{method:'POST',mode:'no-cors',body})}catch(_){}
     if(phone)lpLead(name,email,phone,places);
-    lsSet('bx_signed',new Date().toISOString());lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);g.hidden=true;document.documentElement.style.overflow=''})}
-root.addEventListener('keydown',e=>{if(e.key==='Tab'&&!$('gate').hidden){const f=[...$('gform').querySelectorAll('input,button,a')];const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
+    lsSet('bx_signed',new Date().toISOString());lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);g.hidden=true;root.classList.remove('gated');document.documentElement.style.overflow='';setTimeout(()=>{try{map&&map.invalidate&&map.invalidate()}catch(_){}window.dispatchEvent(new Event('resize'))},50)})}
+root.addEventListener('keydown',e=>{if(e.key==='Tab'&&!$('gate').hidden&&!root.classList.contains('gated')){const f=[...$('gform').querySelectorAll('input,button,a')];const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
 
 loadGoogle();
 fromHash();
