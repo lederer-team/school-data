@@ -1919,7 +1919,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     <p class="ml">${x.office?'Listed by '+esc(x.office)+'. ':''}Listing information comes from the MLS through our home search and can change at any time. <a class="lnk" href="${esc(x.href)}" target="_blank" rel="noopener">Open the full listing</a></p>
    </div></div>`;
   el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();lvRealTimes(x);{const tb=el.querySelector('.lv-thumbs');let q;tb.addEventListener('scroll',()=>{clearTimeout(q);q=setTimeout(lvTa,60)},{passive:true})}
-  const fm=el.querySelector('.lv-form');fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
+  const fm=el.querySelector('.lv-form');bindPhone(fm.elements['p']);fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':phone.replace(/\D/g,'').length<10?'Please add a phone number so we can set up the showing.':'';
     out.textContent=err;if(err)return;lsSet('bx_name',name);lsSet('bx_email',email);lsSet('bx_phone',phone);
     const full=msg+' [Home: '+(x.ad||street)+(x.mls?', MLS '+x.mls:'')+'] [From the Bay Area School Explorer]';
@@ -2504,6 +2504,8 @@ $('tokbox').addEventListener('click',e=>{if(e.target.id==='tokbox')$('placeIn').
 /* ---------- sign-in gate (live site only): name, email, terms. Logged to a Google Sheet; with a phone number, also sent through the site's own contact form ---------- */
 const GF='https://docs.google.com/forms/d/e/1FAIpQLScoldxLPgwedCdD8pPlMi38hiPjs_R74ConLYphjwRbOxgTWQ/formResponse';
 const GE={name:'entry.1829188186',email:'entry.1868695182',phone:'entry.1624231566',terms:'entry.915905887',consent:'entry.1326937585',places:'entry.1983400583',page:'entry.308060020'};
+const fmtPhone=v=>{let d=String(v).replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);d=d.slice(0,10);if(!d)return'';if(d.length<4)return'('+d;if(d.length<7)return'('+d.slice(0,3)+') '+d.slice(3);return'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6)};
+const bindPhone=el=>{if(!el)return;el.setAttribute('placeholder','(510) 555-0123');el.setAttribute('inputmode','tel');el.addEventListener('input',e=>{if(e.inputType&&e.inputType.startsWith('delete'))return;el.value=fmtPhone(el.value)});el.addEventListener('blur',()=>{el.value=fmtPhone(el.value)})};
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function teamBypass(){if(/[?&#]team=lederer\b/.test(location.search+location.hash)){lsSet('bx_team','1');return true}return lsGet('bx_team')==='1'}
 function lpLead(name,email,phone,places,msg){try{
@@ -2515,7 +2517,7 @@ function lpLead(name,email,phone,places,msg){try{
   setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
 function gate(){
   if(!CFG.gate||/luxurypresence|localhost/.test(location.hostname)||teamBypass()||lsGet('bx_signed'))return;
-  const g=$('gate');g.hidden=false;const gsync=()=>{const ok=$('gterms').checked&&$('gconsent').checked;$('gbtn').disabled=!ok;$('ghint').hidden=ok};['gterms','gconsent'].forEach(id=>$(id).addEventListener('change',gsync));gsync();g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
+  const g=$('gate');g.hidden=false;const gsync=()=>{const ok=$('gterms').checked&&$('gconsent').checked;$('gbtn').disabled=!ok;$('ghint').hidden=ok};['gterms','gconsent'].forEach(id=>$(id).addEventListener('change',gsync));gsync();bindPhone($('gphone'));g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
   root.querySelectorAll('.hero a[href^="#"],.hero button:not(.hbtn)').forEach(b=>b.addEventListener('click',e=>{if(!root.classList.contains('gated'))return;e.preventDefault();e.stopPropagation();g.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>$('gname').focus({preventScroll:true}),400)},true));
   $('gform').addEventListener('submit',e=>{e.preventDefault();
     const name=$('gname').value.trim(),email=$('gemail').value.trim(),phone=$('gphone').value.trim();
