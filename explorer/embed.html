@@ -888,7 +888,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mk-br.hi span{color:var(--ink);font-weight:700}
 .bx .mk-cs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
 .bx .mk-c{border:1px solid var(--line);background:var(--surface);padding:12px 14px;min-width:0}
-.bx .mk-c h4{margin:0 0 6px;font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.bx .mk-c h4{margin:0 0 6px;font-family:var(--sans);font-size:12px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--muted)}
 .bx .mk-svg{width:100%;height:auto;display:block;overflow:visible}
 .bx .mk-svg .ax{stroke:var(--line2);stroke-width:1}
 .bx .mk-svg .md{stroke:var(--teal);stroke-width:2;stroke-dasharray:4 3}
@@ -1717,7 +1717,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611120911').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611120951').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2260,7 +2260,7 @@ function lvMarket(x){const c=x.city;const m=pmStat(c);const v=pmVs(x);if(!m&&!v)
       strip=`<div class="mk-c"><h4>This price among ${esc(c)} ${cd?'condos':'homes'} for sale now</h4><svg viewBox="0 0 ${W} ${H}" class="mk-svg" role="img" aria-label="This home's price compared with ${ps.length} homes for sale in ${esc(c)} and the median sale">
         <line x1="${pl}" x2="${W-pr}" y1="52" y2="52" class="ax"/><line x1="${mx.toFixed(1)}" x2="${mx.toFixed(1)}" y1="22" y2="82" class="md"/><text x="${mx.toFixed(1)}" y="14" text-anchor="middle" class="mdl">Median sale ${fM2(v.m.p)}</text>
         ${dots}<circle cx="${X(me.price).toFixed(1)}" cy="52" r="8" class="me"><title>This home: ${fM2(me.price)}</title></circle><text x="${Math.min(W-pr,Math.max(pl,X(me.price))).toFixed(1)}" y="98" text-anchor="${X(me.price)>W*.85?'end':X(me.price)<W*.15?'start':'middle'}" class="mel">This home ${fM2(me.price)}</text>
-        <text x="${pl}" y="98" class="tk">${fM2(lo/.95)}</text><text x="${W-pr}" y="98" text-anchor="end" class="tk">${fM2(hi/1.03)}</text></svg>
+        ${X(me.price)>pl+150?`<text x="${pl}" y="98" class="tk">${fM2(lo/.95)}</text>`:''}${X(me.price)<W-pr-150?`<text x="${W-pr}" y="98" text-anchor="end" class="tk">${fM2(hi/1.03)}</text>`:''}</svg>
         <p class="mk-k"><span class="kk"><span class="kd me"></span>This home</span><span class="kk"><span class="kd o"></span>Other ${cd?'condos':'homes'} for sale (${ps.length-1})</span><span class="kk"><span class="kl"></span>Median sale, past year</span>${off?`<span>${off} far outside this range not shown</span>`:''}</p></div>`}}
   // chart 2: one-year price change, every measured Bay Area city sorted, this city highlighted
   let rank='';if(m&&G.med.all&&G.med.all.length>10){const A=G.med.all,W=560,H=124,pt=22,pb=22,n=A.length,bw=(W-8)/n;const mn=Math.min(...A.map(a=>a[1]),0),mxv=Math.max(...A.map(a=>a[1]),0);
@@ -2272,7 +2272,7 @@ function lvMarket(x){const c=x.city;const m=pmStat(c);const v=pmVs(x);if(!m&&!v)
       ${ci>=0?`<line x1="${cx.toFixed(1)}" x2="${cx.toFixed(1)}" y1="${pt-4}" y2="${(H-pb).toFixed(1)}" class="md"/><text x="${Math.min(W-4,Math.max(4,cx)).toFixed(1)}" y="${pt-6}" text-anchor="${cx>W*.8?'end':cx<W*.2?'start':'middle'}" class="mel">${esc(c)} ${A[ci][1]>0?'+':''}${A[ci][1].toFixed(1)}%</text>`:''}
       <text x="4" y="${H-6}" class="tk">${A[0][1].toFixed(1)}%</text><text x="${W-4}" y="${H-6}" text-anchor="end" class="tk">+${A[n-1][1].toFixed(1)}%</text></svg>
       <p class="mk-k">Each bar is one city, lowest to highest. Bay Area overall: ${B.ch>0?'+':''}${B.ch!=null?B.ch.toFixed(1):''}%. Hover a bar for the city.</p></div>`}
-  return`<section class="lvsec lvmk"><div class="mk-hd"><h3 class="lvh">${esc(c)} market snapshot</h3><a href="${PMURL}" target="_blank" rel="noopener">See ${esc(c)} on our price map →</a></div>
+  return`<section class="lvsec lvmk"><div class="mk-hd"><h3 class="lvh">${esc(c)} market snapshot</h3><a href="${PMURL}" target="_blank" rel="noopener">Check out our quarterly data for the entire Bay Area →</a></div>
     <div class="mk-row">${tiles.join('')}</div>${strip||rank?`<div class="mk-cs">${strip}${rank}</div>`:''}
     <p class="sub">${m?`${m.n.toLocaleString()} house sales in ${esc(c)}, `:''}${G.med.per?esc(G.med.per)+'. ':''}Bay Area figures are the typical city among ${(G.med.N||106)} we measure. Bay Area MLS data, compiled by The Lederer Team.</p></section>`}
 function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
