@@ -774,7 +774,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .kdhead .top b{color:var(--ink2)}
 .bx .dgcard{display:grid;gap:12px}
 .bx .znote.dgcard{border-left:1px solid var(--line)}
-.bx .ztop:not(:empty){margin:16px 0 4px}
+.bx .ztop:not(:empty){margin:10px 0 0}
+.bx .dgstrip{padding:8px 14px;display:flex!important;flex-wrap:wrap;align-items:center;gap:6px 16px}
+.bx .dgstrip>p{flex-basis:100%;margin:0}
+.bx .dgstrip .dgmore{margin-left:auto}
+.bx .dgstrip .dgmore[open]{flex-basis:100%;margin-left:0}
+.bx .dgrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.bx .dgl{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.bx .dgchip{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--line2);border-left:4px solid var(--teal);background:var(--surface);padding:6px 10px;font:inherit;font-size:13px;color:var(--ink2);cursor:pointer}
+.bx .dgchip.app{border-left-color:var(--amber)}
+.bx .dgchip b{color:var(--ink);font-weight:800}
+.bx .dgchip span{font-size:12px;color:var(--muted)}
+.bx .dgchip:hover{border-color:var(--teal)}
+.bx .dgstrip .dgmore summary{font-size:12.5px}
 .bx .ztop .dgc{padding:10px 12px}
 .bx .ztop .dggrid{grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
 .bx .dgc .more{border:0!important;padding:0!important;background:none!important}
@@ -1489,10 +1501,9 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const L=k.grade<=5?'e':k.grade<=8?'m':'h';
   const rule=d=>{if(DPOL[d])return DPOL[d].head;const g=DGUIDE[d];if(!g||!g.levels)return 'Schools are generally assigned by home address.';const lv=g.levels.find(x=>x[0]===L)||g.levels.find(x=>x[0]==='k8')||g.levels[0];return (lv[2]||'').split(/(?<=\.)\s/)[0]};
   const town=d=>st.places.filter(p=>[...placeDists(p)].includes(d)).map(p=>p.n||p.label).join(', ');
-  el.innerHTML=`<div class="znote dgcard"><div class="dghead"><b>How public schools work in the places you picked</b><br><span class="sub">Each district assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} seats its own way. Open a district for the full guide, maps and links.</span></div>
-   <div class="dggrid">${[...ds].map(d=>`<button type="button" class="dgc${DPOL[d]?' pol':''}" data-dguide="${esc(d)}"><span class="dn">${esc(d)}</span><span class="dw">${esc(town(d))}</span><span>${esc(rule(d))}</span><span class="more">How it works →</span></button>`).join('')}</div>
+  el.innerHTML=`<div class="znote dgcard dgstrip"><div class="dgrow"><span class="dgl">How public schools work here:</span>${[...ds].map(d=>{const r=rule(d),app=!!DPOL[d]||/application|lottery|choose|choice|rank/i.test(r);return`<button type="button" class="dgchip${app?' app':''}" data-dguide="${esc(d)}" title="${esc(r)}"><b>${esc(d)}</b><span>${app?'By application':'By home address'}</span></button>`}).join('')}</div>
    ${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
-   <details class="dgmore"><summary>Boundaries, homes for sale and district phone numbers</summary>
+   <details class="dgmore"><summary>Boundaries, homes and district phones</summary>
    ${st.places.some(isCity)?`<p>For each city, the list shows every public school that serves some part of it. Which school a home attends depends on its exact address, so add an address to narrow the results, then confirm with the district.</p>`:''}
    <p><b>Homes for sale:</b> ${st.places.map(p=>homesLink(homesUrl(placeBox(p)),(p.kind==='address'?'near ':'in ')+esc(p.label))).join(' \u00b7 ')}. Check each home\u2019s assigned school with the district.</p>
    <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></details></div>`}
