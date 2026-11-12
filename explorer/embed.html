@@ -1690,7 +1690,7 @@ function listingsViaFrame(p,k){
   f.addEventListener('load',()=>setTimeout(poll,1500))}
 // Homes only: no apartment buildings, duplex-to-fourplex, commercial or land listings
 const isHome=x=>{const t=String(x.ty||'').toUpperCase(),sub=String(x.sub||'').toLowerCase();if(/MULTI|COMMERCIAL|LAND/.test(t))return false;
-  if(/multi|units|duplex|triplex|quad|apt|apartment|commercial|mixed|business|office|land|lot|income/.test(sub))return false;return !((x.units||0)>1)};
+  if(/multi|units|duplex|triplex|quad|apt|apartment|commercial|mixed|business|office|land|lot|income/.test(sub))return false;if(!(x.bd>0))return false;if(t==='OTHER'&&!/condo|town|single|detached/.test(sub))return false;return !((x.units||0)>1)};
 const HF=()=>st.hf||(st.hf={pmin:0,pmax:0,bd:0,ba:0,sf:0,ty:''});
 const isCondo=x=>/CONDO/.test(x.ty||'')||/condo|town/i.test(x.sub||'');
 const hfOk=x=>{const f=HF();return(!f.pmin||(x.price||0)>=f.pmin)&&(!f.pmax||(x.price||0)<=f.pmax)&&(!f.bd||(x.bd||0)>=f.bd)&&(!f.ba||(x.ba||0)>=f.ba)&&(!f.sf||(x.sf||0)>=f.sf)&&(!f.ty||(f.ty==='sf'?!isCondo(x):isCondo(x)))};
@@ -1743,7 +1743,9 @@ function lvSchools(x){if(!x.lat||!x.lng)return'';const p={label:x.ad,n:x.ad,lat:
   const rows=st.kids.map((k,i)=>{const L=k.grade>=9?9:k.grade>=6?6:0;
     const zs=S.filter(s=>s.sec==='Public'&&k.grade>=s.lo&&k.grade<=s.hi&&(()=>{try{const z=zoneFor(s,p);return z&&z.k==='zone'}catch(e){return false}})());
     const ds=[...new Set(zs.map(s=>s.dist))];const pol=ds.filter(d=>DPOL[d]).map(d=>DPOL[d].head);
-    const list=zs.length?zs.map(s=>{let f=null;try{const r=scoreFor(s,k,p);f=r.score}catch(e){}return`<button type="button" class="lnk" data-detail="${s.id}">${esc(s.n)}</button>${f!=null?` <b class="fitb" style="--kc:${css(KC[i])}">${f.toFixed(1)} fit</b>`:''}`}).join(' · '):'<span class="sub">No attendance area on file here. Ask the district which school serves this address.</span>';
+    let fb='';if(!zs.length){const dd=[...placeDists(p)];const cand=S.filter(s=>s.sec==='Public'&&!s.special&&k.grade>=s.lo&&k.grade<=s.hi&&dd.includes(s.dist)&&!/independent|online|virtual|adult|continuation|community day|opportunity/i.test(s.n));
+      if(cand.length===1)zs.push(cand[0]);else if(dd.length)fb=dd.map(d=>`<button type="button" class="lnk" data-dguide="${esc(d)}">${esc(d)}</button>`).join(' or ')+` assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} by address among ${cand.length} schools. We don't have its attendance map yet, so ask the district which school serves this home.`}
+    const list=zs.length?zs.map(s=>{let f=null;try{const r=scoreFor(s,k,p);f=r.score}catch(e){}return`<button type="button" class="lnk" data-detail="${s.id}">${esc(s.n)}</button>${f!=null?` <b class="fitb" style="--kc:${css(KC[i])}">${f.toFixed(1)} fit</b>`:''}`}).join(' · '):`<span class="sub">${fb||'No attendance area on file here. Ask the district which school serves this address.'}</span>`;
     return`<div class="lvk"><span class="dot" style="background:${css(KC[i])}"></span><div><b>${esc(kname(k,i))}</b> (${GRADES[k.grade]}): ${list}${pol.length?`<div class="sub">${esc(pol.join(' '))}</div>`:''}</div></div>`}).join('');
   return`<section class="lvsec"><h3>Schools for this home</h3><p class="sub">Public schools whose attendance area covers this address, for each child's grade next fall. Boundaries can change and a seat isn't guaranteed: confirm with the district before you buy.</p>${rows}</section>`}
 function lvGal(){const x=LV.x,n=x.imgs.length||1,i=((LV.i%n)+n)%n;LV.i=i;
