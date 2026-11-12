@@ -875,6 +875,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hsech h4{font-family:var(--serif);font-weight:400;font-size:26px;margin:0;color:var(--ink)}
 .bx .hsech .lnk{margin-left:auto}
 .bx .hmore{text-align:center}
+.bx #lvmap{height:340px;margin-top:10px;border:1px solid var(--line);background:var(--sunk);z-index:0}
+.bx .lvm-home{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--dark);color:#fff;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.bx .lvm-home svg{width:18px;height:18px}
 .bx #lview{position:fixed;inset:0;z-index:2147483000;background:rgba(11,11,11,.72);overflow-y:auto;padding:24px max(12px,env(safe-area-inset-left,0px))}
 .bx .lv-in{position:relative;max-width:1180px;margin:0 auto;background:var(--surface);color:var(--ink)}
 .bx .lv-x{position:absolute;top:10px;right:10px;z-index:3;width:42px;height:42px;border:0;background:rgba(11,11,11,.6);color:#fff;font-size:26px;line-height:1;cursor:pointer}
@@ -1672,7 +1675,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611120858').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2177,6 +2180,24 @@ function lvGal(){const x=LV.x,n=x.imgs.length||1,i=((LV.i%n)+n)%n;LV.i=i;
   const m=document.querySelector('#lview .lv-main');if(!m)return;m.style.backgroundImage=x.imgs[i]?`url('${x.imgs[i]}')`:'none';m.querySelector('.lv-cnt').textContent=`${i+1} / ${n}`;
   document.querySelectorAll('#lview .lv-th').forEach((t,j)=>t.classList.toggle('on',j===i));const on=document.querySelector('#lview .lv-th.on'),tb=document.querySelector('#lview .lv-thumbs');if(on&&tb){const pad=48,l=on.offsetLeft,r=l+on.offsetWidth;if(l<tb.scrollLeft+pad)tb.scrollLeft=l-pad;else if(r>tb.scrollLeft+tb.clientWidth-pad)tb.scrollLeft=r-tb.clientWidth+pad}lvTa()}
 function lvTa(){const tb=document.querySelector('#lview .lv-thumbs');if(!tb)return;const l=document.querySelector('#lview .lv-ta.l'),r=document.querySelector('#lview .lv-ta.r');setTimeout(()=>{l.disabled=tb.scrollLeft<4;r.disabled=tb.scrollLeft+tb.clientWidth>=tb.scrollWidth-4},350)}
+// Property view map: the home plus each child's schools shown in the list (pins in each child's color)
+function lvMap(x){const el=document.getElementById('lvmap');if(!el||!window.L||!x.lat||!x.lng)return;
+  try{if(LVM){LVM.remove();LVM=null}}catch(e){}
+  const m=L.map(el,{scrollWheelZoom:false,zoomControl:true,attributionControl:true});LVM=m;
+  const base=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,attribution:'Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors'}).addTo(m);
+  const ref=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Reference/MapServer/tile/{z}/{y}/{x}',{maxZoom:16,pane:'shadowPane'}).addTo(m);
+  let fails=0;base.on('tileerror',()=>{if(++fails===4){m.removeLayer(base);m.removeLayer(ref);L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(m)}});
+  const pts=[[x.lat,x.lng]];const home=L.divIcon({className:'',html:'<span class="lvm-home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z" fill="currentColor"/></svg></span>',iconSize:[34,34],iconAnchor:[17,17]});
+  L.marker([x.lat,x.lng],{icon:home,zIndexOffset:1000,title:'This home'}).addTo(m).bindPopup(`<b>This home</b><br>${esc(x.ad||'')}`);
+  const by=new Map();
+  document.querySelectorAll('#lview .lvkid').forEach(kb=>{const kc=kb.style.getPropertyValue('--kc')||'#1A1A1A';const kn=(kb.querySelector('.lvkh b')||{}).textContent||'';
+    kb.querySelectorAll('li').forEach(li=>{const d=li.querySelector('.lvdr');if(!d)return;const lat=+d.dataset.lat,lng=+d.dataset.lng;if(!lat||!lng)return;
+      const id=d.dataset.drs;const nm=(li.querySelector('.lvsn .lnk')||{}).textContent||'';const lab=(li.querySelector('.lvpk')||{}).textContent||'';
+      const o=by.get(id)||{lat,lng,nm,min:d.textContent,who:[],kc};o.who.push(`${esc(kn)}: ${esc(lab.toLowerCase())}`);if(/top/i.test(lab))o.kc=kc;by.set(id,o)})});
+  by.forEach(o=>{pts.push([o.lat,o.lng]);L.circleMarker([o.lat,o.lng],{radius:8,weight:2,color:'#fff',fillColor:o.kc,fillOpacity:.95}).addTo(m).bindPopup(`<b>${esc(o.nm)}</b><br>${o.who.join('<br>')}<br>About ${esc(o.min)} by car`);
+    L.polyline([[x.lat,x.lng],[o.lat,o.lng]],{color:o.kc,weight:1.5,opacity:.45,dashArray:'4 5',interactive:false}).addTo(m)});
+  const fit=()=>{m.invalidateSize();if(pts.length>1)m.fitBounds(pts,{padding:[30,30],maxZoom:14});else m.setView(pts[0],14)};fit();setTimeout(fit,250)}
+let LVM=null;
 function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
   const t=v=>v==null||v===''?null:v;const sqm=x.price&&x.sf?Math.round(x.price/x.sf):null;
   const rowsI=[['Bedrooms',t(x.bd)],['Bathrooms',t(x.ba)],['Living area',x.sf?x.sf.toLocaleString()+' sq ft':null]];
@@ -2195,6 +2216,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     <div class="lv-two"><div class="lv-desc">${desc?desc.split(/\n+/).map(q=>`<p>${esc(q)}</p>`).join(''):'<p class="sub">The listing description isn’t available here. Open the full listing for details.</p>'}</div>
      <div class="lv-stats">${[[IC.bed,x.bd,'Beds'],[IC.bath,x.ba,'Baths'],[IC.sf,x.sf&&x.sf.toLocaleString(),'Sq ft living area'],[IC.lot,x.lot&&x.lot.toLocaleString(),'Sq ft lot']].filter(q=>q[1]).map(([i,v,l])=>`<div>${i}<span><b>${v}</b>${l}</span></div>`).join('')}</div></div>
     ${lvSchools(x)}
+    ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above. Tap a pin for the school and drive time.</p><div id="lvmap"></div></section>`:''}
     <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
      <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
       <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
@@ -2202,7 +2224,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     <section class="lvsec"><h3 class="lvh">Features &amp; amenities</h3><div class="lvfs">${grid('Interior',rowsI)}${grid('Exterior',rowsE)}${grid('Area &amp; listing',rowsA)}${grid('Financial',rowsF)}</div></section>
     <p class="ml">${x.office?'Listed by '+esc(x.office)+'. ':''}Listing information comes from the MLS through our home search and can change at any time. <a class="lnk" href="${esc(x.href)}" target="_blank" rel="noopener">Open the full listing</a></p>
    </div></div>`;
-  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();lvRealTimes(x);{const tb=el.querySelector('.lv-thumbs');let q;tb.addEventListener('scroll',()=>{clearTimeout(q);q=setTimeout(lvTa,60)},{passive:true})}
+  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();lvRealTimes(x);lvMap(x);{const tb=el.querySelector('.lv-thumbs');let q;tb.addEventListener('scroll',()=>{clearTimeout(q);q=setTimeout(lvTa,60)},{passive:true})}
   const fm=el.querySelector('.lv-form');bindPhone(fm.elements['p']);fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':phone.replace(/\D/g,'').length<10?'Please add a phone number so we can set up the showing.':'';
     out.textContent=err;if(err)return;lsSet('bx_name',name);lsSet('bx_email',email);lsSet('bx_phone',phone);
