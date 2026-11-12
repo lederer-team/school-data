@@ -1230,14 +1230,28 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-rate input{font:inherit;font-size:14px;letter-spacing:0;font-weight:700;width:72px;padding:5px 6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .bx .mq-ctl .sub{font-size:12px}
 .bx .mq-ctl .lnk{font-size:12.5px}
-.bx .mq-eq2{margin-top:12px}
-.bx .mq-eq2 .mq-house{max-width:560px}
 .bx .mq-advb .mq-block{margin-top:14px;border-color:var(--line)}
 @media (max-width:720px){.bx .mq-sum{grid-template-columns:minmax(0,1fr)}}
-.bx .mq-steps{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;counter-reset:st}
-.bx .mq-steps li{counter-increment:st;background:var(--surface);border:1px solid var(--line);padding:12px 14px 12px 46px;position:relative;display:grid;gap:2px;font-size:14px;color:var(--ink2)}
-.bx .mq-steps li::before{content:counter(st);position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--onink);font-size:12px;font-weight:800;display:grid;place-items:center}
-.bx .mq-steps b{color:var(--ink)}
+.bx .mq-band{margin-top:12px;background:var(--dark);color:#fff;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.45fr) minmax(0,.95fr)}
+.bx .mq-band>*{padding:16px 20px;min-width:0}
+.bx .mq-band>*+*{border-left:1px solid rgba(255,255,255,.16)}
+.bx .mq-band .eyebrow{color:rgba(255,255,255,.66);margin:0}
+.bx .mq-band .mq-big{color:#fff;font-size:clamp(28px,3vw,38px)}
+.bx .mq-band .mq-big small{color:rgba(255,255,255,.7)}
+.bx .mq-b1,.bx .mq-b3{display:grid;gap:8px;align-content:start}
+.bx .mq-b1 .mq-hrow{gap:10px}
+.bx .mq-b1 .mq-hico{width:34px}
+.bx .mq-dlbar{display:flex;height:6px;gap:2px;margin-top:4px}
+.bx .mq-dlbar span{display:block;min-width:4px;background:#fff}
+.bx .mq-dlbar span:first-child{background:rgba(255,255,255,.35)}
+.bx .mq-barl{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;color:rgba(255,255,255,.7);margin-top:-2px}
+.bx .mq-barl b{color:#fff}
+.bx .mq-b3 .mq-big{color:#9fe3d3}
+.bx .mq-b3 p{margin:0;font-size:13.5px;line-height:1.45;color:rgba(255,255,255,.78)}
+.bx .mq-steps{list-style:none;margin:0;display:grid;gap:9px;align-content:center;counter-reset:st;font-size:13.5px;line-height:1.4;color:rgba(255,255,255,.78)}
+.bx .mq-steps li{counter-increment:st;position:relative;padding-left:30px}
+.bx .mq-steps li::before{content:counter(st);position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:#fff;color:var(--dark);font-size:11px;font-weight:800;display:grid;place-items:center}
+.bx .mq-steps b{color:#fff}
 .bx .mq-yrs{margin-top:16px}
 .bx .mq-hd{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 28px;margin-bottom:6px}
 .bx .mq-stat{display:grid;gap:2px}
@@ -1255,8 +1269,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-years .tot{fill:var(--ink);font-size:11.5px;font-weight:800}
 .bx .mq-years .col{cursor:pointer}
 .bx .mq-years .col.dim rect:not(.hit){opacity:.35}
-.bx .mq-tip{position:absolute;z-index:3;background:var(--dark);color:#fff;padding:10px 12px;font-size:13px;display:grid;gap:4px;min-width:200px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
-.bx .mq-tip span{display:flex;gap:8px;align-items:center}
+.bx .mq-tip{position:absolute;z-index:3;background:var(--dark);color:#fff;padding:10px 12px;font-size:13px;display:grid;gap:4px;min-width:200px;width:max-content;max-width:calc(100% - 8px);box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
+.bx .mq-tip span{display:flex;gap:8px;align-items:center;white-space:nowrap}
 .bx .mq-tip i{width:9px;height:9px;border-radius:50%}
 .bx .mq-tip em{font-style:normal;font-weight:800;margin-left:auto;padding-left:14px}
 .bx .mq-tip .rt{color:#9fe3d3}
@@ -1268,7 +1282,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-leg i{width:12px;height:12px;display:inline-block}
 .bx .mq-leg i.hatch{background:repeating-linear-gradient(45deg,var(--teal) 0 3px,color-mix(in srgb,var(--teal) 70%,#fff) 3px 6px)}
 .bx .mq-city b small{font-size:11px;font-weight:600;color:var(--muted);margin-right:3px}
-@media (max-width:720px){.bx .mq-steps{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:820px){.bx .mq-band{grid-template-columns:minmax(0,1fr)}
+.bx .mq-band>*+*{border-left:0;border-top:1px solid rgba(255,255,255,.16)}}
 @media (max-width:720px){.bx .mq-eq{grid-template-columns:minmax(0,1fr)}
 .bx .mq-eqs{justify-self:center;font-size:34px;margin:-6px 0}
 .bx .mq-bar,.bx .mq-city{grid-template-columns:70px minmax(0,1fr) auto}}
@@ -2051,14 +2066,13 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
   for(let y=0;y<yrs;y++){const parts=P.map(p=>{const g=p.k.grade+y;if(g>12)return 0;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;return t*Math.pow(1+tgr(),y)});cols.push(parts);total+=parts.reduce((a,b)=>a+b,0)}
   const lastY=fall+yrs;
   const kc=p=>css(KC[p.i]);
-  // A: the equation
-  const eq=`<div class="mq-eq2"><div class="mq-card mq-house"><div class="eyebrow">${fD(annual)} a year in tuition, as a mortgage instead</div>
-      <div class="mq-hrow"><svg class="mq-hico" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 27 32 5l26 22" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><path d="M13 23v29h38V23" fill="currentColor" opacity=".14"/><path d="M13 23v29h38V23" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><rect x="27" y="35" width="10" height="17" fill="currentColor"/></svg>
-      <div class="mq-big">${fM(h.H)}<small> more home</small></div></div>
-      <div class="mq-stack"><span class="dn" style="flex:${h.down}">${Math.round(dp*100)}% down<b>${fM(h.down)}</b></span><span class="ln" style="flex:${h.loan}">Loan<b>${fM(h.loan)}</b></span></div>
-      <div class="mq-sub">at ${rate.toFixed(2)}%${st.rt?' (your rate)':', the market rate'}</div></div></div>`;
-  // B: how the number is figured, in three plain steps
-  const steps=`<ol class="mq-steps"><li><b>${fD(annual)} a year</b><span>in private tuition is ${fD(annual/12)} a month.</span></li><li><b>${fD(annual/12)} a month</b><span>pays a ${fM(h.loan)} mortgage at ${rate.toFixed(2)}% plus property tax.</span></li><li><b>${fM(h.loan)} loan + ${fM(h.down)} down</b><span>(${Math.round(dp*100)}%) buys a home that costs about ${fM(h.H)} more.</span></li></ol>`;
+  // A+B: one dark band: as a mortgage (with the three steps) and as money toward the house itself
+  const mkEq=()=>`<div class="mq-band">
+      <div class="mq-b1"><div class="eyebrow">As a mortgage payment</div>
+        <div class="mq-hrow"><svg class="mq-hico" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 27 32 5l26 22" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round"/><path d="M13 23v29h38V23" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round"/><rect x="27" y="35" width="10" height="17" fill="currentColor"/></svg><div class="mq-big">${fM(h.H)}<small> more home</small></div></div>
+        <div class="mq-dlbar"><span style="flex:${h.down} 1 0"></span><span style="flex:${h.loan} 1 0"></span></div><div class="mq-barl"><span><b>${fM(h.down)}</b> ${Math.round(dp*100)}% down</span><span><b>${fM(h.loan)}</b> loan</span></div></div>
+      <ol class="mq-steps"><li><b>${fD(annual)} a year</b> in tuition is ${fD(annual/12)} a month.</li><li><b>${fD(annual/12)} a month</b> pays a ${fM(h.loan)} mortgage at ${rate.toFixed(2)}%${st.rt?'':' (market rate)'} plus property tax.</li><li><b>${fM(h.loan)} loan + ${fM(h.down)} down</b> (${Math.round(dp*100)}%) buys a home that costs about ${fM(h.H)} more.</li></ol>
+      <div class="mq-b3"><div class="eyebrow">Or toward the house itself</div><div class="mq-big">${fM(total)}</div><p>All the tuition through ${lastY}, put toward a bigger down payment or paying down principal.</p></div></div>`;
   // C: over the school years (SVG columns)
   const W=1000,H=230,pb=26,pt=26,slot=(W-20)/cols.length,bw=Math.min(44,slot-8),mx=Math.max(...cols.map(c=>c.reduce((a,b)=>a+b,0)));
   const svg=`<svg class="mq-years" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tuition by school year until ${lastY}">${cols.map((c,y)=>{const x=10+y*slot+(slot-bw)/2;let yy=H-pb;const tot=c.reduce((a,b)=>a+b,0);
@@ -2079,10 +2093,10 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
   el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school costs</div></div>
     <h3>What private school would cost</h3><p class="sub">Each child’s top private pick, from next fall through 12th grade.</p></div>
     ${years}
-    <details class="mq-adv"${st.mqOpen?' open':''}><summary><span><b>Public school instead? See how much more house you could buy</b><em>Put the tuition toward a mortgage: about ${fM(h.H)} more home.</em></span><span class="mq-open">Open</span></summary>
+    <details class="mq-adv"${st.mqOpen?' open':''}><summary><span><b>Public school instead? See how much more house you could buy</b><em>If a public school works for your children, put the private school money toward a mortgage or principal: about ${fM(h.H)} more home.</em></span><span class="mq-open">Open</span></summary>
       <div class="mq-advb"><div class="mq-ctl"><div class="mq-dp" role="group" aria-label="Down payment"><span>Down payment</span>${[10,20,30].map(v=>`<button type="button" data-dp="${v}" aria-pressed="${(st.dp||20)===v}">${v}%</button>`).join('')}</div>${rateCtl}</div>
-      ${eq}${steps}${cities}
-      <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. Tuition is our best figure from each school and changes yearly; after a child’s current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></div></details></section>`;
+      ${mkEq()}${cities}
+      <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. The principal figure is the tuition total itself and does not count interest saved. Tuition is our best figure from each school and changes yearly; after a child’s current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></div></details></section>`;
   const tgs=el.querySelector('[data-tg]');if(tgs)tgs.addEventListener('change',()=>{st.tg=+tgs.value;renderMoney();syncHash()});
   const adv=el.querySelector('.mq-adv');adv.addEventListener('toggle',()=>{st.mqOpen=adv.open});
   const ri=el.querySelector('[data-rt]');if(ri)ri.addEventListener('change',()=>{const v=+ri.value;st.rt=v>=2&&v<=15&&Math.abs(v-mkt)>0.001?v:0;renderMoney()});
