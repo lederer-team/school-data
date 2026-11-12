@@ -759,6 +759,32 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .supnote .dot{width:10px;height:10px;border-radius:50%;background:var(--kcur);flex:none}
 .bx .supnote .lbtn.sm{padding:8px 12px;font-size:12px;color:var(--ink);border-color:var(--ink);flex:none}
 .bx #special{scroll-margin-top:90px}
+.bx .kdrawer{border:1px solid var(--line);background:var(--surface);margin-top:14px;scroll-margin-top:90px}
+.bx .kdrawer .reshead{margin:0;border-left:6px solid var(--kcur);padding:12px 14px;background:var(--sunk);align-items:center;flex-wrap:nowrap}
+.bx .kdrawer .reshead .rt{display:grid;gap:2px;min-width:0;flex:1}
+.bx .kdtog{flex:none;border:1px solid var(--line2);background:var(--surface);font:inherit;font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:8px 12px;cursor:pointer;color:var(--ink)}
+.bx #kdbody{padding:0 14px 14px}
+.bx .kdrawer.closed #kdbody{display:none}
+.bx .kdhead{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);border-left:6px solid var(--kc);background:var(--surface);padding:14px;margin-top:14px;cursor:pointer;font:inherit;color:var(--ink)}
+.bx .kdhead:hover{background:var(--sunk)}
+.bx .kdhead .dot{width:12px;height:12px;border-radius:50%;background:var(--kc)}
+.bx .kdhead .t{font-family:var(--serif,inherit);font-size:20px;font-weight:600}
+.bx .kdhead .open{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--teal)}
+.bx .kdhead .top{grid-column:2/4;font-size:13.5px;color:var(--muted);min-width:0}
+.bx .kdhead .top b{color:var(--ink2)}
+.bx .dgcard{display:grid;gap:12px}
+.bx .znote.dgcard{border-left:1px solid var(--line)}
+.bx .dgc .more{border:0!important;padding:0!important;background:none!important}
+.bx .dgcard .dghead b{font-size:15px;color:var(--ink)}
+.bx .dggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.bx .dgc{display:grid;gap:4px;text-align:left;border:1px solid var(--line2);border-top:4px solid var(--teal);background:var(--surface);padding:12px;cursor:pointer;font:inherit;color:var(--ink2);font-size:13px;line-height:1.45}
+.bx .dgc:hover{border-color:var(--teal)}
+.bx .dgc.pol{border-top-color:var(--amber)}
+.bx .dgc .dn{font-weight:800;color:var(--ink);font-size:14px}
+.bx .dgc .dw{font-size:11.5px;color:var(--muted)}
+.bx .dgc .more{font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--teal);margin-top:2px}
+.bx .dgmore summary{cursor:pointer;font-weight:700;color:var(--teal);font-size:13.5px}
+.bx .dgmore[open] summary{margin-bottom:8px}
 .bx .reshead.flash{animation:khl 1.2s ease}
 @keyframes khl{.bx 0%{background:var(--teal-soft)}
 .bx 100%{background:var(--sunk)}}
@@ -1098,10 +1124,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
       </div>
       <div id="supnote"></div>
       <div id="planwrap" class="res"></div>
-      <div class="reshead"><h3 class="h2" id="ktitle"></h3><span class="sub" id="ksub"></span></div>
       <div id="znote"></div>
-      <div id="special"></div>
-      <div id="list" class="res"><div class="empty">Loading East Bay schools…</div></div>
+      <div id="kdabove"></div>
+      <div class="kdrawer" id="kdactive">
+       <div class="reshead"><div class="rt"><h3 class="h2" id="ktitle"></h3><span class="sub" id="ksub"></span></div><button type="button" class="kdtog" id="kdtog" aria-expanded="true" aria-controls="kdbody">Collapse</button></div>
+       <div id="kdbody"><div id="special"></div>
+       <div id="list" class="res"><div class="empty">Loading East Bay schools…</div></div></div>
+      </div>
+      <div id="kdbelow"></div>
       <p class="sub">Scores are The Lederer Team's own calculation from public data. See <a href="#method" data-view="method">how we score schools</a>. Public school attendance depends on district boundaries, which can change: confirm eligibility with the district before choosing a home.</p>
     </section>
   </div>
@@ -1444,11 +1474,21 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const host=w=>w.replace(/^https?:\/\//,'').replace(/\/$/,'');
   const contact=[...ds].map(d=>{const c=(G.dinfo||{})[d]||{};return`<li><b>${esc(d)}</b>${c.ph?` · ${esc(c.ph)}`:''}${c.w?` · <a href="https://${esc(host(c.w))}" target="_blank" rel="noopener">${esc(host(c.w))}</a>`:''}</li>`}).join('');
   const pols=[...ds].filter(d=>DPOL[d]);
-  el.innerHTML=`${pols.map(d=>`<button type="button" class="znote pol dg" data-dguide="${esc(d)}"><span><span class="warn">${esc(DPOL[d].head)}</span> ${esc(DPOL[d].long)}</span><span class="more">How ${esc(d)} works, with links →</span></button>`).join('')}<div class="znote">
-   <p class="dgs"><b>How each district works:</b> ${[...ds].map(d=>`<button type="button" class="lnk" data-dguide="${esc(d)}">${esc(d)}</button>`).join(' ')}</p>${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
-   ${st.places.filter(isCity).map(p=>`<p><b>${esc(p.n)}:</b> these are all the public schools that serve some part of ${esc(p.n)}. Which school a home attends depends on its exact address and on the district. Add an address to narrow the results, then confirm with the district.</p>`).join('')}
+  const L=k.grade<=5?'e':k.grade<=8?'m':'h';
+  const rule=d=>{if(DPOL[d])return DPOL[d].head;const g=DGUIDE[d];if(!g||!g.levels)return 'Schools are generally assigned by home address.';const lv=g.levels.find(x=>x[0]===L)||g.levels.find(x=>x[0]==='k8')||g.levels[0];return (lv[2]||'').split(/(?<=\.)\s/)[0]};
+  const town=d=>st.places.filter(p=>[...placeDists(p)].includes(d)).map(p=>p.n||p.label).join(', ');
+  el.innerHTML=`<div class="znote dgcard"><div class="dghead"><b>How public schools work where you're looking</b><br><span class="sub">Each district assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} seats its own way. Open a district for the full guide, maps and links.</span></div>
+   <div class="dggrid">${[...ds].map(d=>`<button type="button" class="dgc${DPOL[d]?' pol':''}" data-dguide="${esc(d)}"><span class="dn">${esc(d)}</span><span class="dw">${esc(town(d))}</span><span>${esc(rule(d))}</span><span class="more">How it works →</span></button>`).join('')}</div>
+   ${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
+   <details class="dgmore"><summary>Boundaries, homes for sale and district phone numbers</summary>
+   ${st.places.some(isCity)?`<p>For each city, the list shows every public school that serves some part of it. Which school a home attends depends on its exact address, so add an address to narrow the results, then confirm with the district.</p>`:''}
    <p><b>Homes for sale:</b> ${st.places.map(p=>homesLink(homesUrl(placeBox(p)),(p.kind==='address'?'near ':'in ')+esc(p.label))).join(' \u00b7 ')}. Check each home\u2019s assigned school with the district.</p>
-   <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. The public schools shown come from each district’s own map. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div>`}
+   <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></details></div>`}
+function renderDrawers(){const K=st.kids,a=st.active,many=K.length>1;
+  const hd=i=>{const k=K[i],nm=kname(k,i);let top='';if(st.places.length){const R=order(rankKid(k)).slice(0,3);top=R.length?R.map((r,j)=>`${j+1}. <b>${esc(r.s.n)}</b> ${r.score.toFixed(1)}`).join(' \u00b7 '):'No ranked schools yet'}
+    return`<button type="button" class="kdhead" data-tab="${i}" data-kd="1" style="--kc:${css(KC[i])}"><span class="dot"></span><span class="t">Best fits for ${esc(nm)} (${GRADES[k.grade]})${k.support?' \u00b7 learning support':''}</span><span class="open">Open ▾</span><span class="top">${top}</span></button>`};
+  $('kdabove').innerHTML=K.map((_,i)=>i<a?hd(i):'').join('');$('kdbelow').innerHTML=K.map((_,i)=>i>a?hd(i):'').join('');
+  $('kdactive').classList.toggle('closed',!!st.kdc);const tg=$('kdtog');tg.hidden=!many&&!st.kdc;tg.textContent=st.kdc?'Open':'Collapse';tg.setAttribute('aria-expanded',String(!st.kdc))}
 // When a home is an address or neighborhood inside this school's attendance area, the zoned high school at that point is known
 // The zoned school of a level (M or H) for a home address inside this school's area, same district
 function atHome(s,lv){if(s.dist===LVD){for(const p of st.places){const g=lvLookup(p);if(g&&g.ids.has(s.id)&&g.lv[lv].size===1)return [...g.lv[lv]][0]}return null}
@@ -1955,7 +1995,7 @@ function renderList(){
       <span>Every public district must provide special education services, and many run dedicated autism programs. Ask each district on your list about its programs. Mainstream private schools aren't required to offer the same services, so ask each school what support it provides.</span></div>
      <div class="reshead"><h3 class="h2">All schools for ${esc(nm)}</h3></div>`;
   }else{$('special').innerHTML='';$('supnote').innerHTML=''}
-  lastSpec=k.support?specList(k,'ld'):[];renderZoneNote(k);
+  lastSpec=k.support?specList(k,'ld'):[];renderZoneNote(k);renderDrawers();
   const n=pubs.length+(st.showN[st.active]||10);lastList={scored,un,n};
   const mi_=st.radius>50?'at any distance':`within ${st.radius} miles`;
   const head=i=>!grp?'':(i===0&&pubs.length?`<div class="grphead"><h4>Public schools ${st.pub==='zone'?'zoned for your locations':'in your districts'}</h4><span class="sub">${pubs.length} school${pubs.length===1?'':'s'}. Assigned by the district.</span></div>`:'')+
@@ -2003,7 +2043,8 @@ root.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;const k=st.kids[st.active];
   if(t.dataset.unplace){st.places.splice(+t.dataset.unplace,1);st.mapPlan=null;render();$('placeIn').focus()}
   else if(t.dataset.v&&t.closest('#mode')){st.together=t.dataset.v==='campus';st.mapPlan=null;render()}
-  else if(t.dataset.tab){st.active=+t.dataset.tab;st.mapPlan=null;soft()}
+  else if(t.dataset.tab){st.active=+t.dataset.tab;st.mapPlan=null;st.kdc=false;soft();if(t.dataset.kd)setTimeout(()=>$('kdactive').scrollIntoView({behavior:'smooth',block:'start'}),60)}
+  else if(t.id==='kdtog'){st.kdc=!st.kdc;renderDrawers()}
   else if(t.dataset.add){const i=st.kids.length;st.kids.push(mk('',2,'Balanced',[],'all'));st.active=i;st.mapPlan=null;soft();$('kname').focus()}
   else if(t.dataset.remove){st.kids.splice(+t.dataset.remove,1);st.active=0;st.mapPlan=null;soft()}
   else if(t.dataset.sec){k.sector=t.dataset.sec;soft()}
