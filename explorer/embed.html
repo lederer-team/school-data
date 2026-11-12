@@ -875,6 +875,19 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hsech h4{font-family:var(--serif);font-weight:400;font-size:26px;margin:0;color:var(--ink)}
 .bx .hsech .lnk{margin-left:auto}
 .bx .hmore{text-align:center}
+.bx #lview .lvm-t{background:var(--surface);color:var(--ink2);border:1px solid var(--line2);border-radius:0;box-shadow:0 1px 4px rgba(0,0,0,.15);font:600 11.5px/1.2 var(--sans);padding:3px 6px}
+.bx #lview .lvm-t b{color:var(--ink)}
+.bx #lview .lvm-t::before{display:none}
+.bx .lvmk .mk-hd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 16px}
+.bx .lvmk .mk-hd a{color:var(--teal);font-weight:800;font-size:14px;text-decoration:none}
+.bx .lvmk .mk-hd a:hover{text-decoration:underline}
+.bx .mk-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.bx .mk-t{display:grid;gap:3px;align-content:start;border:1px solid var(--line);border-top:3px solid var(--teal);background:var(--surface);padding:12px 14px;min-width:0}
+.bx .mk-t.hi{background:var(--dark);border-color:var(--dark);color:#fff}
+.bx .mk-t.hi .mk-l,.bx .mk-t.hi .mk-s{color:rgba(255,255,255,.72)}
+.bx .mk-l{font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.bx .mk-t b{font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.05}
+.bx .mk-s{font-size:12.5px;line-height:1.35;color:var(--muted)}
 .bx #lvmap{height:340px;margin-top:10px;border:1px solid var(--line);background:var(--sunk);z-index:0}
 .bx .lvm-home{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--dark);color:#fff;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)}
 .bx .lvm-home svg{width:18px;height:18px}
@@ -1170,6 +1183,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hpm{margin:6px 0 10px;font-size:12.5px;color:var(--muted)}
 .bx .hpm a{color:var(--teal);font-weight:800;text-decoration:none;white-space:nowrap}
 .bx .hpm a:hover{text-decoration:underline}
+.bx .hcard .mvc{display:inline-block;background:var(--teal-soft);color:var(--teal);font-weight:800;font-size:11.5px;padding:1px 6px;margin-right:4px}
 .bx .hcard .mv{font-size:11.5px;line-height:1.4;color:var(--muted);margin-top:3px;padding-top:4px;border-top:1px dashed var(--line)}
 .bx .ml{font-size:11px;color:var(--muted)}
 .bx .mny{margin-top:clamp(28px,4vw,48px)}
@@ -1675,7 +1689,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611120858').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611120904').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2029,7 +2043,7 @@ function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){e
   const head=(t,sub,ctl)=>`<div class="hh"><div class="hhtop"><div class="eyebrow">Active listings · from our home search</div><a class="hhall" href="${esc(all)}" target="_blank" rel="noopener">See every home in this area →</a></div><h3>${t}</h3>${sub?`<p class="sub">${sub}</p>`:''}</div>${ctl||''}${G.med&&G.med.c?`<p class="hpm">Each home is compared with the median sale in its city over the past year (houses with houses, condos with condos), from our own MLS data. <a href="${PMURL}" target="_blank" rel="noopener">Compare 106 Bay Area cities on our price map →</a></p>`:''}`;
   const spec=x=>[x.bd&&x.bd+' bd',x.ba&&x.ba+' ba',x.sf&&x.sf.toLocaleString()+' sqft'].filter(Boolean).join(' · ');
   const bg=x=>x.img?` style="background-image:url('${esc(x.img)}')"`:'';
-  const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener" data-lh="${esc(x.href)}"><div class="ph"${bg(x)}>${x.st!=='For sale'?`<span class="stt">${x.st}</span>`:''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span>${(()=>{const v=pmVs(x);return v?`<span class="mv">${esc(v.vs[0].toUpperCase()+v.vs.slice(1))} for ${esc(v.c)} ${v.kind} (${fM2(v.m.p)})${v.psf&&v.m.sq?`<br>$${v.psf.toLocaleString()}/sq ft · city median $${v.m.sq.toLocaleString()}`:''}</span>`:''})()}<span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
+  const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener" data-lh="${esc(x.href)}"><div class="ph"${bg(x)}>${x.st!=='For sale'?`<span class="stt">${x.st}</span>`:''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span>${(()=>{const v=pmVs(x);return v?`<span class="mv"><span class="mvc">${Math.abs(v.d)<3?'At':(v.d>0?'+':'−')+Math.abs(v.d)+'% vs'} ${esc(v.c)} median</span><br>Median ${v.kind==="condos"?"condo":"house"} sale ${fM2(v.m.p)}${v.psf&&v.m.sq?` · $${v.psf.toLocaleString()}/sq ft vs $${v.m.sq.toLocaleString()}`:''}</span>`:''})()}<span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
   const discs=Object.values(LST.discs||{});
   const foot=`<p class="ml">Listings come from the MLS through our home search and can change at any time. ${p?'The schools above are for the address you entered; check':'A home’s assigned schools depend on its exact address; check'} each home’s schools with the district.</p>${discs.length?`<details class="disc"><summary>MLS information and disclaimers</summary>${discs.map(d=>`<p>${esc(d)}</p>`).join('')}</details>`:''}`;
   const sk=n=>`<div class="hgrid">${'<div class="hcard sk"><div class="ph"></div><div class="bd"><span></span><span style="width:60%"></span></div></div>'.repeat(n)}</div>`;
@@ -2168,7 +2182,7 @@ function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label
   const u=[...new Map(tops.map(t=>[t.id,t])).values()];let route=0,cur=null,left=[...u];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);cur=nx}
   const MQ=moneyCalc();const mline=MQ?`<div class="lvmq"><span class="lvmq-h">Public school instead?</span><span>${MQ.P.map(p=>esc(kname(p.k,p.i))+' at '+esc(p.s.n)).join(', ')}: about <b>${fD(MQ.annual)} a year</b>. As a mortgage payment, that buys about <b>${fM(MQ.h.H)} more home</b> (${Math.round(MQ.dp*100)}% down, ${MQ.rate.toFixed(2)}% rate).</span></div>`:'';
   const sum=st.kids.length>1&&u.length?`<p class="lvroute"><b>Morning drop-off from this home:</b> about ${route} min to ${u.length>1?'reach every top pick, nearest first':'the shared top pick'}.</p>`:'';
-  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities. <span class="lvdn">Drive times are estimates for a weekday morning.</span></p>${sum}${mline}${pmLine(x.city,'pmh-lv',x)}<div class="lvkids">${blocks}</div>${anyPub?`<div class="lvwarn"><b>About public school assignments.</b> The assigned public schools shown here come from district attendance maps, which can change. We don't guarantee a seat at any school. Please verify the school for this address with the school district before you buy.</div>`:''}</section>`}
+  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities. <span class="lvdn">Drive times are estimates for a weekday morning.</span></p>${sum}${mline}<div class="lvkids">${blocks}</div>${anyPub?`<div class="lvwarn"><b>About public school assignments.</b> The assigned public schools shown here come from district attendance maps, which can change. We don't guarantee a seat at any school. Please verify the school for this address with the school district before you buy.</div>`:''}</section>`}
 // Upgrade drive estimates to Google drive times when the Routes API is enabled for the site's key
 async function lvRealTimes(x){try{if(!window.google||!google.maps||!google.maps.importLibrary)return;const el=document.querySelectorAll('#lview .lvdr');if(!el.length)return;
   const ids=[...new Map([...el].map(e=>[e.dataset.drs,[+e.dataset.lat,+e.dataset.lng]])).entries()];const lib=await google.maps.importLibrary('routes');if(!lib.RouteMatrix)return;
@@ -2194,10 +2208,22 @@ function lvMap(x){const el=document.getElementById('lvmap');if(!el||!window.L||!
     kb.querySelectorAll('li').forEach(li=>{const d=li.querySelector('.lvdr');if(!d)return;const lat=+d.dataset.lat,lng=+d.dataset.lng;if(!lat||!lng)return;
       const id=d.dataset.drs;const nm=(li.querySelector('.lvsn .lnk')||{}).textContent||'';const lab=(li.querySelector('.lvpk')||{}).textContent||'';
       const o=by.get(id)||{lat,lng,nm,min:d.textContent,who:[],kc};o.who.push(`${esc(kn)}: ${esc(lab.toLowerCase())}`);if(/top/i.test(lab))o.kc=kc;by.set(id,o)})});
-  by.forEach(o=>{pts.push([o.lat,o.lng]);L.circleMarker([o.lat,o.lng],{radius:8,weight:2,color:'#fff',fillColor:o.kc,fillOpacity:.95}).addTo(m).bindPopup(`<b>${esc(o.nm)}</b><br>${o.who.join('<br>')}<br>About ${esc(o.min)} by car`);
+  by.forEach(o=>{pts.push([o.lat,o.lng]);const mk=L.circleMarker([o.lat,o.lng],{radius:8,weight:2,color:'#fff',fillColor:o.kc,fillOpacity:.95}).addTo(m);mk.bindTooltip(`<b>${esc(o.min)}</b> ${esc(o.nm.length>26?o.nm.slice(0,24)+'…':o.nm)}`,{permanent:true,direction:'right',offset:[9,0],className:'lvm-t',opacity:1});mk.bindPopup(`<b>${esc(o.nm)}</b><br>${o.who.join('<br>')}<br>About ${esc(o.min)} by car`);
     L.polyline([[x.lat,x.lng],[o.lat,o.lng]],{color:o.kc,weight:1.5,opacity:.45,dashArray:'4 5',interactive:false}).addTo(m)});
   const fit=()=>{m.invalidateSize();if(pts.length>1)m.fitBounds(pts,{padding:[30,30],maxZoom:14});else m.setView(pts[0],14)};fit();setTimeout(fit,250)}
 let LVM=null;
+// Market snapshot on the property page: this home against its city's sales over the past year (our price map data)
+function lvMarket(x){const c=x.city;const m=pmStat(c);const v=pmVs(x);if(!m&&!v)return'';const cd=v&&v.kind==='condos';
+  const t=(big,lab,sub,cls)=>`<div class="mk-t${cls?' '+cls:''}"><span class="mk-l">${lab}</span><b>${big}</b><span class="mk-s">${sub}</span></div>`;
+  const tiles=[];
+  if(v){const d=v.d;tiles.push(t(Math.abs(d)<3?'At median':`${d>0?'+':'−'}${Math.abs(d)}%`,'This home’s price',`vs the ${fM2(v.m.p)} median ${cd?'condo':'house'} sale in ${esc(c)}`,'hi'));
+    if(v.psf&&v.m.sq)tiles.push(t(`$${v.psf.toLocaleString()}`,'Price per sq ft',`${esc(c)} median: $${v.m.sq.toLocaleString()}`))}
+  if(m){const b=pmBits(m);tiles.push(t(`${m.ch>0?'+':m.ch<0?'−':''}${Math.abs(m.ch).toFixed(1)}%`,'House prices, past year',m.rk?`#${m.rk} of ${m.N} Bay Area cities`:esc(c)));
+    if(m.ov!=null)tiles.push(t(`${Math.round(m.ov)}%`,'Sold over asking',`of ${esc(c)} houses`));
+    if(m.dom!=null)tiles.push(t(`${m.dom}`,'Days on market',`median for ${esc(c)} houses`))}
+  return`<section class="lvsec lvmk"><div class="mk-hd"><h3 class="lvh">${esc(c)} market snapshot</h3><a href="${PMURL}" target="_blank" rel="noopener">See ${esc(c)} on our price map →</a></div>
+    <div class="mk-row">${tiles.join('')}</div>
+    <p class="sub">${m?`${m.n.toLocaleString()} house sales, `:''}${G.med.per?esc(G.med.per)+'. ':''}Bay Area MLS data, compiled by The Lederer Team.</p></section>`}
 function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
   const t=v=>v==null||v===''?null:v;const sqm=x.price&&x.sf?Math.round(x.price/x.sf):null;
   const rowsI=[['Bedrooms',t(x.bd)],['Bathrooms',t(x.ba)],['Living area',x.sf?x.sf.toLocaleString()+' sq ft':null]];
@@ -2215,8 +2241,9 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
      <div class="lv-cta"><button type="button" class="lvbtn dark" data-lvask="1">Request a showing</button>${x.vt?`<a class="lvbtn" href="${esc(x.vt)}" target="_blank" rel="noopener">Virtual tour</a>`:''}</div></div>
     <div class="lv-two"><div class="lv-desc">${desc?desc.split(/\n+/).map(q=>`<p>${esc(q)}</p>`).join(''):'<p class="sub">The listing description isn’t available here. Open the full listing for details.</p>'}</div>
      <div class="lv-stats">${[[IC.bed,x.bd,'Beds'],[IC.bath,x.ba,'Baths'],[IC.sf,x.sf&&x.sf.toLocaleString(),'Sq ft living area'],[IC.lot,x.lot&&x.lot.toLocaleString(),'Sq ft lot']].filter(q=>q[1]).map(([i,v,l])=>`<div>${i}<span><b>${v}</b>${l}</span></div>`).join('')}</div></div>
+    ${lvMarket(x)}
     ${lvSchools(x)}
-    ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above. Tap a pin for the school and drive time.</p><div id="lvmap"></div></section>`:''}
+    ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above, with the typical weekday-morning drive from the home. Tap a pin for details.</p><div id="lvmap"></div></section>`:''}
     <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
      <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
       <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
