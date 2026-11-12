@@ -1259,6 +1259,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-tip span{display:flex;gap:8px;align-items:center}
 .bx .mq-tip i{width:9px;height:9px;border-radius:50%}
 .bx .mq-tip em{font-style:normal;font-weight:800;margin-left:auto;padding-left:14px}
+.bx .mq-tip .rt{color:#9fe3d3}
+.bx .mq-tip .rt em{color:#9fe3d3}
+.bx .bx select.mq-tg,.bx .mq-tg{display:inline-block;width:auto;min-width:0;margin:0 2px;vertical-align:baseline;font:inherit;font-size:13.5px;font-weight:800;padding:2px 4px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .bx .mq-tip .t{border-top:1px solid rgba(255,255,255,.25);padding-top:4px;margin-top:2px;font-weight:800}
 .bx .mq-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink2);margin:0 0 10px}
 .bx .mq-leg span{display:flex;align-items:center;gap:6px}
@@ -2024,7 +2027,7 @@ function bindLv(el){el.querySelectorAll('[data-lh]').forEach(a=>a.addEventListen
 /* ---------- What private school costs, in house ----------
    Each child's top private pick (its tuition for next fall) turned into the home that the same monthly money would pay for:
    30-year fixed at the market rate (Freddie Mac weekly average, pulled at build), property tax about 1.18% of price. */
-const TAXR=0.0118,TGROW=0.04;
+const TAXR=0.0118;const tgr=()=>(st.tg||4)/100;
 const mortF=rate=>{const r=rate/100/12;return r/(1-Math.pow(1+r,-360))};
 function houseFor(pay,dp,rate){const f=mortF(rate),H=pay/((1-dp)*f+TAXR/12);return{H,loan:H*(1-dp),down:H*dp,pi:H*(1-dp)*f,tax:H*TAXR/12}}
 const fM=v=>v>=995000?'$'+(Math.round(v/1e5)/10).toFixed(v>=9.95e6?0:1).replace(/\.0$/,'')+'M':'$'+Math.round(v/1000)+'k';
@@ -2038,14 +2041,14 @@ function moneyCalc(){const P=st.places.length?privPicks():[];if(!P.length)return
   return{P,rate,mkt,dp,annual,h:houseFor(annual/12,dp,rate)}}
 function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();const tz=$('mqtease');if(!M){el.innerHTML='';if(tz)tz.innerHTML='';return}
   if(tz){const nms=M.P.map(p=>esc(kname(p.k,p.i)));const who=nms.length>1?nms.slice(0,-1).join(', ')+' and '+nms[nms.length-1]:nms[0];
-    let tot=0;{const now=new Date(),yrs=Math.max(...M.P.map(p=>13-p.k.grade));for(let y=0;y<yrs;y++)M.P.forEach(p=>{const g=p.k.grade+y;if(g>12)return;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;tot+=t*Math.pow(1+TGROW,y)})}
+    let tot=0;{const now=new Date(),yrs=Math.max(...M.P.map(p=>13-p.k.grade));for(let y=0;y<yrs;y++)M.P.forEach(p=>{const g=p.k.grade+y;if(g>12)return;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;tot+=t*Math.pow(1+tgr(),y)})}
     const endY=(new Date().getMonth()>=6?new Date().getFullYear()+1:new Date().getFullYear())+Math.max(...M.P.map(p=>13-p.k.grade));
     tz.innerHTML=`<div class="mqt"><button type="button" class="mqt-b" data-mqgo="1"><span class="mqt-t"><b>Private school for ${who}: ${fD(M.annual)} next year, ${fM(tot)} through ${endY}.</b> Or about ${fM(M.h.H)} more house with public school.</span><span class="mqt-go">See the numbers ↓</span></button></div>`}
   const{P,rate,mkt,dp,annual,h}=M;const rd=G.rate&&G.rate[1]?new Date(G.rate[1]+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
   const now=new Date(),fall=now.getMonth()>=6?now.getFullYear()+1:now.getFullYear();
   // tuition by school year for each child through 12th grade, growing about 4% a year
   const yrs=Math.max(...P.map(p=>13-p.k.grade));const cols=[];let total=0;
-  for(let y=0;y<yrs;y++){const parts=P.map(p=>{const g=p.k.grade+y;if(g>12)return 0;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;return t*Math.pow(1+TGROW,y)});cols.push(parts);total+=parts.reduce((a,b)=>a+b,0)}
+  for(let y=0;y<yrs;y++){const parts=P.map(p=>{const g=p.k.grade+y;if(g>12)return 0;let t=tuition(p.s,g);if(t==null||!(p.s.hi>=g))t=p.t;return t*Math.pow(1+tgr(),y)});cols.push(parts);total+=parts.reduce((a,b)=>a+b,0)}
   const lastY=fall+yrs;
   const kc=p=>css(KC[p.i]);
   // A: the equation
@@ -2063,7 +2066,7 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
       return`<g class="col" data-y="${y}">`+`<rect class="hit" x="${(10+y*slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${H}" fill="transparent"/>`+seg+`<text x="${(x+bw/2).toFixed(1)}" y="${(yy-6).toFixed(1)}" text-anchor="middle" class="tot">${Math.round(tot/1000)}k</text><text x="${(x+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${String(fall+y).slice(2)}-${String(fall+y+1).slice(2)}</text></g>`}).join('')}</svg>`;
   const legend=`<div class="mq-hd"><div class="mq-stat"><span>Next year</span><b>${fD(annual)}</b></div><div class="mq-stat"><span>Through ${lastY}</span><b>${fM(total)}</b></div><div class="mq-leg">${P.map(p=>`<span><i style="background:${kc(p)}"></i><b>${esc(kname(p.k,p.i))}</b> ${esc(p.s.n)} · ${fM(p.t)}</span>`).join('')}</div></div>`;
   const years=`<div class="mq-block mq-yrs">${legend}<div class="mq-chart">${svg}<div class="mq-tip" hidden></div></div>
-    <p class="mq-note">Tuition rises about 4% a year. Hover over or tap a year for each child’s grade and tuition.</p></div>`;
+    <p class="mq-note">Each bar is one school year. Tuition rises <select class="mq-tg" data-tg="1" aria-label="Yearly tuition increase">${[3,4,5,6,7,8].map(v=>`<option value="${v}"${(st.tg||4)===v?' selected':''}>${v}%</option>`).join('')}</select> a year; many private schools raise tuition 4% to 6%. Hover over or tap a year for details and the running total.</p></div>`;
   // D: prices in your cities (median of homes for sale that match the filters), with the same money added
   let cities='';
   if(LST.mode==='area'&&LST.state==='done'){const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
@@ -2080,11 +2083,12 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
       <div class="mq-advb"><div class="mq-ctl"><div class="mq-dp" role="group" aria-label="Down payment"><span>Down payment</span>${[10,20,30].map(v=>`<button type="button" data-dp="${v}" aria-pressed="${(st.dp||20)===v}">${v}%</button>`).join('')}</div>${rateCtl}</div>
       ${eq}${steps}${cities}
       <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. Tuition is our best figure from each school and changes yearly; after a child’s current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></div></details></section>`;
+  const tgs=el.querySelector('[data-tg]');if(tgs)tgs.addEventListener('change',()=>{st.tg=+tgs.value;renderMoney();syncHash()});
   const adv=el.querySelector('.mq-adv');adv.addEventListener('toggle',()=>{st.mqOpen=adv.open});
   const ri=el.querySelector('[data-rt]');if(ri)ri.addEventListener('change',()=>{const v=+ri.value;st.rt=v>=2&&v<=15&&Math.abs(v-mkt)>0.001?v:0;renderMoney()});
   const ch=el.querySelector('.mq-chart'),tip=ch&&ch.querySelector('.mq-tip');
   if(ch)ch.querySelectorAll('.col').forEach(g=>{const show=()=>{const y=+g.dataset.y,c=cols[y],t=c.reduce((a,b)=>a+b,0);ch.querySelectorAll('.col').forEach(o=>o.classList.toggle('dim',o!==g));
-      tip.innerHTML=`<b>${fall+y}-${String(fall+y+1).slice(2)} school year</b>${P.map((p,j)=>c[j]?`<span><i style="background:${kc(p)}"></i>${esc(kname(p.k,p.i))} (${GRADES[p.k.grade+y]}${GRADES[p.k.grade+y]==='K'?'':' grade'})<em>${fD(c[j])}</em></span>`:'').join('')}<span class="t">Total<em>${fD(t)}</em></span>`;
+      tip.innerHTML=`<b>${fall+y}-${String(fall+y+1).slice(2)} school year</b>${P.map((p,j)=>c[j]?`<span><i style="background:${kc(p)}"></i>${esc(kname(p.k,p.i))} (${GRADES[p.k.grade+y]}${GRADES[p.k.grade+y]==='K'?'':' grade'})<em>${fD(c[j])}</em></span>`:'').join('')}<span class="t">This year<em>${fD(t)}</em></span><span class="rt">Total through ${fall+y}-${String(fall+y+1).slice(2)}<em>${fD(cols.slice(0,y+1).reduce((a,c)=>a+c.reduce((x,z)=>x+z,0),0))}</em></span>`;
       const r=g.getBoundingClientRect(),cr=ch.getBoundingClientRect();tip.hidden=false;const tw=tip.offsetWidth;let lx=r.left-cr.left+r.width/2-tw/2;lx=Math.max(0,Math.min(cr.width-tw,lx));tip.style.left=lx+'px';tip.style.top='0px'};
     g.addEventListener('mouseenter',show);g.addEventListener('click',show)});
   if(ch)ch.addEventListener('mouseleave',()=>{tip.hidden=true;ch.querySelectorAll('.col').forEach(o=>o.classList.remove('dim'))})}
@@ -2336,7 +2340,7 @@ function timeline(p){
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
 function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['zone','dist','radius'].indexOf(st.pub),a:st.active,
-  h:(()=>{const f=HF();return[f.pmin,f.pmax,f.bd,f.ba,f.sf,f.ty]})(),dp:st.dp||20,
+  h:(()=>{const f=HF();return[f.pmin,f.pmax,f.bd,f.ba,f.sf,f.ty]})(),dp:st.dp||20,tg:st.tg||4,
   k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||'',k.k12?1:0])}}
 function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
@@ -2345,7 +2349,7 @@ function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
     sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12}));
   if(Array.isArray(o.h)){const[a,b,c,d,e,t]=o.h;n.hf={pmin:+a||0,pmax:+b||0,bd:+c||0,ba:+d||0,sf:+e||0,ty:['sf','condo'].includes(t)?t:''}}
-  n.dp=[10,20,30].includes(o.dp)?o.dp:20;
+  n.dp=[10,20,30].includes(o.dp)?o.dp:20;n.tg=[3,4,5,6,7,8].includes(o.tg)?o.tg:4;
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
 function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
