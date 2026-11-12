@@ -850,7 +850,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 @media (max-width:560px){.bx .tlh{display:none}}
 .bx .tls.tg b{color:var(--teal);font-size:12px}
 .bx .hctl{flex-wrap:wrap}
-.bx .hsaved{flex-basis:100%;font-size:12px}
+.bx .hsaved{font-size:12px}
 .bx .hsec{display:grid;gap:12px;margin-top:22px}
 .bx .hsech{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:8px}
 .bx .hsech h4{font-family:var(--serif);font-weight:400;font-size:26px;margin:0;color:var(--ink)}
@@ -891,6 +891,28 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lv-stats b{font-size:16px;color:var(--ink);letter-spacing:0}
 .bx .lvsec{display:grid;gap:12px}
 .bx .lvsec h3,.bx .lvh{font-family:var(--serif);font-weight:400;font-size:28px;margin:0}
+.bx .lvschools .lvroute{margin:10px 0 0;font-size:14px;color:var(--ink2)}
+.bx .lvkids{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:14px;margin-top:14px}
+.bx .lvkid{border:1px solid var(--line);border-top:4px solid var(--kc);background:var(--surface);padding:12px 14px;min-width:0}
+.bx .lvkh{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.bx .lvkh .dot{width:10px;height:10px;border-radius:50%;background:var(--kc);align-self:center}
+.bx .lvkh b{font-size:16px}
+.bx .lvsl{list-style:none;margin:0;padding:0;display:grid}
+.bx .lvsl li{display:grid;grid-template-columns:98px minmax(0,1fr) auto auto 58px;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.bx .lvsl li:first-child{border-top:0}
+.bx .lvpk{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:900;color:var(--kc);border:1.5px solid var(--kc);padding:2px 6px;text-align:center;white-space:nowrap}
+.bx .lvpk.p1{background:var(--kc);color:#fff}
+.bx .lvsn{display:grid;min-width:0}
+.bx .lvsn .lnk{text-align:left;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bx .lvsn .sub{font-size:12px}
+.bx .lvsl .cost{margin:0}
+.bx .lvsl .fitb{white-space:nowrap}
+.bx .lvdr{font-size:13px;font-weight:700;color:var(--ink);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bx .lvdr::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--muted);margin-right:5px;vertical-align:1px}
+.bx .lvfb{margin:8px 0 0;font-size:12.5px}
+@media (max-width:560px){.bx .lvsl li{grid-template-columns:auto minmax(0,1fr) auto;}
+.bx .lvsl li .lvpk{grid-column:1/-1;justify-self:start}
+.bx .lvsl li .lvsn{grid-column:1/-1}}
 .bx .lvk{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.6}
 .bx .lvk .dot{width:10px;height:10px;border-radius:50%;margin-top:7px;flex:none}
 .bx .lv-agent{background:var(--dark);color:#fff;padding:28px clamp(16px,3vw,32px);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center;margin:0 calc(-1 * clamp(16px,4vw,48px))}
@@ -1142,7 +1164,14 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hempty button{font:inherit;font-size:12.5px;font-weight:700;color:var(--teal);background:var(--surface);border:1px solid var(--line);padding:5px 10px;cursor:pointer}
 .bx .hempty button:hover{border-color:var(--teal)}
 .bx .hrow.relax .hrl .sub{color:var(--amber);font-weight:700}
-.bx .homes .hh h3{font-size:clamp(24px,3vw,34px)}
+.bx .homes .hh{display:grid!important;gap:4px}
+.bx .homes .hh h3{font-size:clamp(24px,3vw,34px);margin:0}
+.bx .homes .hh .sub{margin:0}
+.bx .hhtop{display:flex;justify-content:space-between;align-items:baseline;gap:6px 16px;flex-wrap:wrap}
+.bx .hhall{font-size:12px;letter-spacing:1.2px;text-transform:uppercase;font-weight:800;color:var(--teal);text-decoration:none;white-space:nowrap}
+.bx .hhall:hover{text-decoration:underline}
+.bx .hctl{margin-top:12px}
+.bx .hctl .hsaved{font-size:12px}
 @media (max-width:760px){.bx .hrow{grid-template-columns:minmax(0,1fr);gap:8px}
 .bx .hrl{grid-template-columns:auto auto 1fr;align-items:baseline;gap:10px}
 .bx .hrl .lnk{justify-self:end}
@@ -1759,7 +1788,7 @@ function homeCtl(count){const f=HF();const sel=(k,opts,lab)=>`<label>${lab} <sel
   return`<div class="hctl">${sel('pmin',PMIN.map(v=>[v,v?money2(v):'No min']),'Price')}${sel('pmax',PMAX.map(v=>[v,v?money2(v):'No max']),'to')}
    ${sel('bd',[0,1,2,3,4,5].map(n=>[n,n?n+'+':'Any']),'Beds')}${sel('ba',[0,1,1.5,2,2.5,3,4].map(n=>[n,n?n+'+':'Any']),'Baths')}
    ${sel('sf',[0,1000,1500,2000,2500,3000,4000].map(n=>[n,n?n.toLocaleString()+'+ sq ft':'Any size']),'Size')}${sel('ty',[['','Houses and condos'],['sf','Single-family houses'],['condo','Condos and townhomes']],'Type')}
-   ${count!=null?`<span class="cnt">${count} home${count===1?'':'s'}</span>`:''}<span class="sub hsaved">These choices are saved in the family link.</span></div>`}
+   ${count!=null?`<span class="cnt">${count} home${count===1?'':'s'}</span>`:''}<span class="sub hsaved" title="These choices are saved in the family link.">Saved in the family link</span></div>`}
 function bindHomeCtl(el){el.querySelectorAll('[data-hf2]').forEach(b=>b.addEventListener('change',()=>{const k=b.dataset.hf2;HF()[k]=k==='ty'?b.value:+b.value;LST.relax={};renderHomes();syncHash()}))}
 const PRB=[['','Any price'],['0-1000000','Under $1M'],['1000000-1500000','$1M to $1.5M'],['1500000-2000000','$1.5M to $2M'],['2000000-3000000','$2M to $3M'],['3000000-1e12','$3M and up']];
 function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){el.innerHTML='';return}
@@ -1767,7 +1796,7 @@ function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){e
   if(p){if(LST.key!==p.lat+','+p.lng){listingsFor(p);return}}else if(LST.key!==areaKey()){listingsArea();return}
   const where=p?'near '+esc(p.label):'in '+esc(st.places.map(x=>x.n||x.label).join(', ').replace(/, ([^,]*)$/,' and $1'));
   const all=homesUrl(p?placeBox(p):(()=>{const bs=st.places.map(q=>isCity(q)?cityBox(q):placeBox(q));return[Math.min(...bs.map(b=>b[0])),Math.min(...bs.map(b=>b[1])),Math.max(...bs.map(b=>b[2])),Math.max(...bs.map(b=>b[3]))]})());
-  const head=(t,sub,ctl)=>`<div class="hh"><div><div class="eyebrow">Active listings · from our home search</div><h3>${t}</h3>${sub?`<p class="sub" style="margin-top:6px">${sub}</p>`:''}</div><a class="lnkall" href="${esc(all)}" target="_blank" rel="noopener">See every home in this area</a></div>${ctl||''}`;
+  const head=(t,sub,ctl)=>`<div class="hh"><div class="hhtop"><div class="eyebrow">Active listings · from our home search</div><a class="hhall" href="${esc(all)}" target="_blank" rel="noopener">See every home in this area →</a></div><h3>${t}</h3>${sub?`<p class="sub">${sub}</p>`:''}</div>${ctl||''}`;
   const spec=x=>[x.bd&&x.bd+' bd',x.ba&&x.ba+' ba',x.sf&&x.sf.toLocaleString()+' sqft'].filter(Boolean).join(' · ');
   const bg=x=>x.img?` style="background-image:url('${esc(x.img)}')"`:'';
   const card=x=>`<a class="hcard" href="${esc(x.href)}" target="_blank" rel="noopener" data-lh="${esc(x.href)}"><div class="ph"${bg(x)}>${x.st!=='For sale'?`<span class="stt">${x.st}</span>`:''}<span class="pr">${x.price?'$'+x.price.toLocaleString():''}</span></div><div class="bd"><span class="ad">${esc(x.ad.replace(/,?\s*CA,?\s*\d{5}$/,''))}</span><span class="sp">${spec(x)}</span><span class="ml">${x.office?'Listed by '+esc(x.office)+(x.mls?' · ':''):''}${x.mls?'MLS® '+esc(x.mls):''}</span></div></a>`;
@@ -1808,15 +1837,33 @@ const IC={bed:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" strok
  lot:'<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5M8 8l3 3m5-3-3 3m-5 5 3-3m5 3-3-3"/></svg>'};
 let LV=null;
 function bindLv(el){el.querySelectorAll('[data-lh]').forEach(a=>a.addEventListener('click',e=>{if(e.metaKey||e.ctrlKey||e.shiftKey)return;const x=LST.items.find(i=>i.href===a.dataset.lh);if(!x)return;e.preventDefault();openListing(x)}))}
-function lvSchools(x){if(!x.lat||!x.lng)return'';const p={label:x.ad,n:x.ad,lat:x.lat,lng:x.lng,kind:'address',city:x.city};
-  const rows=st.kids.map((k,i)=>{const L=k.grade>=9?9:k.grade>=6?6:0;
-    const zs=S.filter(s=>s.sec==='Public'&&k.grade>=s.lo&&k.grade<=s.hi&&(()=>{try{const z=zoneFor(s,p);return z&&z.k==='zone'}catch(e){return false}})());
-    const ds=[...new Set(zs.map(s=>s.dist))];const pol=ds.filter(d=>DPOL[d]).map(d=>DPOL[d].head);
-    let fb='';if(!zs.length){const dd=[...placeDists(p)];const cand=S.filter(s=>s.sec==='Public'&&!s.special&&k.grade>=s.lo&&k.grade<=s.hi&&dd.includes(s.dist)&&!/independent|online|virtual|adult|continuation|community day|opportunity/i.test(s.n));
-      if(cand.length===1)zs.push(cand[0]);else if(dd.length)fb=dd.map(d=>`<button type="button" class="lnk" data-dguide="${esc(d)}">${esc(d)}</button>`).join(' or ')+` assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} by address among ${cand.length} schools. We don't have its attendance map yet, so ask the district which school serves this home.`}
-    const list=zs.length?zs.map(s=>{let f=null;try{const r=scoreFor(s,k,p);f=r.score}catch(e){}return`<button type="button" class="lnk" data-detail="${s.id}">${esc(s.n)}</button>${f!=null?` <b class="fitb" style="--kc:${css(KC[i])}">${f.toFixed(1)} fit</b>`:''}`}).join(' · '):`<span class="sub">${fb||'No attendance area on file here. Ask the district which school serves this address.'}</span>`;
-    return`<div class="lvk"><span class="dot" style="background:${css(KC[i])}"></span><div><b>${esc(kname(k,i))}</b> (${GRADES[k.grade]}): ${list}${pol.length?`<div class="sub">${esc(pol.join(' '))}</div>`:''}</div></div>`}).join('');
-  return`<section class="lvsec"><h3>Schools for this home</h3><p class="sub">Public schools whose attendance area covers this address, for each child's grade next fall. Boundaries can change and a seat isn't guaranteed: confirm with the district before you buy.</p>${rows}</section>`}
+function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label:x.ad,n:x.ad,lat:x.lat,lng:x.lng,kind:'address',city:x.city};const hp=pt(p);
+  const costC=(sc,g)=>{const t=tuition(sc,g);return t==null?'<span class="cost unk" title="Tuition not yet collected; ask the school">Tuition n/a</span>':t===0?`<span class="cost free">Free · ${sc.sec==='Charter'?'charter':'public'}</span>`:`<span class="cost">$${Math.round(t/1000)}k<small>/yr</small></span>`};
+  const L3=['Top pick','Runner-up','Also strong'],tops=[];
+  const zonedOf=k=>{let zs=S.filter(sc=>sc.sec==='Public'&&k.grade>=sc.lo&&k.grade<=sc.hi&&(()=>{try{const z=zoneFor(sc,p);return z&&z.k==='zone'}catch(e){return false}})());let fb='';
+    if(!zs.length){const dd=[...placeDists(p)];const cand=S.filter(sc=>sc.sec==='Public'&&!sc.special&&k.grade>=sc.lo&&k.grade<=sc.hi&&dd.includes(sc.dist)&&!/independent|online|virtual|adult|continuation|community day|opportunity/i.test(sc.n));
+      const dh=[...new Set(cand.map(sc=>sc.dist))];if(cand.length===1)zs=[cand[0]];else if(dh.length)fb=dh.map(d=>`<button type="button" class="lnk" data-dguide="${esc(d)}">${esc(d)}</button>`).join(' or ')+` assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} by address among ${cand.length} schools. We don't have its attendance map yet, so ask the district which one serves this home.`}
+    return{zs,fb}};
+  const row=(r,k,i,lab,extra)=>{const sc=r.s,m=drive(hp,sc);return`<li><span class="lvpk${lab===L3[0]?' p1':''}">${lab}</span><span class="lvsn"><button type="button" class="lnk" data-detail="${sc.id}">${esc(sc.n)}</button><span class="sub">${esc(sc.c)} · ${sc.sec}${extra||''}</span></span>${r.score!=null?`<b class="fitb" style="--kc:${css(KC[i])}">${r.score.toFixed(1)} fit</b>`:'<span></span>'}${costC(sc,k.grade)}<span class="lvdr" data-drs="${sc.id}" data-lat="${sc.lat}" data-lng="${sc.lng}">${m} min</span></li>`};
+  const blocks=st.kids.map((k,i)=>{const {zs,fb}=zonedOf(k);const zid=new Set(zs.map(z=>z.id));let list,support=false;
+    if(k.support){const sl=specList(k,'ld').filter(r=>mi(hp,r.s)<=Math.max(st.radius,SPEC_MI)).map(r=>({...r,min:drive(hp,r.s)})).sort((a,b)=>b.score-a.score);if(sl.length){list=sl.slice(0,3);support=true}}
+    if(!list){let rk=[];try{rk=order(rankKid(k,p).filter(r=>r.s.sec!=='Public'||zid.has(r.s.id)||pubOk(r.s,p)))}catch(e){}list=rk.slice(0,3)}
+    if(list[0])tops.push(list[0].s);
+    const rows=list.map((r,j)=>row(r,k,i,L3[j],zid.has(r.s.id)?' · assigned to this address':(support?' · learning support':''))).join('');
+    const zr=zs.filter(z=>!list.some(r=>r.s.id===z.id)).map(z=>{let f=null;try{f=scoreFor(z,k,p).score}catch(e){}return row({s:z,score:f},k,i,'Assigned')}).join('');
+    const pol=[...new Set(zs.map(z=>z.dist))].filter(d=>DPOL[d]).map(d=>DPOL[d].head);
+    return`<div class="lvkid" style="--kc:${css(KC[i])}"><div class="lvkh"><span class="dot"></span><b>${esc(kname(k,i))}</b><span class="sub">${GRADES[k.grade]}${GRADES[k.grade]==='K'?'':' grade'} next fall${support?' · learning support':''}</span></div>
+      ${rows||zr?`<ol class="lvsl">${rows}${zr}</ol>`:'<p class="sub">No schools in range for this grade.</p>'}${fb&&!zr?`<p class="sub lvfb"><b>Assigned public school:</b> ${fb}</p>`:''}${pol.length?`<p class="sub lvfb">${esc(pol.join(' '))}</p>`:''}</div>`}).join('');
+  const u=[...new Map(tops.map(t=>[t.id,t])).values()];let route=0,cur=null,left=[...u];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);cur=nx}
+  const sum=st.kids.length>1&&u.length?`<p class="lvroute"><b>Morning drop-off from this home:</b> about ${route} min to ${u.length>1?'reach every top pick, nearest first':'the shared top pick'}.</p>`:'';
+  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities, plus the public school assigned here. <span class="lvdn">Drive times are estimates for a weekday morning.</span> Confirm assignments with the district before you buy.</p>${sum}<div class="lvkids">${blocks}</div></section>`}
+// Upgrade drive estimates to Google drive times when the Routes API is enabled for the site's key
+async function lvRealTimes(x){try{if(!window.google||!google.maps||!google.maps.importLibrary)return;const el=document.querySelectorAll('#lview .lvdr');if(!el.length)return;
+  const ids=[...new Map([...el].map(e=>[e.dataset.drs,[+e.dataset.lat,+e.dataset.lng]])).entries()];const lib=await google.maps.importLibrary('routes');if(!lib.RouteMatrix)return;
+  const d=new Date();d.setDate(d.getDate()+((8-d.getDay())%7||7));d.setHours(7,45,0,0);if(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+(d.getDay()===6?2:1));
+  const r=await lib.RouteMatrix.computeRouteMatrix({origins:[{lat:x.lat,lng:x.lng}],destinations:ids.map(([,c])=>({lat:c[0],lng:c[1]})),travelMode:'DRIVING',routingPreference:'TRAFFIC_AWARE',departureTime:d,fields:['durationMillis']});
+  if(!LV||LV.x!==x)return;const items=r.matrix.rows[0].items;ids.forEach(([id],j)=>{const ms=items[j]&&items[j].durationMillis;if(ms)document.querySelectorAll(`#lview .lvdr[data-drs="${id}"]`).forEach(e=>{e.textContent=Math.round(ms/60000)+' min';e.classList.add('real')})});
+  const n=document.querySelector('#lview .lvdn');if(n)n.textContent='Drive times are from Google Maps for a typical weekday morning.'}catch(e){}}
 function lvGal(){const x=LV.x,n=x.imgs.length||1,i=((LV.i%n)+n)%n;LV.i=i;
   const m=document.querySelector('#lview .lv-main');if(!m)return;m.style.backgroundImage=x.imgs[i]?`url('${x.imgs[i]}')`:'none';m.querySelector('.lv-cnt').textContent=`${i+1} / ${n}`;
   document.querySelectorAll('#lview .lv-th').forEach((t,j)=>t.classList.toggle('on',j===i));const on=document.querySelector('#lview .lv-th.on'),tb=document.querySelector('#lview .lv-thumbs');if(on&&tb){const pad=48,l=on.offsetLeft,r=l+on.offsetWidth;if(l<tb.scrollLeft+pad)tb.scrollLeft=l-pad;else if(r>tb.scrollLeft+tb.clientWidth-pad)tb.scrollLeft=r-tb.clientWidth+pad}lvTa()}
@@ -1846,7 +1893,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     <section class="lvsec"><h3 class="lvh">Features &amp; amenities</h3><div class="lvfs">${grid('Interior',rowsI)}${grid('Exterior',rowsE)}${grid('Area &amp; listing',rowsA)}${grid('Financial',rowsF)}</div></section>
     <p class="ml">${x.office?'Listed by '+esc(x.office)+'. ':''}Listing information comes from the MLS through our home search and can change at any time. <a class="lnk" href="${esc(x.href)}" target="_blank" rel="noopener">Open the full listing</a></p>
    </div></div>`;
-  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();{const tb=el.querySelector('.lv-thumbs');let q;tb.addEventListener('scroll',()=>{clearTimeout(q);q=setTimeout(lvTa,60)},{passive:true})}
+  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();lvRealTimes(x);{const tb=el.querySelector('.lv-thumbs');let q;tb.addEventListener('scroll',()=>{clearTimeout(q);q=setTimeout(lvTa,60)},{passive:true})}
   const fm=el.querySelector('.lv-form');fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':phone.replace(/\D/g,'').length<10?'Please add a phone number so we can set up the showing.':'';
     out.textContent=err;if(err)return;lsSet('bx_name',name);lsSet('bx_email',email);lsSet('bx_phone',phone);
