@@ -785,6 +785,10 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .dgc .more{font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--teal);margin-top:2px}
 .bx .dgmore summary{cursor:pointer;font-weight:700;color:var(--teal);font-size:13.5px}
 .bx .dgmore[open] summary{margin-bottom:8px}
+.bx .alts{grid-column:1/-1;font-size:13px;color:var(--muted);margin:-2px 0 6px 20px}
+.bx .alts .lnk{font-size:13px}
+.bx .alts .nt,.bx .pick{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--amber)}
+.bx .pick{display:inline-block;color:var(--teal);margin-bottom:4px}
 .bx .reshead.flash{animation:khl 1.2s ease}
 @keyframes khl{.bx 0%{background:var(--teal-soft)}
 .bx 100%{background:var(--sunk)}}
@@ -1162,7 +1166,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
      <tr><td>Arts</td><td>35% theater, musical, dance and film programs; 30% performing ensembles such as bands, orchestras and choirs (8 or more earns full credit); 20% advanced arts courses on the school's official UC course list (20 or more earns full credit); 15% outside recognition such as festival results.</td></tr>
      <tr><td>STEM</td><td>Half is the number of AP math, science and computer science courses on the school's official UC course list. Half is competitive STEM teams and clubs such as robotics, Science Olympiad and math team (5 or more earns full credit). Schools without AP courses are measured by their advanced course catalog instead.</td></tr>
      <tr><td>Clubs and activities</td><td>80% the number of student clubs, 20% civic and speaking programs such as debate, mock trial and Model UN.</td></tr>
-     <tr><td>Elementary and middle school programs</td><td>For children below 9th grade: <b>Arts</b> (performing ensembles, art, theater), <b>STEM</b> (science specialist or lab, coding, robotics, math or problem-solving teams), <b>Sports</b> (interscholastic teams in the middle grades, PE specialists in elementary), <b>Clubs</b>, <b>World languages</b> (10 for immersion or languages from kindergarten, 6 for language classes, 3 for before or after school only), <b>Before and after care</b> on campus, and <b>Small classes</b> (average class size, adjusted for co-teaching). Researched school by school from school and district sites, starting with Lamorinda, Piedmont, Bentley and Head-Royce.</td></tr>
+     <tr><td>Elementary and middle school programs</td><td>For children below 9th grade: <b>Arts</b> (performing ensembles, art, theater), <b>STEM</b> (science specialist or lab, coding, robotics, math or problem-solving teams), <b>Sports</b> (interscholastic teams in the middle grades, PE specialists in elementary), <b>Clubs</b>, <b>World languages</b> (10 for immersion or languages from kindergarten, 6 for language classes, 3 for before or after school only), <b>Before and after care</b> on campus, and <b>Small classes</b> (average class size, adjusted for co-teaching). Researched school by school from school and district sites, starting with Lamorinda, Piedmont, Bentley and Head-Royce. Sports and arts also look ahead: 60% is the school's own program and 40% is the high school it leads to (its own upper school, or the zoned or usual high school), when we know it.</td></tr>
      <tr><td>Child's interests</td><td>Matches the activities you select. For a sport, championships in that sport. For music, the number of ensembles. For other activities, whether the school offers a team or program.</td></tr>
      <tr><td>School size</td><td>Enrollment compared with typical sizes for that level: an exact match scores 10, one size off scores 5.</td></tr>
      <tr><td>Short commute</td><td>An estimated morning drive from your closest location: straight-line distance, plus 35% for roads, at 40 miles per hour, plus 4 minutes. 10 minutes or less scores 10; 45 minutes or more scores 0. Real drive times vary with traffic.</td></tr>
@@ -1664,6 +1668,8 @@ function eligible(s,kid){if(!baseOk(s,kid)||!st.places.length)return false;if(s.
 function scoreFor(s,kid,home){
   const v={...s.s};if(level(kid.grade)!=='H'){delete v.college;const x=s.k8||{};for(const c of ['sports','arts','stem','clubs','lang','care','small'])v[c]=x[c]??null}
   const p=pathInfo(s,kid);v.path=p?.v??null;
+  // Young children: sports and arts also count the high school the school leads to (60% now, 40% the high school years)
+  v.hsb={};if(level(kid.grade)!=='H'&&p&&p.to&&p.to.length){for(const c of ['sports','arts']){const hv=p.to.map(h=>h.s&&h.s[c]).filter(x=>x!=null);if(v[c]!=null&&hv.length){const h=hv.reduce((a,b)=>a+b,0)/hv.length;v.hsb[c]=h;v[c]=0.6*v[c]+0.4*h}}}
   v.size=sizeScore(s,kid);
   const it=interestScore(s,kid);v.interest=it?.v??null;
   const hf=homeFor(s);const hp=home?pt(home):(hf?pt(hf.p):null);const m=hp?drive(hp,s):null;v.commute=m==null?null:Math.max(0,Math.min(10,(45-m)/35*10));
@@ -1703,7 +1709,7 @@ function specCard(r,i){const s=r.s,sp=s.spec,k=st.kids[st.active];
     <div class="pacts"><button type="button" class="lnk" data-detail="${s.id}">Full details</button><button type="button" class="lnk" data-showmap="${s.id}">Show on map</button></div></div></article>`}
 
 /* ---------- family plans ---------- */
-let lastPlans=[],lastList={scored:[],un:[]},lastSpec=[];
+let PICK={},lastPlans=[],lastList={scored:[],un:[]},lastSpec=[];
 function plans(){
   const K=st.kids;if(K.length<2||!st.places.length)return[];
   const out=[];
@@ -1713,7 +1719,7 @@ function plans(){
     if(lists.some(l=>!l.length))continue;
     const tops=lists.map(l=>l[0]);
     const rec=(i,acc)=>{if(i===K.length){const pl=evalPlan(home,hp,acc);pl.tops=tops;out.push(pl);return}for(const r of lists[i])rec(i+1,[...acc,r])};
-    rec(0,[]);
+    rec(0,[]);out.filter(pl=>pl.home===home).forEach(pl=>pl.lists=lists);
   }
   const ok=out.filter(p=>!st.budget||p.cost==null||p.cost<=st.budget);
   ok.sort((a,b)=>b.score-a.score);
@@ -1962,7 +1968,7 @@ function renderPlans(){
   $('planwrap').innerHTML=`<div class="reshead"><h3 class="h2">Family plans</h3><span class="sub">The best combination for each location${P.length<st.places.length?`. No plan fits in ${esc(st.places.filter(x=>!P.some(q=>q.home===x)).map(x=>x.label).join(', '))} with these settings`:''}</span></div>`+
    P.map((p,j)=>`<article class="plan${j===0?' best':''}">
     <div class="ph"><div class="live"><i style="display:inline-block;width:10px;height:10px;background:${pc(p.home)};margin-right:8px;vertical-align:0"></i>${j===0&&P.length>1?'Best overall · ':''}If you live ${p.home.kind==='address'?'at':'in'} <b>${esc(p.home.label)}</b>${(()=>{const ps=[...new Map(p.picks.map(r=>[r.s.id,r.s])).values()].map(x=>[x,partial(x,p.home)]).filter(x=>x[1]!=null);return ps.length?`, <b>only in the part zoned for ${esc(ps.map(x=>x[0].n).join(' and '))}</b>`:''})()}</div><div class="big">${p.score.toFixed(1)}<small>family score</small></div></div>
-    <div class="assign">${p.picks.map((r,i)=>`<div class="as"><span class="dot" style="background:${css(KC[i])}"></span><span class="who"><b>${esc(kname(st.kids[i],i))}</b> (${GRADES[st.kids[i].grade]}) at ${esc(r.s.n)}${(()=>{const v=partial(r.s,p.home);return v==null?'':`<br><span class="sub" style="color:var(--amber)">Zoned for only part of ${esc(p.home.city)} (about ${Math.round(v*100)}% of the city). Add an address to narrow results.</span>`})()}</span><span class="fit">fit ${r.score.toFixed(1)} · ${drive(pt(p.home),r.s)} min · ${(()=>{const t=tuition(r.s,st.kids[i].grade);return t==null?'tuition n/a':t===0?'free':'approx. $'+Math.round(t/1000)+'k'})()}</span></div>`).join('')}</div>
+    <div class="assign">${p.picks.map((r,i)=>`<div class="as"><span class="dot" style="background:${css(KC[i])}"></span><span class="who"><b>${esc(kname(st.kids[i],i))}</b> (${GRADES[st.kids[i].grade]}) at ${esc(r.s.n)}${(()=>{const v=partial(r.s,p.home);return v==null?'':`<br><span class="sub" style="color:var(--amber)">Zoned for only part of ${esc(p.home.city)} (about ${Math.round(v*100)}% of the city). Add an address to narrow results.</span>`})()}</span><span class="fit">fit ${r.score.toFixed(1)} · ${drive(pt(p.home),r.s)} min · ${(()=>{const t=tuition(r.s,st.kids[i].grade);return t==null?'tuition n/a':t===0?'free':'approx. $'+Math.round(t/1000)+'k'})()}</span></div>${(()=>{const al=(p.lists&&p.lists[i]||[]).filter(x=>x.s.id!==r.s.id&&(x.s.org||x.s.id)!==(r.s.org||r.s.id)).slice(0,2);return al.length?`<div class="alts">Also worth a visit for ${esc(kname(st.kids[i],i))}: ${al.map(x=>`<button type="button" class="lnk" data-detail="${x.s.id}">${esc(x.s.n)}</button> ${x.score.toFixed(1)}${Math.abs(x.score-r.score)<0.1?' <span class="nt">nearly tied</span>':''}`).join(' \u00b7 ')}</div>`:''})()}`).join('')}</div>
     ${!p.together?`<p class="sub" style="margin:0">${new Set(p.picks.map(r=>r.s.org||r.s.id)).size} separate drop-offs: ${p.picks.map((r,i)=>`about ${drive(pt(p.home),r.s)} min to ${esc(r.s.n)} for ${esc(kname(st.kids[i],i))}`).join('; ')}.</p>`:''}
     <div class="tags">
       <span class="tag ${p.route<=25?'good':p.route>40?'warn':''}">${p.together?'Morning drive':'Total morning drive'} about ${p.route} min</span>
@@ -1985,6 +1991,7 @@ function renderList(){
   const grp=st.pub!=='radius'&&k.sector==='Public';const isZ=r=>{const b=zoneBest(r.s);return !!b&&b.z.k==='zone'};const pubs=grp?[...order(R.filter(r=>r.s.sec==='Public'&&isZ(r))),...order(R.filter(r=>r.s.sec==='Public'&&!isZ(r)))]:[]; // zoned schools before district-wide programs
   const rest=grp?order(R.filter(r=>r.s.sec!=='Public')):order(R);
   const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
+  {const t3=[...scored].sort((a,b)=>b.score-a.score).slice(0,3);PICK={};const L3=['Top pick','Runner-up','Also strong'];t3.forEach((r,j)=>{PICK[r.s.id]=L3[j]+(j>0&&t3[0].score-r.score<0.1?' \u00b7 nearly tied':'')})}
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
     $('supnote').innerHTML=`<div class="supnote"><span class="dot"></span><div><b>Learning support is on for ${esc(nm)}.</b> ${sp.length?`${sp.length} specialized or one-to-one school${sp.length>1?'s':''} within ${Math.max(st.radius,SPEC_MI)} miles serve ${GRADES[k.grade]} grade${np.length?`, plus ${np.length} nonpublic school${np.length>1?'s':''} reached through an IEP`:''}.`:`No specialized private schools serve ${GRADES[k.grade]} grade nearby${np.length?`, but ${np.length} nonpublic school${np.length>1?'s are':' is'} reached through an IEP`:''}.`} Family plans below still compare mainstream schools.</div><a href="#special" class="lbtn sm" data-jump="special">See ${esc(nm)}'s options</a></div>`;
@@ -2014,7 +2021,7 @@ function renderList(){
     if(s.e)tags.push(`<span class="tag">${s.e.toLocaleString()} students${s.rt?' · '+s.rt+' per teacher':''}</span>`);
     const flags=[...(level(k.grade)==='H'?(s.flags||[]).filter(f=>f!=='Programs not yet scored'):[]),...(r.limited?['Limited data: kept out of the top 10']:[]),...(r.est.length?['Estimated at average until scored: '+r.est.join(', ')]:[])];
     return`<article class="card" id="c-${s.id}"><div class="rk">${i+1}</div>
-     <div><div class="nm">${tbadge(s)}${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
+     <div>${PICK[s.id]?`<span class="pick">${PICK[s.id]}</span>`:''}<div class="nm">${tbadge(s)}${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
      <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
      <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
       <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
