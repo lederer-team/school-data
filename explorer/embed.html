@@ -1526,8 +1526,9 @@ function renderZoneNote(k){const el=$('znote');{const ex=$('example');if(ex)ex.h
 function renderDrawers(){const K=st.kids,a=st.active,many=K.length>1;
   const hd=i=>{const k=K[i],nm=kname(k,i);let top='';if(st.places.length){const R=order(rankKid(k)).slice(0,3);top=R.length?R.map((r,j)=>`${j+1}. <b>${esc(r.s.n)}</b> ${r.score.toFixed(1)}`).join(' \u00b7 '):'No ranked schools yet'}
     return`<button type="button" class="kdhead" data-tab="${i}" data-kd="1" style="--kc:${css(KC[i])}"><span class="dot"></span><span class="t">Best fits for ${esc(nm)} (${GRADES[k.grade]})${k.support?' \u00b7 learning support':''}</span><span class="open">Open ▾</span><span class="top">${top}</span></button>`};
-  $('kdabove').innerHTML=K.map((_,i)=>i<a?hd(i):'').join('');$('kdbelow').innerHTML=K.map((_,i)=>i>a?hd(i):'').join('');
-  $('kdactive').classList.toggle('closed',!!st.kdc);const tg=$('kdtog');tg.hidden=!many&&!st.kdc;tg.textContent=st.kdc?'Open':'Collapse';tg.setAttribute('aria-expanded',String(!st.kdc))}
+  const shut=st.kdc!==false;
+  $('kdabove').innerHTML=K.map((_,i)=>i<a||(shut&&i===a)?hd(i):'').join('');$('kdbelow').innerHTML=K.map((_,i)=>i>a?hd(i):'').join('');
+  $('kdactive').hidden=shut;const tg=$('kdtog');tg.textContent='Collapse';tg.setAttribute('aria-expanded','true')}
 // When a home is an address or neighborhood inside this school's attendance area, the zoned high school at that point is known
 // The zoned school of a level (M or H) for a home address inside this school's area, same district
 function atHome(s,lv){if(s.dist===LVD){for(const p of st.places){const g=lvLookup(p);if(g&&g.ids.has(s.id)&&g.lv[lv].size===1)return [...g.lv[lv]][0]}return null}
@@ -2085,8 +2086,8 @@ root.addEventListener('click',e=>{
   const t=e.target.closest('button');if(!t)return;const k=st.kids[st.active];
   if(t.dataset.unplace){st.places.splice(+t.dataset.unplace,1);st.mapPlan=null;render();$('placeIn').focus()}
   else if(t.dataset.v&&t.closest('#mode')){st.together=t.dataset.v==='campus';st.mapPlan=null;render()}
-  else if(t.dataset.tab){st.active=+t.dataset.tab;st.mapPlan=null;st.kdc=false;soft();if(t.dataset.kd)setTimeout(()=>$('kdactive').scrollIntoView({behavior:'smooth',block:'start'}),60)}
-  else if(t.id==='kdtog'){st.kdc=!st.kdc;renderDrawers()}
+  else if(t.dataset.tab){st.active=+t.dataset.tab;st.mapPlan=null;if(t.dataset.kd)st.kdc=false;soft();if(t.dataset.kd)setTimeout(()=>$('kdactive').scrollIntoView({behavior:'smooth',block:'start'}),60)}
+  else if(t.id==='kdtog'){st.kdc=st.kdc===false;renderDrawers()}
   else if(t.dataset.add){const i=st.kids.length;st.kids.push(mk('',2,'Balanced',[],'all'));st.active=i;st.mapPlan=null;soft();$('kname').focus()}
   else if(t.dataset.remove){st.kids.splice(+t.dataset.remove,1);st.active=0;st.mapPlan=null;soft()}
   else if(t.dataset.sec){k.sector=t.dataset.sec;soft()}
@@ -2097,7 +2098,7 @@ root.addEventListener('click',e=>{
   else if(t.dataset.detail){openDetail(t.dataset.detail)}
   else if(t.dataset.dguide){openDistrict(t.dataset.dguide)}
   else if(t.dataset.showmap){showOnMap(t.dataset.showmap)}
-  else if(t.dataset.jump){e.preventDefault();$(t.dataset.jump).scrollIntoView({behavior:'smooth',block:'start'})}
+  else if(t.dataset.jump){e.preventDefault();st.kdc=false;renderDrawers();$(t.dataset.jump).scrollIntoView({behavior:'smooth',block:'start'})}
   else if(t.dataset.planmap){st.mapPlan=+t.dataset.planmap;renderMap();$('mapcard').scrollIntoView({behavior:'smooth',block:'start'})}
   else if(t.id==='mapBack'){st.mapPlan=null;renderMap()}
   else if(t.id==='example'||t.dataset.example){st=example();$('sharebox').hidden=true;render()}
