@@ -787,8 +787,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .dgmore[open] summary{margin-bottom:8px}
 .bx .alts{grid-column:1/-1;font-size:13px;color:var(--muted);margin:-2px 0 6px 20px}
 .bx .alts .lnk{font-size:13px}
-.bx .alts .nt,.bx .pick{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--amber)}
-.bx .pick{display:inline-block;color:var(--teal);margin-bottom:4px}
+.bx .alts .nt{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--amber)}
+.bx .pick{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;padding:5px 10px 5px 8px;margin-bottom:8px;border:2px solid var(--kcur);color:var(--kcur);background:var(--surface)}
+.bx .pick i{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:var(--kcur);color:var(--onink);font-size:11px;letter-spacing:0}
+.bx .pick.p1{background:var(--kcur);color:var(--onink)}
+.bx .pick.p1 i{background:var(--onink);color:var(--kcur)}
+.bx .pick .nt{font-weight:700;opacity:.85;text-transform:none;letter-spacing:0}
+.bx .card.top1{box-shadow:inset 5px 0 0 var(--kcur)}
 .bx .reshead.flash{animation:khl 1.2s ease}
 @keyframes khl{.bx 0%{background:var(--teal-soft)}
 .bx 100%{background:var(--sunk)}}
@@ -1991,7 +1996,7 @@ function renderList(){
   const grp=st.pub!=='radius'&&k.sector==='Public';const isZ=r=>{const b=zoneBest(r.s);return !!b&&b.z.k==='zone'};const pubs=grp?[...order(R.filter(r=>r.s.sec==='Public'&&isZ(r))),...order(R.filter(r=>r.s.sec==='Public'&&!isZ(r)))]:[]; // zoned schools before district-wide programs
   const rest=grp?order(R.filter(r=>r.s.sec!=='Public')):order(R);
   const scored=[...pubs,...rest],un=R.filter(r=>r.score==null);
-  {const t3=[...scored].sort((a,b)=>b.score-a.score).slice(0,3);PICK={};const L3=['Top pick','Runner-up','Also strong'];t3.forEach((r,j)=>{PICK[r.s.id]=L3[j]+(j>0&&t3[0].score-r.score<0.1?' \u00b7 nearly tied':'')})}
+  {const t3=[...scored].sort((a,b)=>b.score-a.score).slice(0,3);PICK={};const L3=['Top pick','Runner-up','Also strong'];t3.forEach((r,j)=>{PICK[r.s.id]={n:j+1,t:L3[j],tie:j>0&&t3[0].score-r.score<0.1}})}
   $('ksub').textContent=`${scored.length} ranked · ${un.length} not yet scored · ${st.pub==='radius'?'within '+(st.radius>50?'any distance':st.radius+' mi')+' of your locations':(st.pub==='zone'?'zoned public schools':'public schools in your districts')+(k.sector==='Public'?'':', private and charter '+(st.radius>50?'at any distance':'within '+st.radius+' mi'))}`;
   if(k.support){const sp=specList(k,'ld'),np=specList(k,'nps');
     $('supnote').innerHTML=`<div class="supnote"><span class="dot"></span><div><b>Learning support is on for ${esc(nm)}.</b> ${sp.length?`${sp.length} specialized or one-to-one school${sp.length>1?'s':''} within ${Math.max(st.radius,SPEC_MI)} miles serve ${GRADES[k.grade]} grade${np.length?`, plus ${np.length} nonpublic school${np.length>1?'s':''} reached through an IEP`:''}.`:`No specialized private schools serve ${GRADES[k.grade]} grade nearby${np.length?`, but ${np.length} nonpublic school${np.length>1?'s are':' is'} reached through an IEP`:''}.`} Family plans below still compare mainstream schools.</div><a href="#special" class="lbtn sm" data-jump="special">See ${esc(nm)}'s options</a></div>`;
@@ -2020,8 +2025,8 @@ function renderList(){
     if(level(k.grade)!=='H'&&s.k8){const x=s.k8;if(x.langs)tags.push(`<span class="tag ${x.lang>=6?'good':''}">${esc(x.langs)}</span>`);if(x.care===10)tags.push('<span class="tag good">Before and after care on campus</span>');if(x.thin)tags.push('<span class="tag warn" title="This school publishes few program details online, so its arts, STEM and clubs scores rest on limited information.">Few program details online</span>');if(x.cls)tags.push(`<span class="tag">Classes of about ${Math.round(x.cls)}</span>`)}
     if(s.e)tags.push(`<span class="tag">${s.e.toLocaleString()} students${s.rt?' · '+s.rt+' per teacher':''}</span>`);
     const flags=[...(level(k.grade)==='H'?(s.flags||[]).filter(f=>f!=='Programs not yet scored'):[]),...(r.limited?['Limited data: kept out of the top 10']:[]),...(r.est.length?['Estimated at average until scored: '+r.est.join(', ')]:[])];
-    return`<article class="card" id="c-${s.id}"><div class="rk">${i+1}</div>
-     <div>${PICK[s.id]?`<span class="pick">${PICK[s.id]}</span>`:''}<div class="nm">${tbadge(s)}${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
+    return`<article class="card${PICK[s.id]&&PICK[s.id].n===1?' top1':''}" id="c-${s.id}"><div class="rk">${i+1}</div>
+     <div>${PICK[s.id]?`<span class="pick p${PICK[s.id].n}"><i>${PICK[s.id].n}</i>${PICK[s.id].t}${PICK[s.id].tie?'<span class="nt">· nearly tied</span>':''}</span>`:''}<div class="nm">${tbadge(s)}${esc(s.n)}</div><div class="meta">${esc(s.c)} · ${s.sec} · grades ${s.lo===0?'K':s.lo}-${s.hi}</div></div>
      <div class="score"><b>${r.score.toFixed(1)}</b><small>fit</small></div>
      <div class="why"><div class="bar">${r.parts.map(p=>`<span title="${esc(CATS[p.c][0])} ${p.v.toFixed(1)}" style="width:${p.share*10}%;background:${css(CATS[p.c][1])};${p.e?'opacity:.35':''}"></span>`).join('')}</div>
       <div class="reason">Strongest here: ${esc(top.join(', '))}</div><div class="tags">${tags.join('')}</div>
