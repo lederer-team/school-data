@@ -819,6 +819,27 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .pick.p1 i{background:var(--onink);color:var(--kcur)}
 .bx .pick .nt{font-weight:700;opacity:.85;text-transform:none;letter-spacing:0}
 .bx .card.top1{box-shadow:inset 5px 0 0 var(--kcur)}
+.bx .tl2{overflow-x:auto;margin-top:10px}
+.bx .tlin{min-width:620px;display:grid;gap:8px}
+.bx .tlh,.bx .tlr{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px;align-items:stretch}
+.bx .tlh{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:6px}
+.bx .tlk{display:flex;align-items:center;gap:8px;font-weight:900;font-size:14px;color:var(--ink)}
+.bx .tlk i{width:10px;height:10px;border-radius:50%;background:var(--kc)}
+.bx .tlb{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.bx .tls{display:grid;align-content:center;gap:2px;min-width:0;padding:8px 10px;border-left:4px solid var(--kc);background:color-mix(in srgb,var(--kc) 14%,var(--surface));font-size:13px;color:var(--ink);overflow:hidden}
+.bx .tls b{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx .tls span{font-size:11.5px;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx .tls.M{background:color-mix(in srgb,var(--kc) 26%,var(--surface))}
+.bx .tls.H{background:color-mix(in srgb,var(--kc) 40%,var(--surface))}
+.bx .tls.G{background:var(--sunk);border-left-color:var(--line2);color:var(--muted)}
+.bx .tls.warn{background:var(--amber-soft);border:1px dashed var(--amber);border-left:4px solid var(--amber)}
+.bx .tls.warn b{color:var(--amber)}
+.bx .tgr .tlk{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--teal)}
+.bx .tls.tg{border-left-color:var(--teal);background:var(--teal-soft);padding:5px 10px}
+.bx .tlroute{padding-top:2px}
+.bx .tlroute .stop .t{padding-right:8px}
+@media (max-width:560px){.bx .tlh{display:none}}
+.bx .tls.tg b{color:var(--teal);font-size:12px}
 .bx .reshead.flash{animation:khl 1.2s ease}
 @keyframes khl{.bx 0%{background:var(--teal-soft)}
 .bx 100%{background:var(--sunk)}}
@@ -1777,12 +1798,21 @@ function evalPlan(home,hp,picks){
 function timeline(p){
   const yrs=[0,1,2,3,4];
   const rows=st.kids.map((k,i)=>{let sch=p.picks[i].s;return yrs.map(y=>{const g=k.grade+y;if(g>12)return{txt:'Graduated',em:''};
-    if(g<=sch.hi)return{txt:sch.n,em:GRADES[g]};
+    if(g<=sch.hi)return{txt:sch.n,em:GRADES[g],id:sch.id};
     const pi=pathInfo(sch,{...k,grade:Math.min(8,k.grade)});
-    if(pi&&pi.to.length===1){const prev=sch;sch=pi.to[0];return{txt:sch.n,em:`${GRADES[g]} · ${pi.cert==='Certain'?'district feeder':'continues'}${prev.org&&prev.org===sch.org&&prev.c!==sch.c?' · campus moves to '+sch.c:''}`}}
+    if(pi&&pi.to.length===1){const prev=sch;sch=pi.to[0];return{txt:sch.n,id:sch.id,em:`${GRADES[g]} · ${pi.cert==='Certain'?'district feeder':'continues'}${prev.org&&prev.org===sch.org&&prev.c!==sch.c?' · campus moves to '+sch.c:''}`}}
     return{txt:'Apply to high school',em:GRADES[g]+' · admission needed',warn:true}})});
   const tog=yrs.map(y=>{const ids=rows.map(r=>r[y].txt);return ids.length>1&&ids.every(x=>x===ids[0]&&x!=='Graduated'&&!x.startsWith('Apply'))});
-  return`<div class="tl"><table><thead><tr><th>Child</th>${yrs.map(y=>`<th>${YEAR+y}-${String(YEAR+y+1).slice(2)}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr><td><b>${esc(kname(st.kids[i],i))}</b></td>${r.map((c,y)=>`<td${c.warn?' style="color:var(--amber)"':''}>${esc(c.txt)}<em>${esc(c.em)}${tog[y]?' · together':''}</em></td>`).join('')}</tr>`).join('')}</tbody></table></div>`}
+  const lvl=g=>g>12?'G':g>=9?'H':g>=6?'M':'E';const LN={E:'Elementary',M:'Middle',H:'High school',G:''};
+  const segs=(r,k)=>{const out=[];r.forEach((c,y)=>{const g=k.grade+y,L=lvl(g),last=out[out.length-1];if(last&&last.txt===c.txt&&last.L===L){last.b=y;last.g2=g}else out.push({txt:c.txt,id:c.id,warn:c.warn,a:y,b:y,g1:g,g2:g,L,note:(c.em.split(' · ').slice(1).join(' · '))})});return out};
+  const gr=(a,b)=>a>12?'':(GRADES[a]+(b>a?'-'+GRADES[Math.min(b,12)]:''));
+  const head=`<div class="tlr tlh"><div></div><div class="tlb">${yrs.map(y=>`<span>${YEAR+y}-${String(YEAR+y+1).slice(2)}</span>`).join('')}</div></div>`;
+  const RC={E:'var(--rt-e)',M:'var(--rt-m)',H:'var(--rt-h)',G:'var(--rt-x)'};
+  const body=rows.map((r,i)=>{const k=st.kids[i];return`<div class="tlr" style="--kc:${css(KC[i])}"><div class="tlk"><i></i>${esc(kname(k,i))}</div><div class="route tlroute">${segs(r,k).map(sg=>{const col=sg.warn?'var(--rt-x)':RC[sg.L];const nm=sg.id?`<button type="button" class="sch" data-detail="${sg.id}">${esc(sg.txt)}</button>`:`<b>${esc(sg.txt)}</b>`;
+    return`<div class="stop${sg.a===0?' cur':''}${sg.warn?' alt':''}" style="color:${col};flex-grow:${sg.b-sg.a+1}"><div class="trk" style="background:${col}"><span class="dot"></span></div><div class="t">${nm}<span>${sg.L==='G'?'':esc([LN[sg.L],gr(sg.g1,sg.g2),sg.note].filter(Boolean).join(' · '))}</span></div></div>`}).join('')}</div></div>`}).join('');
+  const tg=[];tog.forEach((t,y)=>{if(!t)return;const l=tg[tg.length-1];if(l&&l.b===y-1)l.b=y;else tg.push({a:y,b:y})});
+  const trow=tg.length?`<div class="tlr tgr"><div class="tlk">Together</div><div class="route tlroute">${(()=>{let o='',c=0;tg.forEach(t=>{if(t.a>c)o+=`<div class="stop gap" style="flex-grow:${t.a-c}"></div>`;o+=`<div class="stop" style="color:var(--teal);flex-grow:${t.b-t.a+1}"><div class="trk" style="background:var(--teal)"><span class="dot"></span></div><div class="t"><b>Same campus</b><span>one drop-off</span></div></div>`;c=t.b+1});if(c<5)o+=`<div class="stop gap" style="flex-grow:${5-c}"></div>`;return o})()}</div></div>`:'';
+  return`<div class="tl2"><div class="tlin">${head}${body}${trow}</div></div>`}
 
 /* ---------- share links: settings live in the link's #fragment, never sent to a server ---------- */
 const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
