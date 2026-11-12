@@ -890,7 +890,18 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lv-agent h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:6px 0}
 .bx .lv-agent p{margin:0;color:rgba(255,255,255,.8);font-size:14px}
 .bx .lv-agent .eyebrow{color:rgba(255,255,255,.7)}
-.bx .lv-agent-c{display:grid;gap:10px;justify-items:start}
+.bx .lv-agent-t{flex:1 1 280px;min-width:0}
+.bx .lv-form{flex:1 1 420px;min-width:0;display:grid;gap:10px}
+.bx .lv-fr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.bx .lv-form label{display:grid;gap:4px;font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800;color:rgba(255,255,255,.7)}
+.bx .lv-form input,.bx .lv-form textarea{font:inherit;font-size:14px;letter-spacing:0;text-transform:none;font-weight:400;color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.35);padding:9px 10px;min-width:0;resize:vertical}
+.bx .lv-form input:focus,.bx .lv-form textarea:focus{outline:2px solid #fff;outline-offset:1px}
+.bx .lv-fa{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.bx .lv-ferr{font-size:13px;color:#ffcf9e}
+.bx .lv-form button.lvbtn{cursor:pointer}
+.bx .lv-form button.lvbtn:hover{background:#fff;color:var(--dark)}
+.bx .lv-sent{margin:0;font-size:16px;color:#fff;line-height:1.5}
+@media (max-width:640px){.bx .lv-fr{grid-template-columns:minmax(0,1fr)}}
 .bx .lv-agent-c .ph{font-size:20px;font-weight:700;letter-spacing:.5px;user-select:all}
 .bx .lvfs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 48px}
 .bx .lvf h4{font-family:var(--serif);font-weight:400;font-size:21px;margin:0 0 6px;padding-bottom:8px;border-bottom:1px solid var(--line)}
@@ -1098,6 +1109,39 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .hcard .ad{font-size:14px;color:var(--ink);font-weight:700}
 .bx .hcard .sp{font-size:13px;color:var(--ink2)}
 .bx .ml{font-size:11px;color:var(--muted)}
+.bx .hrows{display:grid;margin-top:14px;border-top:1px solid var(--line)}
+.bx .hrow{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:16px 0;border-bottom:1px solid var(--line);align-items:start}
+.bx .hrl{display:grid;gap:4px;align-content:start;padding-top:2px}
+.bx .hrl h4{font-family:var(--serif);font-weight:400;font-size:24px;line-height:1.1;margin:0;color:var(--ink)}
+.bx .hrl .sub{font-size:12.5px}
+.bx .hrl .lnk{font-size:12.5px;font-weight:700;color:var(--teal);text-decoration:none}
+.bx .hrl .lnk:hover{text-decoration:underline}
+.bx .hrl .rng{font-size:12px;color:var(--muted)}
+.bx .hstrip{position:relative;min-width:0}
+.bx .hscroll{display:grid;grid-auto-flow:column;grid-auto-columns:max(190px,calc((100% - 48px)/4.4));justify-content:start;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:thin;padding-bottom:6px}
+.bx .hscroll>*{scroll-snap-align:start}
+.bx .hscroll .hcard .ph{aspect-ratio:3/2}
+.bx .hscroll .hcard .pr{font-size:21px;left:10px;bottom:8px}
+.bx .hscroll .hcard .bd{padding:8px 10px 10px;gap:1px}
+.bx .hscroll .hcard .ad{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bx .hscroll .hcard .sp{font-size:12px}
+.bx .hscroll .hcard .ml{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10.5px}
+.bx .harr{position:absolute;top:calc((100% - 6px) * .33);transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:18px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);z-index:2;display:grid;place-items:center}
+.bx .harr.l{left:-12px}
+.bx .harr.r{right:-12px}
+.bx .harr[disabled]{opacity:0;pointer-events:none}
+.bx .hmorec{display:grid;place-items:center;align-content:center;gap:6px;border:1px dashed var(--line2);background:var(--sunk);color:var(--teal);font-weight:700;font-size:13px;text-decoration:none;text-align:center;padding:12px}
+.bx .hempty{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;padding:14px 0;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line)}
+.bx .hempty button{font:inherit;font-size:12.5px;font-weight:700;color:var(--teal);background:var(--surface);border:1px solid var(--line);padding:5px 10px;cursor:pointer}
+.bx .hempty button:hover{border-color:var(--teal)}
+.bx .hrow.relax .hrl .sub{color:var(--amber);font-weight:700}
+.bx .homes .hh h3{font-size:clamp(24px,3vw,34px)}
+@media (max-width:760px){.bx .hrow{grid-template-columns:minmax(0,1fr);gap:8px}
+.bx .hrl{grid-template-columns:auto auto 1fr;align-items:baseline;gap:10px}
+.bx .hrl .lnk{justify-self:end}
+.bx .hrl .rng{display:none}
+.bx .hscroll{grid-auto-columns:72%}
+.bx .harr{display:none}}
 .bx .hcard.sk .ph{animation:pulse 1.4s ease-in-out infinite}
 .bx .hcard.sk .bd span{display:block;height:10px;background:var(--sunk);margin:4px 0}
 @keyframes pulse{.bx 50%{opacity:.55}}
@@ -1354,7 +1398,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
      <li>Program data (sports, arts, STEM and clubs) currently covers 102 high schools in Alameda and Contra Costa counties. Other counties are coming.</li>
      <li>Club and team counts come from what schools publish, which varies in detail. Estimates are flagged on each card.</li>
      <li>Test results describe one year of students and don't measure teaching quality, school culture or fit for an individual child.</li>
-     <li>Visit schools, talk with families there and confirm enrollment rules before deciding. Spot something out of date? Call us at 510-774-4231 and we'll correct it.</li>
+     <li>Visit schools, talk with families there and confirm enrollment rules before deciding. Spot something out of date? Use Suggest a school or edit and we'll correct it.</li>
     </ul>
    </section>
   </div>
@@ -1410,7 +1454,7 @@ bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
   const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
-load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page, or call 510-774-4231.</div>'});
+load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
 function boot(S,G){
 const BY=Object.fromEntries(S.map(s=>[s.id,s]));
@@ -1687,7 +1731,7 @@ function listingsFor(p){const k=p.lat+','+p.lng;if(LST.key===k)return;LST={key:k
 function listingsArea(){const k=areaKey();if(LST.key===k)return;LST={key:k,mode:'area',state:'loading',items:[],discs:{},f:{c:'',pr:'',bd:0},n:12};renderHomes();
   if(!/theledererteam\.com$/.test(location.hostname)){LST.state='offsite';renderHomes();return}
   Promise.all(st.places.map(p=>fetchBox(isCity(p)?cityBox(p):placeBox(p),p).then(xs=>xs.map(x=>({...x,place:p.n||p.label})).filter(x=>!isCity(p)||x.city.toLowerCase()===String(p.n).toLowerCase()))))
-    .then(all=>{if(LST.key!==k)return;const seen=new Set();LST.items=all.flat().filter(x=>!seen.has(x.href)&&seen.add(x.href)&&!/LAND|LOT/i.test(x.ty||''));LST.state='done';renderHomes()})
+    .then(all=>{if(LST.key!==k)return;const seen=new Set(),sk=x=>[x.href,addrKey(x.ad)+'|'+x.price];LST.items=all.flat().filter(x=>!sk(x).some(k=>seen.has(k))&&(sk(x).forEach(k=>seen.add(k)),1)&&!/LAND|LOT/i.test(x.ty||''));LST.state='done';renderHomes()})
     .catch(()=>{if(LST.key!==k)return;LST.state='error';renderHomes()})}
 function listingsViaFrame(p,k){
   const f=document.createElement('iframe');f.setAttribute('aria-hidden','true');f.tabIndex=-1;f.style.cssText='position:fixed;left:0;top:0;width:min(1200px,100vw);height:900px;border:0;opacity:0;pointer-events:none;z-index:-1';
@@ -1709,7 +1753,7 @@ function homeCtl(count){const f=HF();const sel=(k,opts,lab)=>`<label>${lab} <sel
    ${sel('bd',[0,1,2,3,4,5].map(n=>[n,n?n+'+':'Any']),'Beds')}${sel('ba',[0,1,1.5,2,2.5,3,4].map(n=>[n,n?n+'+':'Any']),'Baths')}
    ${sel('sf',[0,1000,1500,2000,2500,3000,4000].map(n=>[n,n?n.toLocaleString()+'+ sq ft':'Any size']),'Size')}${sel('ty',[['','Houses and condos'],['sf','Single-family houses'],['condo','Condos and townhomes']],'Type')}
    ${count!=null?`<span class="cnt">${count} home${count===1?'':'s'}</span>`:''}<span class="sub hsaved">These choices are saved in the family link.</span></div>`}
-function bindHomeCtl(el){el.querySelectorAll('[data-hf2]').forEach(b=>b.addEventListener('change',()=>{const k=b.dataset.hf2;HF()[k]=k==='ty'?b.value:+b.value;LST.np={};renderHomes();syncHash()}))}
+function bindHomeCtl(el){el.querySelectorAll('[data-hf2]').forEach(b=>b.addEventListener('change',()=>{const k=b.dataset.hf2;HF()[k]=k==='ty'?b.value:+b.value;LST.relax={};renderHomes();syncHash()}))}
 const PRB=[['','Any price'],['0-1000000','Under $1M'],['1000000-1500000','$1M to $1.5M'],['1500000-2000000','$1.5M to $2M'],['2000000-3000000','$2M to $3M'],['3000000-1e12','$3M and up']];
 function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){el.innerHTML='';return}
   const p=st.places.find(x=>x.kind==='address');
@@ -1725,13 +1769,23 @@ function renderHomes(){const el=$('homes');if(!el)return;if(!st.places.length){e
   const sk=n=>`<div class="hgrid">${'<div class="hcard sk"><div class="ph"></div><div class="bd"><span></span><span style="width:60%"></span></div></div>'.repeat(n)}</div>`;
   if(LST.state==='loading'){el.innerHTML=`<section class="homes">${head('Homes for sale '+where)}${sk(4)}</section>`;return}
   if(LST.state==='offsite'||LST.state==='error'){el.innerHTML=`<section class="homes">${head('Homes for sale '+where,LST.state==='offsite'?'Active listings appear here on theledererteam.com.':'Listings didn’t load. Use the button to open our home search.')}</section>`;return}
-  if(LST.mode==='area'){LST.np=LST.np||{};
-    const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
-    const secs=st.places.map(q=>{const nm=q.n||q.label;const xs=ok.filter(x=>x.place===nm);const n=LST.np[nm]||4;
-      return`<div class="hsec"><div class="hsech"><h4>${esc(nm)}</h4><span class="sub">${xs.length} home${xs.length===1?'':'s'} match</span><a class="lnk" href="${esc(homesUrl(isCity(q)?cityBox(q):placeBox(q)))}" target="_blank" rel="noopener">See all in ${esc(nm)} →</a></div>
-       ${xs.length?`<div class="hgrid">${xs.slice(0,n).map(card).join('')}</div>${xs.length>n?`<div class="hmore"><button type="button" class="lnkall" data-hmore2="${esc(nm)}">Show 4 more in ${esc(nm)}</button></div>`:''}`:'<p class="sub">No active listings here match these choices.</p>'}</div>`}).join('');
-    el.innerHTML=`<section class="homes">${head('Homes for sale '+where,'Newest listings first, grouped by location. Single-family homes, condos and townhomes only.',homeCtl(ok.length))}${secs}${foot}</section>`;
-    bindHomeCtl(el);el.querySelectorAll('[data-hmore2]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.hmore2;LST.np[k]=(LST.np[k]||4)+4;renderHomes()}));bindLv(el);return}
+  if(LST.mode==='area'){LST.relax=LST.relax||{};
+    const homes=LST.items.filter(isHome),ok=homes.filter(hfOk),byP=(a,b)=>(b.price||0)-(a.price||0);
+    const rows=[],empty=[];
+    st.places.forEach(q=>{const nm=q.n||q.label,url=homesUrl(isCity(q)?cityBox(q):placeBox(q));let xs=ok.filter(x=>x.place===nm).sort(byP);const relax=!xs.length&&LST.relax[nm];
+      if(!xs.length&&!relax){empty.push({nm,url,n:homes.filter(x=>x.place===nm).length});return}
+      if(relax)xs=homes.filter(x=>x.place===nm).sort(byP);
+      const lo=xs[xs.length-1].price,hi=xs[0].price,MAX=24,show=xs.slice(0,MAX);
+      rows.push(`<div class="hrow${relax?' relax':''}"><div class="hrl"><h4>${esc(nm)}</h4><span class="sub">${relax?`All ${xs.length} home${xs.length===1?'':'s'}, outside your choices`:`${xs.length} home${xs.length===1?'':'s'} match`}</span>${hi&&xs.length>1?`<span class="rng">${money2(lo)} to ${money2(hi)}</span>`:''}<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener">See all in ${esc(nm)} →</a></div>
+        <div class="hstrip"><button type="button" class="harr l" aria-label="Scroll ${esc(nm)} homes left" disabled>‹</button><div class="hscroll">${show.map(card).join('')}${xs.length>MAX?`<a class="hmorec" href="${esc(url)}" target="_blank" rel="noopener">${xs.length-MAX} more in ${esc(nm)}<span>Open our home search →</span></a>`:''}</div><button type="button" class="harr r" aria-label="Scroll ${esc(nm)} homes right">›</button></div></div>`)});
+    const emp=empty.length?`<div class="hempty"><span>No homes match these choices in ${esc(empty.map(e=>e.nm).join(', ').replace(/, ([^,]*)$/,' or $1'))}.</span>${empty.map(e=>e.n?`<button type="button" data-hrelax="${esc(e.nm)}">See ${e.n} home${e.n===1?'':'s'} in ${esc(e.nm)}</button>`:`<a class="lnk" href="${esc(e.url)}" target="_blank" rel="noopener">Search ${esc(e.nm)} →</a>`).join('')}</div>`:'';
+    el.innerHTML=`<section class="homes">${head('Homes for sale '+where,'Highest price first, grouped by location. Scroll each row for more. Single-family homes, condos and townhomes only.',homeCtl(ok.length))}<div class="hrows">${rows.join('')}${emp}</div>${foot}</section>`;
+    bindHomeCtl(el);
+    el.querySelectorAll('[data-hrelax]').forEach(b=>b.addEventListener('click',()=>{LST.relax[b.dataset.hrelax]=1;renderHomes()}));
+    el.querySelectorAll('.hstrip').forEach(w=>{const sc=w.querySelector('.hscroll'),l=w.querySelector('.harr.l'),r=w.querySelector('.harr.r');
+      const upd=()=>{l.disabled=sc.scrollLeft<4;r.disabled=sc.scrollLeft+sc.clientWidth>=sc.scrollWidth-4};upd();sc.addEventListener('scroll',upd,{passive:true});
+      l.addEventListener('click',()=>sc.scrollBy({left:-sc.clientWidth*.9}));r.addEventListener('click',()=>sc.scrollBy({left:sc.clientWidth*.9}))});
+    bindLv(el);return}
   const key=addrKey(p.label);const me=LST.items.find(x=>key&&addrKey(x.ad)===key);
   let others=LST.items.filter(x=>x!==me&&isHome(x)&&hfOk(x));
   if(me&&me.price){others=others.map(x=>{let d=Math.abs(Math.log((x.price||me.price)/me.price))*3;if(me.bd)d+=x.bd?Math.abs(x.bd-me.bd)*0.5:0.6;if(me.sf)d+=x.sf?Math.abs(Math.log(x.sf/me.sf))*2:0.6;return[x,d]}).sort((a,b)=>a[1]-b[1]).map(x=>x[0])}
@@ -1759,9 +1813,6 @@ function lvSchools(x){if(!x.lat||!x.lng)return'';const p={label:x.ad,n:x.ad,lat:
 function lvGal(){const x=LV.x,n=x.imgs.length||1,i=((LV.i%n)+n)%n;LV.i=i;
   const m=document.querySelector('#lview .lv-main');if(!m)return;m.style.backgroundImage=x.imgs[i]?`url('${x.imgs[i]}')`:'none';m.querySelector('.lv-cnt').textContent=`${i+1} / ${n}`;
   document.querySelectorAll('#lview .lv-th').forEach((t,j)=>t.classList.toggle('on',j===i));const on=document.querySelector('#lview .lv-th.on');if(on)on.scrollIntoView({block:'nearest',inline:'nearest'})}
-function lvMort(){const x=LV.x;const g=id=>+(document.getElementById(id)||{}).value||0;const price=x.price||0,dp=g('lvDp')/100,rate=g('lvRate')/100/12,n=360;
-  const loan=price*(1-dp),pi=rate?loan*rate/(1-Math.pow(1+rate,-n)):loan/n,tax=price*0.0118/12,hoa=x.hoa||0,tot=pi+tax+hoa;
-  const o=document.getElementById('lvPay');if(o)o.innerHTML=`<b>$${Math.round(tot).toLocaleString()}</b><span>a month</span><em>Principal and interest $${Math.round(pi).toLocaleString()} · property tax about $${Math.round(tax).toLocaleString()}${hoa?` · HOA $${Math.round(hoa).toLocaleString()}`:''}</em>`}
 function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
   const t=v=>v==null||v===''?null:v;const sqm=x.price&&x.sf?Math.round(x.price/x.sf):null;
   const rowsI=[['Bedrooms',t(x.bd)],['Bathrooms',t(x.ba)],['Living area',x.sf?x.sf.toLocaleString()+' sq ft':null]];
@@ -1776,23 +1827,29 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     <div class="lv-thumbs">${x.imgs.map((u,j)=>`<button type="button" class="lv-th" data-lvt="${j}" style="background-image:url('${esc(u)}')" aria-label="Photo ${j+1}"></button>`).join('')}</div></div>
    <div class="lv-body">
     <div class="lv-head"><div><h2>${esc(street)}</h2><div class="lv-addr">${esc([x.city,'CA',x.zip].filter(Boolean).join(', ').replace(', CA,',', CA'))}</div><div class="lv-price">${x.price?'$'+x.price.toLocaleString():''}</div>${x.st!=='For sale'?`<span class="tag warn">${esc(x.st)}</span>`:''}</div>
-     <div class="lv-cta"><a class="lvbtn dark" href="${esc(x.href)}" target="_blank" rel="noopener">Request a showing</a>${x.vt?`<a class="lvbtn" href="${esc(x.vt)}" target="_blank" rel="noopener">Virtual tour</a>`:''}</div></div>
+     <div class="lv-cta"><button type="button" class="lvbtn dark" data-lvask="1">Request a showing</button>${x.vt?`<a class="lvbtn" href="${esc(x.vt)}" target="_blank" rel="noopener">Virtual tour</a>`:''}</div></div>
     <div class="lv-two"><div class="lv-desc">${desc?desc.split(/\n+/).map(q=>`<p>${esc(q)}</p>`).join(''):'<p class="sub">The listing description isn’t available here. Open the full listing for details.</p>'}</div>
      <div class="lv-stats">${[[IC.bed,x.bd,'Beds'],[IC.bath,x.ba,'Baths'],[IC.sf,x.sf&&x.sf.toLocaleString(),'Sq ft living area'],[IC.lot,x.lot&&x.lot.toLocaleString(),'Sq ft lot']].filter(q=>q[1]).map(([i,v,l])=>`<div>${i}<span><b>${v}</b>${l}</span></div>`).join('')}</div></div>
     ${lvSchools(x)}
-    <div class="lv-agent"><div><div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3><p>Ask us about this home, its schools and the neighborhood. We'll set up a showing.</p></div>
-     <div class="lv-agent-c"><span class="ph">(510) 774-4231</span><a class="lvbtn light" href="${esc(x.href)}" target="_blank" rel="noopener">Contact us about this home</a></div></div>
+    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
+     <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
+      <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
+      <div class="lv-fa"><button type="submit" class="lvbtn light">Send to our team</button><span class="lv-ferr" role="status"></span></div></form></div>
     <section class="lvsec"><h3 class="lvh">Features &amp; amenities</h3><div class="lvfs">${grid('Interior',rowsI)}${grid('Exterior',rowsE)}${grid('Area &amp; listing',rowsA)}${grid('Financial',rowsF)}</div></section>
-    ${x.price?`<section class="lvsec lvm"><div><h3 class="lvh">Payment estimate</h3><p class="sub">A rough monthly cost for a 30-year fixed loan. Taxes use about 1.18% of the price a year. Ask your lender for real numbers.</p>
-     <div class="lvmi"><label>Down payment <select id="lvDp">${[10,15,20,25,30,40,50].map(v=>`<option value="${v}"${v===20?' selected':''}>${v}%</option>`).join('')}</select></label><label>Interest rate <select id="lvRate">${[5,5.5,6,6.25,6.5,6.75,7,7.5].map(v=>`<option value="${v}"${v===6.5?' selected':''}>${v}%</option>`).join('')}</select></label></div></div><div class="lvpay" id="lvPay"></div></section>`:''}
     <p class="ml">${x.office?'Listed by '+esc(x.office)+'. ':''}Listing information comes from the MLS through our home search and can change at any time. <a class="lnk" href="${esc(x.href)}" target="_blank" rel="noopener">Open the full listing</a></p>
    </div></div>`;
-  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();lvMort();
-  el.querySelectorAll('select').forEach(q=>q.addEventListener('change',lvMort));
-  el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
+  el.hidden=false;document.documentElement.style.overflow='hidden';lvGal();
+  const fm=el.querySelector('.lv-form');fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
+    const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':phone.replace(/\D/g,'').length<10?'Please add a phone number so we can set up the showing.':'';
+    out.textContent=err;if(err)return;lsSet('bx_name',name);lsSet('bx_email',email);lsSet('bx_phone',phone);
+    const full=msg+' [Home: '+(x.ad||street)+(x.mls?', MLS '+x.mls:'')+'] [From the Bay Area School Explorer]';
+    try{fetch(GF,{method:'POST',mode:'no-cors',body:new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Showing request '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:'Showing request: '+full,[GE.page]:x.href||''})})}catch(_){}
+    lpLead(name,email,phone,'',full);
+    fm.innerHTML='<p class="lv-sent"><b>Thanks, '+esc(name.split(' ')[0])+'.</b> Your note about '+esc(street)+' is on its way to our team. We\'ll be in touch soon.</p>'});
+  el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvask){const f=el.querySelector('#lvAsk');f.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{const i=[...f.querySelectorAll('input')].find(q=>!q.value)||f.querySelector('textarea');i&&i.focus({preventScroll:true})},450);return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
   el.querySelector('.lv-x').focus()}
 function closeListing(){const el=document.getElementById('lview');if(el){el.hidden=true;el.innerHTML=''}document.documentElement.style.overflow='';LV=null}
-document.addEventListener('keydown',e=>{if(!LV)return;if(e.key==='Escape'&&$('drawer').hidden)closeListing();else if(e.key==='ArrowRight'){LV.i++;lvGal()}else if(e.key==='ArrowLeft'){LV.i--;lvGal()}});
+document.addEventListener('keydown',e=>{if(!LV)return;if(/INPUT|TEXTAREA|SELECT/.test((e.target||{}).tagName||'')&&e.key!=='Escape')return;if(e.key==='Escape'&&$('drawer').hidden)closeListing();else if(e.key==='ArrowRight'){LV.i++;lvGal()}else if(e.key==='ArrowLeft'){LV.i--;lvGal()}});
 const homesLink=(url,txt)=>`<a class="lnk" href="${esc(url)}" target="_blank" rel="noopener" title="Opens our home search for this map area. Check each home's assigned school with the district.">${txt}</a>`;
 // Where a school leads as a child grows: public feeder chain, private continuation, or a new application
 function schoolPath(s){
@@ -2369,11 +2426,11 @@ const GF='https://docs.google.com/forms/d/e/1FAIpQLScoldxLPgwedCdD8pPlMi38hiPjs_
 const GE={name:'entry.1829188186',email:'entry.1868695182',phone:'entry.1624231566',terms:'entry.915905887',consent:'entry.1326937585',places:'entry.1983400583',page:'entry.308060020'};
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 function teamBypass(){if(/[?&#]team=lederer\b/.test(location.search+location.hash)){lsSet('bx_team','1');return true}return lsGet('bx_team')==='1'}
-function lpLead(name,email,phone,places){try{
+function lpLead(name,email,phone,places,msg){try{
   const f=[...document.querySelectorAll('form')].find(x=>!root.contains(x)&&x.querySelector('[name=phoneNumber]')&&x.querySelector('[name=message]')&&x.querySelector('[name=email]'));if(!f)return;
   const set=(el,v)=>{if(!el)return;const P=el.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(P,'value').set.call(el,v);el.dispatchEvent(new Event('input',{bubbles:true}));el.dispatchEvent(new Event('change',{bubbles:true}))};
   set(f.querySelector('[name=name]'),name);set(f.querySelector('[name=email]'),email);set(f.querySelector('[name=phoneNumber]'),phone);
-  set(f.querySelector('[name=message]'),'Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.');
+  set(f.querySelector('[name=message]'),msg||('Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.'));
   const t=f.querySelector('[name=termsAccepted]');if(t&&!t.checked)t.click();
   setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},300)}catch(e){}}
 function gate(){
@@ -2387,7 +2444,7 @@ function gate(){
     const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:places,[GE.page]:location.origin+location.pathname});
     try{fetch(GF,{method:'POST',mode:'no-cors',body})}catch(_){}
     if(phone)lpLead(name,email,phone,places);
-    lsSet('bx_signed',new Date().toISOString());g.hidden=true;document.documentElement.style.overflow=''})}
+    lsSet('bx_signed',new Date().toISOString());lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);g.hidden=true;document.documentElement.style.overflow=''})}
 root.addEventListener('keydown',e=>{if(e.key==='Tab'&&!$('gate').hidden){const f=[...$('gform').querySelectorAll('input,button,a')];const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
 
 loadGoogle();
