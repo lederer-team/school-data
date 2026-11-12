@@ -898,7 +898,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lvkh .dot{width:10px;height:10px;border-radius:50%;background:var(--kc);align-self:center}
 .bx .lvkh b{font-size:16px}
 .bx .lvsl{list-style:none;margin:0;padding:0;display:grid}
-.bx .lvsl li{display:grid;grid-template-columns:98px minmax(0,1fr) auto auto 58px;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
+.bx .lvsl li{display:grid;grid-template-columns:112px minmax(0,1fr) auto auto 58px;gap:4px 10px;align-items:center;padding:8px 0;border-top:1px solid var(--line);font-size:14px}
 .bx .lvsl li:first-child{border-top:0}
 .bx .lvpk{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:900;color:var(--kc);border:1.5px solid var(--kc);padding:2px 6px;text-align:center;white-space:nowrap}
 .bx .lvpk.p1{background:var(--kc);color:#fff}
@@ -910,6 +910,11 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .lvdr{font-size:13px;font-weight:700;color:var(--ink);text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .bx .lvdr::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--muted);margin-right:5px;vertical-align:1px}
 .bx .lvfb{margin:8px 0 0;font-size:12.5px}
+.bx .lvsl li.lvgrp{display:block;padding:10px 0 2px;border-top:0;font-size:10.5px;letter-spacing:1.4px;text-transform:uppercase;font-weight:900;color:var(--muted)}
+.bx .lvsl li.lvgrp+li{border-top:0}
+.bx .lvsl li.lvgrp:not(:first-child){margin-top:6px;border-top:1px solid var(--line);padding-top:12px}
+.bx .lvwarn{margin-top:14px;border:1px solid var(--line);border-left:4px solid var(--amber);background:var(--amber-soft,var(--sunk));padding:12px 14px;font-size:13.5px;line-height:1.55;color:var(--ink2)}
+.bx .lvwarn b{color:var(--ink)}
 @media (max-width:560px){.bx .lvsl li{grid-template-columns:auto minmax(0,1fr) auto;}
 .bx .lvsl li .lvpk{grid-column:1/-1;justify-self:start}
 .bx .lvsl li .lvsn{grid-column:1/-1}}
@@ -1845,18 +1850,29 @@ function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label
       const dh=[...new Set(cand.map(sc=>sc.dist))];if(cand.length===1)zs=[cand[0]];else if(dh.length)fb=dh.map(d=>`<button type="button" class="lnk" data-dguide="${esc(d)}">${esc(d)}</button>`).join(' or ')+` assigns ${GRADES[k.grade]==='K'?'kindergarten':GRADES[k.grade]+' grade'} by address among ${cand.length} schools. We don't have its attendance map yet, so ask the district which one serves this home.`}
     return{zs,fb}};
   const row=(r,k,i,lab,extra)=>{const sc=r.s,m=drive(hp,sc);return`<li><span class="lvpk${lab===L3[0]?' p1':''}">${lab}</span><span class="lvsn"><button type="button" class="lnk" data-detail="${sc.id}">${esc(sc.n)}</button><span class="sub">${esc(sc.c)} · ${sc.sec}${extra||''}</span></span>${r.score!=null?`<b class="fitb" style="--kc:${css(KC[i])}">${r.score.toFixed(1)} fit</b>`:'<span></span>'}${costC(sc,k.grade)}<span class="lvdr" data-drs="${sc.id}" data-lat="${sc.lat}" data-lng="${sc.lng}">${m} min</span></li>`};
-  const blocks=st.kids.map((k,i)=>{const {zs,fb}=zonedOf(k);const zid=new Set(zs.map(z=>z.id));let list,support=false;
-    if(k.support){const sl=specList(k,'ld').filter(r=>mi(hp,r.s)<=Math.max(st.radius,SPEC_MI)).map(r=>({...r,min:drive(hp,r.s)})).sort((a,b)=>b.score-a.score);if(sl.length){list=sl.slice(0,3);support=true}}
-    if(!list){let rk=[];try{rk=order(rankKid(k,p).filter(r=>r.s.sec!=='Public'||zid.has(r.s.id)||pubOk(r.s,p)))}catch(e){}list=rk.slice(0,3)}
-    if(list[0])tops.push(list[0].s);
-    const rows=list.map((r,j)=>row(r,k,i,L3[j],zid.has(r.s.id)?' · assigned to this address':(support?' · learning support':''))).join('');
-    const zr=zs.filter(z=>!list.some(r=>r.s.id===z.id)).map(z=>{let f=null;try{f=scoreFor(z,k,p).score}catch(e){}return row({s:z,score:f},k,i,'Assigned')}).join('');
-    const pol=[...new Set(zs.map(z=>z.dist))].filter(d=>DPOL[d]).map(d=>DPOL[d].head);
-    return`<div class="lvkid" style="--kc:${css(KC[i])}"><div class="lvkh"><span class="dot"></span><b>${esc(kname(k,i))}</b><span class="sub">${GRADES[k.grade]}${GRADES[k.grade]==='K'?'':' grade'} next fall${support?' · learning support':''}</span></div>
-      ${rows||zr?`<ol class="lvsl">${rows}${zr}</ol>`:'<p class="sub">No schools in range for this grade.</p>'}${fb&&!zr?`<p class="sub lvfb"><b>Assigned public school:</b> ${fb}</p>`:''}${pol.length?`<p class="sub lvfb">${esc(pol.join(' '))}</p>`:''}</div>`}).join('');
+  let anyPub=false;
+  const blocks=st.kids.map((k,i)=>{const {zs,fb}=zonedOf(k);const zid=new Set(zs.map(z=>z.id));let support=false,html='';
+    const sub=t=>`<li class="lvgrp">${t}</li>`;
+    const zrows=ex=>zs.filter(z=>!ex.has(z.id)).map(z=>{let f=null;try{f=scoreFor(z,k,p).score}catch(e){}return row({s:z,score:f},k,i,'Assigned')}).join('');
+    if(k.support){const sl=specList(k,'ld').filter(r=>mi(hp,r.s)<=Math.max(st.radius,SPEC_MI)).sort((a,b)=>b.score-a.score);if(sl.length){support=true;tops.push(sl[0].s);html=sl.slice(0,3).map((r,j)=>row(r,k,i,L3[j],' · learning support')).join('')}}
+    if(!support){let rk=[];try{rk=order(rankKid(k,p).filter(r=>r.s.sec!=='Public'||zid.has(r.s.id)||pubOk(r.s,p)))}catch(e){}
+      if(rk[0])tops.push(rk[0].s);
+      const priv=rk.filter(r=>r.s.sec==='Private').slice(0,3),pubAll=rk.filter(r=>r.s.sec!=='Private');
+      const pubRows=n=>{const pz=pubAll.filter(r=>zid.has(r.s.id)),zbest=Math.max(-1,...pz.map(r=>r.score??-1),...zs.map(z=>{try{return scoreFor(z,k,p).score??-1}catch(e){return -1}}));const hasZ=zs.length>0;let po=pubAll.filter(r=>!zid.has(r.s.id));po=hasZ?po.filter(r=>r.score>zbest).slice(0,1):po.slice(0,n);const used=new Set();
+        const rows=[...pz.map(r=>{used.add(r.s.id);return row(r,k,i,'Assigned',' · assigned to this address')}),zrows(new Set([...used,...pz.map(r=>r.s.id)])),...po.map((r,j)=>row(r,k,i,hasZ?'Also an option':j===0?'Top public':'Runner-up'))].join('');
+        return rows};
+      if(k.sector==='Private')html=priv.map((r,j)=>row(r,k,i,L3[j])).join('');
+      else if(k.sector==='Charter')html=pubAll.filter(r=>r.s.sec==='Charter').slice(0,3).map((r,j)=>row(r,k,i,L3[j])).join('');
+      else if(k.sector==='Public'){html=pubRows(2);anyPub=true}
+      else{const pr=pubRows(2);anyPub=anyPub||!!pr;html=(priv.length?sub('Private schools')+priv.map((r,j)=>row(r,k,i,L3[j])).join(''):'')+(pr?sub('Public schools'):'')+pr}
+    }
+    const showFb=fb&&!support&&k.sector!=='Private'&&k.sector!=='Charter'&&!zs.length;if(showFb)anyPub=true;
+    const pol=k.sector==='Private'||support?[]:[...new Set(zs.map(z=>z.dist))].filter(d=>DPOL[d]).map(d=>DPOL[d].head);
+    return`<div class="lvkid" style="--kc:${css(KC[i])}"><div class="lvkh"><span class="dot"></span><b>${esc(kname(k,i))}</b><span class="sub">${GRADES[k.grade]}${GRADES[k.grade]==='K'?'':' grade'} next fall${support?' · learning support':k.sector==='Private'?' · private schools':k.sector==='Public'?' · public schools':k.sector==='Charter'?' · charter schools':''}</span></div>
+      ${html?`<ol class="lvsl">${html}</ol>`:'<p class="sub">No schools in range for this grade.</p>'}${showFb?`<p class="sub lvfb"><b>Assigned public school:</b> ${fb}</p>`:''}${pol.length?`<p class="sub lvfb">${esc(pol.join(' '))}</p>`:''}</div>`}).join('');
   const u=[...new Map(tops.map(t=>[t.id,t])).values()];let route=0,cur=null,left=[...u];while(left.length){left.sort((a,b)=>(cur?driveSS(cur,a):drive(hp,a))-(cur?driveSS(cur,b):drive(hp,b)));const nx=left.shift();route+=cur?driveSS(cur,nx):drive(hp,nx);cur=nx}
   const sum=st.kids.length>1&&u.length?`<p class="lvroute"><b>Morning drop-off from this home:</b> about ${route} min to ${u.length>1?'reach every top pick, nearest first':'the shared top pick'}.</p>`:'';
-  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities, plus the public school assigned here. <span class="lvdn">Drive times are estimates for a weekday morning.</span> Confirm assignments with the district before you buy.</p>${sum}<div class="lvkids">${blocks}</div></section>`}
+  return`<section class="lvsec lvschools"><h3>Schools for this home</h3><p class="sub">Each child's best fits scored from this address with your priorities. <span class="lvdn">Drive times are estimates for a weekday morning.</span></p>${sum}<div class="lvkids">${blocks}</div>${anyPub?`<div class="lvwarn"><b>About public school assignments.</b> The assigned public schools shown here come from district attendance maps, which can change. We don't guarantee a seat at any school. Please verify the school for this address with the school district before you buy.</div>`:''}</section>`}
 // Upgrade drive estimates to Google drive times when the Routes API is enabled for the site's key
 async function lvRealTimes(x){try{if(!window.google||!google.maps||!google.maps.importLibrary)return;const el=document.querySelectorAll('#lview .lvdr');if(!el.length)return;
   const ids=[...new Map([...el].map(e=>[e.dataset.drs,[+e.dataset.lat,+e.dataset.lng]])).entries()];const lib=await google.maps.importLibrary('routes');if(!lib.RouteMatrix)return;
