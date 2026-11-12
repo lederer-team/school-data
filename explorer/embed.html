@@ -1198,6 +1198,51 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-city .md{background:var(--ink);display:flex;align-items:center;padding:0 8px;min-width:0}
 .bx .mq-city .plus{background:repeating-linear-gradient(45deg,var(--teal) 0 6px,color-mix(in srgb,var(--teal) 70%,#fff) 6px 12px);display:flex;align-items:center;padding:0 8px;min-width:0}
 .bx .mny .ml{margin-top:14px;line-height:1.55}
+.bx .mq-sum{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:16px;margin-top:16px}
+.bx .mq-sum>div{background:var(--surface);border:1px solid var(--line);padding:18px 20px;display:grid;gap:10px;align-content:start}
+.bx .mq-tot span{font-size:14px;color:var(--ink2)}
+.bx .mq-adv{margin-top:16px;border:1px solid var(--line);background:var(--surface)}
+.bx .mq-adv summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:16px 20px}
+.bx .mq-adv summary::-webkit-details-marker{display:none}
+.bx .mq-adv summary>span:first-child{display:grid;gap:2px;flex:1;min-width:0}
+.bx .mq-adv summary b{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--ink)}
+.bx .mq-adv summary em{font-style:normal;font-size:14px;color:var(--ink2)}
+.bx .mq-open{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;font-weight:800;color:var(--teal);white-space:nowrap}
+.bx .mq-open::after{content:" ▾"}
+.bx .mq-adv[open] .mq-open::after{content:" ▴"}
+.bx .mq-adv[open] .mq-open{font-size:0}
+.bx .mq-adv[open] .mq-open::after{font-size:12px;content:"Close ▴"}
+.bx .mq-advb{padding:0 20px 18px;border-top:1px solid var(--line)}
+.bx .mq-ctl{display:flex;flex-wrap:wrap;gap:10px 24px;align-items:center;padding:14px 0 4px}
+.bx .mq-rate{display:flex;align-items:center;gap:6px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:800;color:var(--muted)}
+.bx .mq-rate input{font:inherit;font-size:14px;letter-spacing:0;font-weight:700;width:72px;padding:5px 6px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.bx .mq-ctl .sub{font-size:12px}
+.bx .mq-ctl .lnk{font-size:12.5px}
+.bx .mq-eq2{margin-top:12px}
+.bx .mq-eq2 .mq-house{max-width:560px}
+.bx .mq-advb .mq-block{margin-top:14px;border-color:var(--line)}
+@media (max-width:720px){.bx .mq-sum{grid-template-columns:minmax(0,1fr)}}
+.bx .mq-steps{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;counter-reset:st}
+.bx .mq-steps li{counter-increment:st;background:var(--surface);border:1px solid var(--line);padding:12px 14px 12px 46px;position:relative;display:grid;gap:2px;font-size:14px;color:var(--ink2)}
+.bx .mq-steps li::before{content:counter(st);position:absolute;left:14px;top:12px;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--onink);font-size:12px;font-weight:800;display:grid;place-items:center}
+.bx .mq-steps b{color:var(--ink)}
+.bx .mq-yrs{margin-top:16px}
+.bx .mq-chart{position:relative}
+.bx .mq-years .in{fill:#fff;font-size:11px;font-weight:700}
+.bx .mq-years .tot{fill:var(--ink);font-size:11.5px;font-weight:800}
+.bx .mq-years .col{cursor:pointer}
+.bx .mq-years .col.dim rect:not(.hit){opacity:.35}
+.bx .mq-tip{position:absolute;z-index:3;background:var(--dark);color:#fff;padding:10px 12px;font-size:13px;display:grid;gap:4px;min-width:200px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
+.bx .mq-tip span{display:flex;gap:8px;align-items:center}
+.bx .mq-tip i{width:9px;height:9px;border-radius:50%}
+.bx .mq-tip em{font-style:normal;font-weight:800;margin-left:auto;padding-left:14px}
+.bx .mq-tip .t{border-top:1px solid rgba(255,255,255,.25);padding-top:4px;margin-top:2px;font-weight:800}
+.bx .mq-leg{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink2);margin:0 0 10px}
+.bx .mq-leg span{display:flex;align-items:center;gap:6px}
+.bx .mq-leg i{width:12px;height:12px;display:inline-block}
+.bx .mq-leg i.hatch{background:repeating-linear-gradient(45deg,var(--teal) 0 3px,color-mix(in srgb,var(--teal) 70%,#fff) 3px 6px)}
+.bx .mq-city b small{font-size:11px;font-weight:600;color:var(--muted);margin-right:3px}
+@media (max-width:720px){.bx .mq-steps{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:720px){.bx .mq-eq{grid-template-columns:minmax(0,1fr)}
 .bx .mq-eqs{justify-self:center;font-size:34px;margin:-6px 0}
 .bx .mq-bar,.bx .mq-city{grid-template-columns:70px minmax(0,1fr) auto}}
@@ -1965,10 +2010,10 @@ function privPicks(){return st.kids.map((k,i)=>{if(k.sector==='Public'||k.sector
     if(!r)r=order(rankKid(k)).find(x=>x.s.sec==='Private'&&tuition(x.s,k.grade))||null}catch(e){}
   return r?{k,i,s:r.s,t:tuition(r.s,k.grade)}:null}).filter(Boolean)}
 function moneyCalc(){const P=st.places.length?privPicks():[];if(!P.length)return null;
-  const rate=(G.rate&&+G.rate[0])||7,dp=(st.dp||20)/100,annual=P.reduce((a,p)=>a+p.t,0);
-  return{P,rate,dp,annual,h:houseFor(annual/12,dp,rate)}}
+  const mkt=(G.rate&&+G.rate[0])||7,rate=st.rt||mkt,dp=(st.dp||20)/100,annual=P.reduce((a,p)=>a+p.t,0);
+  return{P,rate,mkt,dp,annual,h:houseFor(annual/12,dp,rate)}}
 function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();if(!M){el.innerHTML='';return}
-  const{P,rate,dp,annual,h}=M;const rd=G.rate&&G.rate[1]?new Date(G.rate[1]+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
+  const{P,rate,mkt,dp,annual,h}=M;const rd=G.rate&&G.rate[1]?new Date(G.rate[1]+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'}):'';
   const now=new Date(),fall=now.getMonth()>=6?now.getFullYear()+1:now.getFullYear();
   // tuition by school year for each child through 12th grade, growing about 4% a year
   const yrs=Math.max(...P.map(p=>13-p.k.grade));const cols=[];let total=0;
@@ -1976,40 +2021,47 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();if(
   const lastY=fall+yrs;
   const kc=p=>css(KC[p.i]);
   // A: the equation
-  const eq=`<div class="mq-eq">
-    <div class="mq-card"><div class="eyebrow">Private school, next fall</div><div class="mq-big">${fD(annual)}<small> a year</small></div>
-      <ul class="mq-kids">${P.map(p=>`<li style="--kc:${kc(p)}"><i></i><b>${esc(kname(p.k,p.i))}</b><span>${esc(p.s.n)}</span><em>${fM(p.t)}</em></li>`).join('')}</ul>
-      <div class="mq-sub">${fD(annual/12)} a month</div></div>
-    <div class="mq-eqs" aria-hidden="true">=</div>
-    <div class="mq-card mq-house"><div class="eyebrow">The same money as a mortgage</div>
+  const eq=`<div class="mq-eq2"><div class="mq-card mq-house"><div class="eyebrow">${fD(annual)} a year in tuition, as a mortgage instead</div>
       <div class="mq-hrow"><svg class="mq-hico" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 27 32 5l26 22" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><path d="M13 23v29h38V23" fill="currentColor" opacity=".14"/><path d="M13 23v29h38V23" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/><rect x="27" y="35" width="10" height="17" fill="currentColor"/></svg>
-      <div class="mq-big">${fM(h.H)}<small> of home</small></div></div>
+      <div class="mq-big">${fM(h.H)}<small> more home</small></div></div>
       <div class="mq-stack"><span class="dn" style="flex:${h.down}">${Math.round(dp*100)}% down<b>${fM(h.down)}</b></span><span class="ln" style="flex:${h.loan}">Loan<b>${fM(h.loan)}</b></span></div>
-      <div class="mq-sub">at ${rate.toFixed(2)}%, the market rate${rd?` (week of ${rd})`:''}</div></div></div>`;
-  // B: one month, two ways
-  const mo=annual/12;const bars=`<div class="mq-block"><h4>One month, two ways</h4>
-    <div class="mq-bar"><span class="lab">Tuition</span><div class="track">${P.map(p=>`<span style="flex:${p.t};background:${kc(p)}" title="${esc(kname(p.k,p.i))}: ${fD(p.t/12)} a month"><em>${esc(kname(p.k,p.i))} ${fD(p.t/12)}</em></span>`).join('')}</div><b>${fD(mo)}</b></div>
-    <div class="mq-bar"><span class="lab">Mortgage</span><div class="track"><span style="flex:${h.pi};background:var(--ink)"><em>Principal and interest ${fD(h.pi)}</em></span><span style="flex:${h.tax};background:var(--muted)"><em>Tax ${fD(h.tax)}</em></span></div><b>${fD(h.pi+h.tax)}</b></div><p class="mq-note">The same ${fD(mo)} a month either pays private tuition or carries a ${fM(h.loan)} loan plus property tax on a ${fM(h.H)} home. Tuition is spent each year; mortgage payments pay down a loan on a home you own.</p></div>`;
+      <div class="mq-sub">at ${rate.toFixed(2)}%${st.rt?' (your rate)':', the market rate'}</div></div></div>`;
+  // B: how the number is figured, in three plain steps
+  const steps=`<ol class="mq-steps"><li><b>${fD(annual)} a year</b><span>in private tuition is ${fD(annual/12)} a month.</span></li><li><b>${fD(annual/12)} a month</b><span>pays a ${fM(h.loan)} mortgage at ${rate.toFixed(2)}% plus property tax.</span></li><li><b>${fM(h.loan)} loan + ${fM(h.down)} down</b><span>(${Math.round(dp*100)}%) buys a home that costs about ${fM(h.H)} more.</span></li></ol>`;
   // C: over the school years (SVG columns)
-  const W=640,H=200,pb=26,pt=26,bw=Math.min(40,(W-20)/cols.length-8),mx=Math.max(...cols.map(c=>c.reduce((a,b)=>a+b,0)));
-  const svg=`<svg class="mq-years" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tuition by school year until ${lastY}">${cols.map((c,y)=>{const x=10+y*((W-20)/cols.length)+(((W-20)/cols.length)-bw)/2;let yy=H-pb;
-      const seg=c.map((v,j)=>{if(!v)return'';const hh=v/mx*(H-pb-pt);yy-=hh;return`<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" fill="${kc(P[j])}"><title>${fall+y}-${String(fall+y+1).slice(2)}: ${esc(kname(P[j].k,P[j].i))} ${fD(v)}</title></rect>`}).join('');
-      return seg+`<text x="${(x+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${String(fall+y).slice(2)}-${String(fall+y+1).slice(2)}</text>`}).join('')}
-      <text x="10" y="14" class="mq-ytop">${fM(mx)} a year at the peak</text></svg>`;
-  const years=`<div class="mq-block"><h4>Over the school years</h4>${svg}
-    <p class="mq-note"><b>About ${fM(total)}</b> in tuition through ${lastY}, growing about 4% a year. Tuition ends when ${P.length>1?'the youngest finishes':esc(kname(P[0].k,P[0].i))+' finishes'} 12th grade; a mortgage keeps going, but you own the home and build equity as you pay it down.</p></div>`;
+  const W=1000,H=230,pb=26,pt=26,slot=(W-20)/cols.length,bw=Math.min(44,slot-8),mx=Math.max(...cols.map(c=>c.reduce((a,b)=>a+b,0)));
+  const svg=`<svg class="mq-years" viewBox="0 0 ${W} ${H}" role="img" aria-label="Tuition by school year until ${lastY}">${cols.map((c,y)=>{const x=10+y*slot+(slot-bw)/2;let yy=H-pb;const tot=c.reduce((a,b)=>a+b,0);
+      const seg=c.map((v,j)=>{if(!v)return'';const hh=v/mx*(H-pb-pt);yy-=hh;const lab=hh>=16&&bw>=30?`<text class="in" x="${(x+bw/2).toFixed(1)}" y="${(yy+hh/2+4).toFixed(1)}" text-anchor="middle">${Math.round(v/1000)}k</text>`:'';return`<rect x="${x.toFixed(1)}" y="${yy.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" fill="${kc(P[j])}"/>${lab}`}).join('');
+      return`<g class="col" data-y="${y}">`+`<rect class="hit" x="${(10+y*slot).toFixed(1)}" y="0" width="${slot.toFixed(1)}" height="${H}" fill="transparent"/>`+seg+`<text x="${(x+bw/2).toFixed(1)}" y="${(yy-6).toFixed(1)}" text-anchor="middle" class="tot">${Math.round(tot/1000)}k</text><text x="${(x+bw/2).toFixed(1)}" y="${H-8}" text-anchor="middle">${String(fall+y).slice(2)}-${String(fall+y+1).slice(2)}</text></g>`}).join('')}</svg>`;
+  const legend=`<div class="mq-leg">${P.map(p=>`<span><i style="background:${kc(p)}"></i>${esc(kname(p.k,p.i))} · ${esc(p.s.n)}</span>`).join('')}</div>`;
+  const years=`<div class="mq-block mq-yrs"><h4>Year by year</h4>${legend}<div class="mq-chart">${svg}<div class="mq-tip" hidden></div></div>
+    <p class="mq-note">Hover over or tap a year to see each child’s grade and tuition.</p></div>`;
   // D: prices in your cities (median of homes for sale that match the filters), with the same money added
   let cities='';
   if(LST.mode==='area'&&LST.state==='done'){const ok=LST.items.filter(x=>isHome(x)&&hfOk(x));
     const rows=st.places.map(q=>{const nm=q.n||q.label;const ps=ok.filter(x=>x.place===nm&&x.price).map(x=>x.price).sort((a,b)=>a-b);if(ps.length<2)return null;const md=ps[Math.floor(ps.length/2)];return{nm,md,n:ps.length}}).filter(Boolean);
     if(rows.length){const mx2=Math.max(...rows.map(r=>r.md))+h.H;
-      cities=`<div class="mq-block"><h4>Prices in your cities</h4><p class="mq-note" style="margin-top:0">Middle price of the homes for sale that match your choices, and the same with the tuition money added as house.</p>
-      ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n} homes</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b>${fM(r.md+h.H)}</b></div>`).join('')}</div>`}}
-  el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school or more house</div>
-    <div class="mq-dp" role="group" aria-label="Down payment"><span>Down payment</span>${[10,20,30].map(v=>`<button type="button" data-dp="${v}" aria-pressed="${(st.dp||20)===v}">${v}%</button>`).join('')}</div></div>
-    <h3>What private school costs, in house</h3><p class="sub">Tuition for each child's top private pick, shown as the home the same money could pay for instead.</p></div>
-    ${eq}<div class="mq-two">${bars}${years}</div>${cities}
-    <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan at the Freddie Mac weekly average rate, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. Tuition is our best figure from each school and changes yearly; after a child's current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></section>`}
+      cities=`<div class="mq-block"><h4>If they went to public school instead</h4><p class="mq-note" style="margin-top:0">For each city: the median price of homes for sale that match your filters, plus how much more home the private school money could buy if your children attended public school.</p>
+      <div class="mq-leg"><span><i style="background:var(--ink)"></i>Median price of homes for sale</span><span><i class="hatch"></i>More home with the tuition money (${fM(h.H)})</span></div>
+      ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n} homes for sale</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b><small>up to</small> ${fM(r.md+h.H)}</b></div>`).join('')}</div>`}}
+  const rateCtl=`<label class="mq-rate">Interest rate <input type="number" step="0.05" min="2" max="15" value="${rate.toFixed(2)}" data-rt="1">%</label>${st.rt?`<button type="button" class="lnk" data-rtreset="1">Use market rate (${mkt.toFixed(2)}%)</button>`:`<span class="sub">Market rate, Freddie Mac weekly average${rd?`, week of ${rd}`:''}</span>`}`;
+  el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school costs</div></div>
+    <h3>What private school would cost</h3><p class="sub">Tuition for each child’s top private pick, from next fall through 12th grade.</p></div>
+    <div class="mq-sum"><div><div class="mq-big">${fD(annual)}<small> next year</small></div><ul class="mq-kids">${P.map(p=>`<li style="--kc:${kc(p)}"><i></i><b>${esc(kname(p.k,p.i))}</b><span>${esc(p.s.n)}</span><em>${fD(p.t)}</em></li>`).join('')}</ul></div>
+      <div class="mq-tot"><div class="mq-big">${fM(total)}</div><span>in total through ${lastY}, with tuition rising about 4% a year</span></div></div>
+    ${years}
+    <details class="mq-adv"${st.mqOpen?' open':''}><summary><span><b>Compare it to buying more house</b><em>The same money as a mortgage payment buys about ${fM(h.H)} more home.</em></span><span class="mq-open">Open</span></summary>
+      <div class="mq-advb"><div class="mq-ctl"><div class="mq-dp" role="group" aria-label="Down payment"><span>Down payment</span>${[10,20,30].map(v=>`<button type="button" data-dp="${v}" aria-pressed="${(st.dp||20)===v}">${v}%</button>`).join('')}</div>${rateCtl}</div>
+      ${eq}${steps}${cities}
+      <p class="ml">Illustration only, not financial or tax advice. 30-year fixed loan, property tax about 1.18% of the price a year, no HOA or insurance. A ${fM(h.H)} higher price also needs about ${fM(h.down)} more cash at ${Math.round(dp*100)}% down. Tuition is our best figure from each school and changes yearly; after a child’s current school ends we assume similar tuition. Talk with us and a lender before deciding.</p></div></details></section>`;
+  const adv=el.querySelector('.mq-adv');adv.addEventListener('toggle',()=>{st.mqOpen=adv.open});
+  const ri=el.querySelector('[data-rt]');if(ri)ri.addEventListener('change',()=>{const v=+ri.value;st.rt=v>=2&&v<=15&&Math.abs(v-mkt)>0.001?v:0;renderMoney()});
+  const ch=el.querySelector('.mq-chart'),tip=ch&&ch.querySelector('.mq-tip');
+  if(ch)ch.querySelectorAll('.col').forEach(g=>{const show=()=>{const y=+g.dataset.y,c=cols[y],t=c.reduce((a,b)=>a+b,0);ch.querySelectorAll('.col').forEach(o=>o.classList.toggle('dim',o!==g));
+      tip.innerHTML=`<b>${fall+y}-${String(fall+y+1).slice(2)} school year</b>${P.map((p,j)=>c[j]?`<span><i style="background:${kc(p)}"></i>${esc(kname(p.k,p.i))} (${GRADES[p.k.grade+y]}${GRADES[p.k.grade+y]==='K'?'':' grade'})<em>${fD(c[j])}</em></span>`:'').join('')}<span class="t">Total<em>${fD(t)}</em></span>`;
+      const r=g.getBoundingClientRect(),cr=ch.getBoundingClientRect();tip.hidden=false;const tw=tip.offsetWidth;let lx=r.left-cr.left+r.width/2-tw/2;lx=Math.max(0,Math.min(cr.width-tw,lx));tip.style.left=lx+'px';tip.style.top='0px'};
+    g.addEventListener('mouseenter',show);g.addEventListener('click',show)});
+  if(ch)ch.addEventListener('mouseleave',()=>{tip.hidden=true;ch.querySelectorAll('.col').forEach(o=>o.classList.remove('dim'))})}
 function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label:x.ad,n:x.ad,lat:x.lat,lng:x.lng,kind:'address',city:x.city};const hp=pt(p);
   const costC=(sc,g)=>{const t=tuition(sc,g);return t==null?'<span class="cost unk" title="Tuition not yet collected; ask the school">Tuition n/a</span>':t===0?`<span class="cost free">Free · ${sc.sec==='Charter'?'charter':'public'}</span>`:`<span class="cost">$${Math.round(t/1000)}k<small>/yr</small></span>`};
   const L3=['Top pick','Runner-up','Also strong'],tops=[];
@@ -2548,6 +2600,7 @@ root.addEventListener('click',e=>{
   const tb=e.target.closest('[data-terms]');if(tb){e.preventDefault();const d=$('tdlg');$('tbody').innerHTML=root.querySelector('#gform .terms').innerHTML;const a=lsGet('bx_signed');
     $('tagree').textContent=a?'You agreed to these terms on '+new Date(a).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})+'.':'Everyone agrees to these terms when they open the Explorer.';d.hidden=false;d.querySelector('.tx').focus();return}
   if(e.target.closest('[data-tclose]')||e.target.id==='tdlg'){$('tdlg').hidden=true;return}
+  if(e.target.closest('[data-rtreset]')){st.rt=0;renderMoney();return}
   const dpb=e.target.closest('[data-dp]');if(dpb){st.dp=+dpb.dataset.dp;renderMoney();syncHash();return}
   const vw=e.target.closest('[data-view]');if(vw){e.preventDefault();setView(vw.dataset.view);return}
   const ta=e.target.closest('.toc a');if(ta){e.preventDefault();const el=root.querySelector(ta.getAttribute('href'));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
