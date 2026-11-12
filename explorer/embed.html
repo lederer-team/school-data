@@ -726,7 +726,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .sugg li small{color:var(--muted);font-size:12px;text-align:right}
 .bx .sugg li[aria-selected="true"]{background:var(--teal-soft)}
 .bx .sugg .pw{font-size:10.5px;color:var(--muted);padding:6px 12px 2px;justify-content:flex-end;cursor:default}
-.bx .tbar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;border-top:1px solid var(--line);margin:0 -20px -18px;padding:11px 20px;background:var(--sunk)}
+.bx .tbar{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;border-top:1px solid var(--line);margin:0 -20px -18px;padding:11px 20px;background:var(--sunk)}
 .bx .tbar .sp{flex:1}
 .bx .tlink{background:none;border:0;padding:0;cursor:pointer;font-size:12px;letter-spacing:1.1px;text-transform:uppercase;font-weight:700;color:var(--muted);display:inline-flex;align-items:center;gap:7px;border-radius:0}
 .bx .tlink:hover{color:var(--ink)}
@@ -774,11 +774,21 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .kdhead .top b{color:var(--ink2)}
 .bx .dgcard{display:grid;gap:12px}
 .bx .znote.dgcard{border-left:1px solid var(--line)}
-.bx .ztop:not(:empty){margin:10px 0 0}
-.bx .dgstrip{padding:8px 14px;display:flex!important;flex-wrap:wrap;align-items:center;gap:6px 16px}
-.bx .dgstrip>p{flex-basis:100%;margin:0}
-.bx .dgstrip .dgmore{margin-left:auto}
-.bx .dgstrip .dgmore[open]{flex-basis:100%;margin-left:0}
+.bx .ztop{display:contents}
+.bx .tbar:has(.dgstrip) .sp{display:none}
+.bx .tbar .dgstrip{flex:1 1 0;min-width:0;display:flex!important;flex-wrap:wrap;align-items:center;gap:6px 8px;padding:0;margin:0;border:0!important;background:none;box-shadow:none}
+.bx .dgrow{display:flex;flex-wrap:wrap;align-items:center;gap:5px}
+.bx .dgl{font-size:11.5px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.bx .dgchip{display:inline-flex;align-items:baseline;gap:5px;border:1px solid var(--line2);border-left:4px solid var(--teal);background:var(--surface);padding:3px 7px;font:inherit;font-size:11.5px;color:var(--ink2);cursor:pointer}
+.bx .dgchip.app{border-left-color:var(--amber)}
+.bx .dgchip b{color:var(--ink);font-weight:800}
+.bx .dgchip span{font-size:11.5px;color:var(--muted)}
+.bx .dgchip:hover{border-color:var(--teal)}
+.bx .dgstrip>p{flex-basis:100%;margin:0;font-size:13px}
+.bx .tbar .dgmore{position:relative}
+.bx .tbar .dgmore summary{font-size:12px;font-weight:700;color:var(--teal);cursor:pointer;list-style-position:inside}
+.bx .dgpop{position:absolute;z-index:30;top:calc(100% + 8px);right:0;width:min(520px,86vw);background:var(--surface);border:1px solid var(--line2);box-shadow:0 10px 30px rgba(0,0,0,.15);padding:14px 16px;font-size:13px;color:var(--ink2);display:grid;gap:8px}
+.bx .dgpop p,.bx .dgpop ul{margin:0}
 .bx .dgrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .bx .dgl{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-right:4px}
 .bx .dgchip{display:inline-flex;align-items:baseline;gap:6px;border:1px solid var(--line2);border-left:4px solid var(--teal);background:var(--surface);padding:6px 10px;font:inherit;font-size:13px;color:var(--ink2);cursor:pointer}
@@ -1130,12 +1140,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
       <button type="button" class="tlink strong" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>Copy family link</button>
       <span class="ok" id="shareOk" aria-live="polite"></span>
       <span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span>
+      <div id="znote" class="ztop"></div>
       <span class="sp"></span>
       <button type="button" class="tlink" id="example">Load an example family</button>
       <button type="button" class="tlink" id="reset">Start over</button>
     </div>
   </section>
-  <div id="znote" class="ztop"></div>
   <div class="grid">
     <aside>
       <div class="kids" role="tablist" id="kidtabs"></div>
@@ -1492,7 +1502,7 @@ function addrWarn(p){if(isCity(p))return null;if(p._w!==undefined)return p._w;co
   for(const[d,lv,ids,polys]of(G.zones||[])){if(!inPolys(polys,x,y))continue;const f=edgeFeet(polys,x,y);if(f<NEAR_FT&&(G.zones||[]).some(z=>z[0]===d&&z[1]===lv&&z[2][0]!==ids[0]&&edgeFeet(z[3],x,y)<f+300))w.near.push({what:ids.map(i=>BY[i]?.n).filter(Boolean).join(' / ')+' attendance area',f})}
   zoneHits(p).snaps.forEach(q=>w.near.push(q));
   p._w=(w.near.length||w.other.length)?w:null;return p._w}
-function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector==='Private'||st.pub==='radius'){el.innerHTML='';return}
+function renderZoneNote(k){const el=$('znote');{const ex=$('example');if(ex)ex.hidden=st.places.length>0}if(!st.places.length||k.sector==='Private'||st.pub==='radius'){el.innerHTML='';return}
   const ds=new Set();st.places.forEach(p=>placeDists(p).forEach(d=>{if(S.some(s=>s.dist===d&&s.sec==='Public'&&k.grade>=s.lo&&k.grade<=s.hi))ds.add(d)}));
   const warns=st.places.map(p=>[p,addrWarn(p)]).filter(x=>x[1]);
   const host=w=>w.replace(/^https?:\/\//,'').replace(/\/$/,'');
@@ -1501,12 +1511,12 @@ function renderZoneNote(k){const el=$('znote');if(!st.places.length||k.sector===
   const L=k.grade<=5?'e':k.grade<=8?'m':'h';
   const rule=d=>{if(DPOL[d])return DPOL[d].head;const g=DGUIDE[d];if(!g||!g.levels)return 'Schools are generally assigned by home address.';const lv=g.levels.find(x=>x[0]===L)||g.levels.find(x=>x[0]==='k8')||g.levels[0];return (lv[2]||'').split(/(?<=\.)\s/)[0]};
   const town=d=>st.places.filter(p=>[...placeDists(p)].includes(d)).map(p=>p.n||p.label).join(', ');
-  el.innerHTML=`<div class="znote dgcard dgstrip"><div class="dgrow"><span class="dgl">How public schools work here:</span>${[...ds].map(d=>{const r=rule(d),app=!!DPOL[d]||/application|lottery|choose|choice|rank/i.test(r);return`<button type="button" class="dgchip${app?' app':''}" data-dguide="${esc(d)}" title="${esc(r)}"><b>${esc(d)}</b><span>${app?'By application':'By home address'}</span></button>`}).join('')}</div>
+  el.innerHTML=`<div class="znote dgcard dgstrip"><div class="dgrow"><span class="dgl">Districts:</span>${[...ds].map(d=>{const r=rule(d),app=!!DPOL[d]||/application|lottery|choose|choice|rank/i.test(r);return`<button type="button" class="dgchip${app?' app':''}" data-dguide="${esc(d)}" title="${esc(r)}"><b>${esc(d)}</b><span>${app?'application':'address'}</span></button>`}).join('')}</div>
    ${warns.map(([p,w])=>`<p><span class="warn">Check ${esc(p.label)} with the district.</span> ${w.other.map(o=>`It has a ${esc(p.city)} mailing address but sits inside ${esc(o.d)}, which mainly serves ${esc(o.cs.join(', '))}. Homes like this can be served by a neighboring city’s schools.`).join(' ')} ${w.near.length?`It’s within about ${Math.max(100,Math.round(Math.min(...w.near.map(q=>q.f))/50)*50)} feet of a boundary (${esc([...new Set(w.near.map(q=>q.what))].join('; '))}), so the schools shown may not be the ones assigned.`:''} Get the assigned schools from the district in writing before relying on them.</p>`).join('')}
-   <details class="dgmore"><summary>Boundaries, homes and district phones</summary>
+   <details class="dgmore"><summary>Details</summary><div class="dgpop">
    ${st.places.some(isCity)?`<p>For each city, the list shows every public school that serves some part of it. Which school a home attends depends on its exact address, so add an address to narrow the results, then confirm with the district.</p>`:''}
    <p><b>Homes for sale:</b> ${st.places.map(p=>homesLink(homesUrl(placeBox(p)),(p.kind==='address'?'near ':'in ')+esc(p.label))).join(' \u00b7 ')}. Check each home\u2019s assigned school with the district.</p>
-   <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></details></div>`}
+   <p><b>Attendance areas change, and district lines can be complicated.</b> Even a correctly zoned home isn’t guaranteed a seat: when a school is full, districts can place newly enrolling students at another school. For an exact answer for a specific home, contact the district:</p><ul>${contact}</ul></div></details></div>`}
 function renderDrawers(){const K=st.kids,a=st.active,many=K.length>1;
   const hd=i=>{const k=K[i],nm=kname(k,i);let top='';if(st.places.length){const R=order(rankKid(k)).slice(0,3);top=R.length?R.map((r,j)=>`${j+1}. <b>${esc(r.s.n)}</b> ${r.score.toFixed(1)}`).join(' \u00b7 '):'No ranked schools yet'}
     return`<button type="button" class="kdhead" data-tab="${i}" data-kd="1" style="--kc:${css(KC[i])}"><span class="dot"></span><span class="t">Best fits for ${esc(nm)} (${GRADES[k.grade]})${k.support?' \u00b7 learning support':''}</span><span class="open">Open ▾</span><span class="top">${top}</span></button>`};
