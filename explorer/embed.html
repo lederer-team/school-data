@@ -1328,6 +1328,12 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .mq-years .tot{fill:var(--ink);font-size:11.5px;font-weight:800}
 .bx .mq-years .col{cursor:pointer}
 .bx .mq-years .col.dim rect:not(.hit){opacity:.35}
+.bx .mq-cities{position:relative}
+.bx .mq-city{cursor:pointer;transition:opacity .15s}
+.bx .mq-city.dim{opacity:.4}
+.bx .mq-city:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+.bx .mq-cities .mq-tip span{white-space:nowrap}
+.bx .mq-cities .mq-tip .sm{font-size:11.5px;color:rgba(255,255,255,.65);white-space:normal;max-width:300px;margin-top:2px}
 .bx .mq-tip{position:absolute;z-index:3;background:var(--dark);color:#fff;padding:10px 12px;font-size:13px;display:grid;gap:4px;min-width:200px;width:max-content;max-width:calc(100% - 8px);box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none}
 .bx .mq-tip span{display:flex;gap:8px;align-items:center;white-space:nowrap}
 .bx .mq-tip i{width:9px;height:9px;border-radius:50%}
@@ -1717,7 +1723,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611120951').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611130957').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2142,7 +2148,7 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
   const mkEq=()=>`<div class="mq-band">
       <div class="mq-b1"><div class="eyebrow">As a mortgage payment</div>
         <div class="mq-hrow"><svg class="mq-hico" viewBox="0 0 64 56" aria-hidden="true"><path d="M6 27 32 5l26 22" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round"/><path d="M13 23v29h38V23" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linejoin="round"/><rect x="27" y="35" width="10" height="17" fill="currentColor"/></svg><div class="mq-big">${fM(h.H)}<small> more home</small></div></div>
-        <div class="mq-dlbar"><span style="flex:${h.down} 1 0"></span><span style="flex:${h.loan} 1 0"></span></div><div class="mq-barl"><span><b>${fM(h.down)}</b> ${Math.round(dp*100)}% down</span><span><b>${fM(h.loan)}</b> loan</span></div></div>
+        <div class="mq-dlbar"><span style="flex:${h.down} 1 0" title="Down payment: ${fD(h.down)} (${Math.round(dp*100)}% of ${fD(h.H)})"></span><span style="flex:${h.loan} 1 0" title="Loan: ${fD(h.loan)} at ${rate.toFixed(2)}%, about ${fD(h.pi)} a month plus ${fD(h.tax)} property tax"></span></div><div class="mq-barl"><span><b>${fM(h.down)}</b> ${Math.round(dp*100)}% down</span><span><b>${fM(h.loan)}</b> loan</span></div></div>
       <ol class="mq-steps"><li><b>${fD(annual)} a year</b> in tuition is ${fD(annual/12)} a month.</li><li><b>${fD(annual/12)} a month</b> pays a ${fM(h.loan)} mortgage at ${rate.toFixed(2)}%${st.rt?'':' (market rate)'} plus property tax.</li><li><b>${fM(h.loan)} loan + ${fM(h.down)} down</b> (${Math.round(dp*100)}%) buys a home that costs about ${fM(h.H)} more.</li></ol>
       <div class="mq-b3"><div class="eyebrow">Or toward the house itself</div><div class="mq-big">${fM(total)}</div><p>All the tuition through ${lastY}, put toward a bigger down payment or paying down principal.</p></div></div>`;
   // C: over the school years (SVG columns)
@@ -2155,12 +2161,12 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
     <p class="mq-note">Each bar is one school year. Tuition rises <select class="mq-tg" data-tg="1" aria-label="Yearly tuition increase">${TGS.map(v=>`<option value="${v}"${(st.tg||4)===v?' selected':''}>${v}%</option>`).join('')}</select> a year; many private schools raise tuition 4% to 6%. Hover over or tap a year for details and the running total.</p></div>`;
   // D: prices in your cities (median of homes for sale that match the filters), with the same money added
   // D: median house sale price per city (our price map, team-compiled MLS data), with the same money added
-  let cities='';const MED=G.med&&G.med.c||{};
+  let cities='';const MED=G.med&&G.med.c||{};const MEDROW=nm=>MED[nm]?{md:MED[nm][0],n:MED[nm][1]}:null;
   {const seen=new Set();const rows=st.places.map(q=>{const nm=MED[q.city]?q.city:MED[q.n]?q.n:null;if(!nm||seen.has(nm))return null;seen.add(nm);return{nm,md:MED[nm][0],n:MED[nm][1]}}).filter(Boolean);
     if(rows.length){const mx2=Math.max(...rows.map(r=>r.md))+h.H;
-      cities=`<div class="mq-block"><h4>If they went to public school instead</h4><p class="mq-note" style="margin-top:0">For each city: the median sale price of houses over the past year, plus how much more home the private school money could buy if your children attended public school.</p>
+      cities=`<div class="mq-block mq-cities"><div class="mq-tip" hidden></div><h4>If they went to public school instead</h4><p class="mq-note" style="margin-top:0">For each city: the median sale price of houses over the past year, plus how much more home the private school money could buy if your children attended public school. Hover over or tap a city for the monthly cost and market numbers.</p>
       <div class="mq-leg"><span><i style="background:var(--ink)"></i>Median house sale price${G.med.per?', '+esc(G.med.per):''}</span><span><i class="hatch"></i>More home with the tuition money (${fM(h.H)})</span></div>
-      ${rows.map(r=>`<div class="mq-city"><span class="lab">${esc(r.nm)}<small>${r.n.toLocaleString()} sales</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM2(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b><small>up to</small> ${fM(r.md+h.H)}</b></div>`).join('')}
+      ${rows.map((r,ci)=>`<div class="mq-city" data-ci="${ci}" tabindex="0"><span class="lab">${esc(r.nm)}<small>${r.n.toLocaleString()} sales</small></span><div class="track"><span class="md" style="width:${(r.md/mx2*100).toFixed(1)}%"><em>${fM2(r.md)}</em></span><span class="plus" style="width:${(h.H/mx2*100).toFixed(1)}%"><em>+${fM(h.H)}</em></span></div><b><small>up to</small> ${fM(r.md+h.H)}</b></div>`).join('')}
       <p class="mq-src">Source: Bay Area MLS data, compiled by The Lederer Team. <a href="/bay-area-home-price-map" target="_blank" rel="noopener">See prices for 106 Bay Area cities on our home price map →</a></p></div>`}}
   const rateCtl=`<label class="mq-rate">Interest rate <input type="number" step="0.05" min="2" max="15" value="${rate.toFixed(2)}" data-rt="1">%</label>${st.rt?`<button type="button" class="lnk" data-rtreset="1">Use market rate (${mkt.toFixed(2)}%)</button>`:`<span class="sub">Market rate, Freddie Mac weekly average${rd?`, week of ${rd}`:''}</span>`}`;
   el.innerHTML=`<section class="homes mny"><div class="hh"><div class="hhtop"><div class="eyebrow">Private school costs</div></div>
@@ -2178,7 +2184,25 @@ function renderMoney(){const el=$('money');if(!el)return;const M=moneyCalc();con
       tip.innerHTML=`<b>${fall+y}-${String(fall+y+1).slice(2)} school year</b>${P.map((p,j)=>c[j]?`<span><i style="background:${kc(p)}"></i>${esc(kname(p.k,p.i))} (${GRADES[p.k.grade+y]}${GRADES[p.k.grade+y]==='K'?'':' grade'})<em>${fD(c[j])}</em></span>`:'').join('')}<span class="t">This year<em>${fD(t)}</em></span><span class="rt">Total through ${fall+y}-${String(fall+y+1).slice(2)}<em>${fD(cols.slice(0,y+1).reduce((a,c)=>a+c.reduce((x,z)=>x+z,0),0))}</em></span>`;
       const r=g.getBoundingClientRect(),cr=ch.getBoundingClientRect();tip.hidden=false;const tw=tip.offsetWidth;let lx=r.left-cr.left+r.width/2-tw/2;lx=Math.max(0,Math.min(cr.width-tw,lx));tip.style.left=lx+'px';tip.style.top='0px'};
     g.addEventListener('mouseenter',show);g.addEventListener('click',show)});
-  if(ch)ch.addEventListener('mouseleave',()=>{tip.hidden=true;ch.querySelectorAll('.col').forEach(o=>o.classList.remove('dim'))})}
+  if(ch)ch.addEventListener('mouseleave',()=>{tip.hidden=true;ch.querySelectorAll('.col').forEach(o=>o.classList.remove('dim'))})
+  // city bars: hover or tap a city for the payment math and that city's market numbers
+  const cb=el.querySelector('.mq-cities'),ctip=cb&&cb.querySelector('.mq-tip');
+  if(cb){const pay=H=>H*(1-dp)*mortF(rate)+H*TAXR/12;const rowsC=[...cb.querySelectorAll('.mq-city')];
+    const showC=row=>{const nm=row.querySelector('.lab').firstChild.textContent;const m=pmStat(nm);const r=MEDROW(nm);if(!r)return;const up=r.md+h.H;
+      rowsC.forEach(o=>o.classList.toggle('dim',o!==row));
+      ctip.innerHTML=`<b>${esc(nm)} houses${G.med.per?', '+esc(G.med.per):''}</b>
+        <span>Median sale<em>${fM2(r.md)}</em></span>
+        <span>Monthly cost at the median<em>${fD(pay(r.md))}</em></span>
+        <span class="t">With the tuition money, up to<em>${fM2(up)}</em></span>
+        <span>Monthly cost at that price<em>${fD(pay(up))}</em></span><span class="sm">That is the median payment plus the ${fD(annual/12)} a month now going to tuition.</span>
+        <span>Cash needed at ${Math.round(dp*100)}% down<em>${fD(up*dp)}</em></span>
+        ${m?`<span class="rt">Prices, past year<em>${m.ch>0?'+':''}${m.ch.toFixed(1)}%${m.rk?` (#${m.rk} of ${m.N})`:''}</em></span>${m.ov!=null?`<span class="rt">Sold over asking<em>${Math.round(m.ov)}%</em></span>`:''}${m.dom!=null?`<span class="rt">Median days on market<em>${m.dom}</em></span>`:''}`:''}
+        <span class="sm">${r.n.toLocaleString()} sales · monthly cost is loan payment at ${rate.toFixed(2)}% plus property tax</span>`;
+      ctip.hidden=false;const rr=row.getBoundingClientRect(),br=cb.getBoundingClientRect(),tw=ctip.offsetWidth;const tr=row.querySelector('.track').getBoundingClientRect();
+      let lx=tr.left-br.left+Math.min(tr.width*.35,tr.width-tw);lx=Math.max(0,Math.min(br.width-tw,lx));ctip.style.left=lx+'px';const below=rr.bottom-br.top+4,above=rr.top-br.top-ctip.offsetHeight-4;ctip.style.top=(rowsC.indexOf(row)>=rowsC.length/2&&above>0?above:below)+'px'};
+    rowsC.forEach(row=>{row.addEventListener('mouseenter',()=>showC(row));row.addEventListener('click',()=>showC(row));row.addEventListener('focus',()=>showC(row))});
+    cb.addEventListener('mouseleave',()=>{ctip.hidden=true;rowsC.forEach(o=>o.classList.remove('dim'))})}
+  }
 function lvSchools(x){if(!x.lat||!x.lng||!st.kids.length)return'';const p={label:x.ad,n:x.ad,lat:x.lat,lng:x.lng,kind:'address',city:x.city};const hp=pt(p);
   const costC=(sc,g)=>{const t=tuition(sc,g);return t==null?'<span class="cost unk" title="Tuition not yet collected; ask the school">Tuition n/a</span>':t===0?`<span class="cost free">Free · ${sc.sec==='Charter'?'charter':'public'}</span>`:`<span class="cost">$${Math.round(t/1000)}k<small>/yr</small></span>`};
   const L3=['Top pick','Runner-up','Also strong'],tops=[];
