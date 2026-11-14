@@ -898,6 +898,23 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .agchip .agm{background:var(--teal);color:#fff;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:900;padding:4px 9px;border-radius:999px;margin-left:2px}
 .bx .agchip:hover .agm{background:#0B5549}
 .bx .lv-agl{background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.bx .sgf{display:grid;gap:12px}
+.bx .sgf .f{display:grid;gap:4px;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.bx .sgf .f[hidden]{display:none}
+.bx .sgf input:not([type=radio]):not([type=checkbox]),.bx .sgf textarea{font:inherit;font-size:14px;text-transform:none;letter-spacing:0;font-weight:400;padding:9px 10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink)}
+.bx .sgt{border:0;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bx .sgt legend{font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.bx .sgc{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--line2);padding:9px 10px;cursor:pointer;background:var(--surface)}
+.bx .sgc:has(input:checked){border-color:var(--teal);box-shadow:inset 3px 0 0 var(--teal);background:var(--teal-soft)}
+.bx .sgc input{margin-top:3px;accent-color:var(--teal)}
+.bx .sgc b{display:block;font-size:13.5px;color:var(--ink)}
+.bx .sgc small{display:block;font-size:12px;color:var(--muted);line-height:1.35;margin-top:1px}
+.bx .sgme .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bx .sgme .check{display:flex;gap:8px;align-items:center;font-size:13.5px;margin-top:8px}
+.bx .sgf .btn{justify-self:start}
+.bx .sgf .err{color:#B3261E;font-size:13px}
+.bx .sgok p{margin:6px 0 14px}
+@media (max-width:560px){.bx .sgt,.bx .sgme .row2{grid-template-columns:1fr}}
 .bx .agd{display:flex;gap:16px;align-items:flex-start}
 .bx .agd p{margin:0}
 .bx .agd-p{width:96px;height:96px;border-radius:50%;object-fit:cover;flex:none}
@@ -1730,13 +1747,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <div><h4>Please verify</h4><p>Attendance boundaries, programs, tuition and enrollment rules change. Confirm eligibility with the school or district before relying on it in a purchase decision.</p></div>
   <div><h4>About our scores</h4><p>Scores are The Lederer Team's own calculation from public data and what schools publish. They don't measure teaching quality or school culture, and we don't recommend specific schools. This page is for research.</p></div>
   <div><h4>Beta version</h4><p>The Explorer is new and we’re still adding and checking schools, boundaries and features. Expect some gaps and errors, and tell us when you find one. <button type="button" class="lnk" data-terms="1">Read the terms of use</button></p></div>
-  <div><h4>Your family link</h4><p>It stores your settings, including any address and children's names you typed, in the link itself. Nothing is saved on our servers. Share it only with people you choose.</p></div>
+  <div><h4>Your family link</h4><p>It stores your settings, including any address and children's names you typed, in the link itself. Share it only with people you choose. If you’ve signed up, we also keep a copy so our team can help (see “What we save” in the terms).</p></div>
 </div></div></div>
 <div class="band plain suggest"><div class="in">
   <p><b>Don’t see a school, or spot something out of date?</b> Tell us and we’ll research it and add it.</p>
-  <a class="sbtn" href="#" data-type="CONTACT_US" data-suggest="">Suggest a school</a>
+  <a class="sbtn" href="#" data-suggest="">Suggest a school or a change</a>
 </div></div>
-<a class="fsug" href="#" data-type="CONTACT_US" data-suggest="" title="Suggest a school or a change, or tell us about something out of date"><span>Suggest a change</span></a>
+<a class="fsug" href="#" data-suggest="" title="Suggest a school or a change, or tell us about something out of date"><span>Suggest a change</span></a>
 
 <div class="band dark cta"><div class="in">
   <div class="eyebrow">Moving to the East Bay?</div>
@@ -1776,7 +1793,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140826').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140842').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2758,7 +2775,7 @@ function openDetail(id){
     ${sec('Cost and eligibility',cost)}
     ${sec('Size',s.e?`<p>${s.e.toLocaleString()} students${s.rt?`, about ${s.rt} per teacher`:''}.</p>`:'')}
     ${sec('Contact',(d.a||d.ph?`<p>${esc(d.a||'')}${d.ph?'<br>'+esc(phone(d.ph)):''}</p>`:'')+(links?`<div class="dlinks">${links}</div>`:''))}
-    <p class="dfix">Something here out of date? <a href="#" data-type="CONTACT_US" data-suggest="${esc(s.n)}">Let us know</a>.</p>
+    <p class="dfix">Something here out of date? <a href="#" data-suggest="${esc(s.n)}" data-sid="${s.id}" data-stype="school">Let us know</a>.</p>
     ${flags.length?`<p class="flag">${flags.map(esc).join(' · ')}</p>`:''}
     <p class="sub">Scores are The Lederer Team's own calculation. See how we score schools. Confirm details with the school.</p>
    </div>`;
@@ -2887,10 +2904,7 @@ root.addEventListener('click',e=>{
   const vw=e.target.closest('[data-view]');if(vw){e.preventDefault();setView(vw.dataset.view);return}
   const ta=e.target.closest('.toc a');if(ta){e.preventDefault();const el=root.querySelector(ta.getAttribute('href'));if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return}
   const kx=e.target.closest('[data-kx]');if(kx){e.stopPropagation();const i=+kx.dataset.kx;st.kids.splice(i,1);st.active=Math.max(0,Math.min(i<=st.active?st.active-1:st.active,st.kids.length-1));st.mapPlan=null;soft();return}
-  const sg=e.target.closest('[data-suggest]');if(sg){e.preventDefault();const nm=sg.dataset.suggest;
-    // On the live site the site's own contact form opens from data-type="CONTACT_US". Elsewhere, fall back to email.
-    setTimeout(()=>{const open=[...document.querySelectorAll('.modal-content,[role=dialog]')].some(m=>!root.contains(m)&&m.offsetParent!==null);
-      if(!open)location.href='mailto:mark@theledererteam.com?subject='+encodeURIComponent(nm?'School Explorer update: '+nm:'Add a school to the Bay Area School Explorer')},600);return}
+  const sg=e.target.closest('[data-suggest]');if(sg){e.preventDefault();openSuggest({sid:sg.dataset.sid||'',name:sg.dataset.suggest||'',type:sg.dataset.stype||''});return}
   const go=e.target.closest('[data-goto]');if(go){openDetail(go.dataset.goto);return}
   if(e.target.closest('[data-dclose]')||e.target.id==='scrim'){closeDetail();return}
   const dm=e.target.closest('[data-dmap]');if(dm){closeDetail();showOnMap(dm.dataset.dmap);return}
@@ -3064,6 +3078,33 @@ function lpLead(name,email,phone,places,msg){try{
     setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},400)};
   fr.addEventListener('load',()=>{let n=0;const iv=setInterval(()=>{run();if(done||++n>40)clearInterval(iv)},500)});
   setTimeout(()=>{try{fr.remove()}catch(e){}},45000)}catch(e){}}
+// Suggest a change: a window just for corrections and ideas for the Explorer. Sent to our sign-up sheet, labeled "Suggestion".
+const STYPES=[['school','School details are wrong','Tuition, grades, programs, website, address'],['zone','Assigned school or boundary','The school for an address, or a district line'],['missing','A school is missing','Public, charter or private'],['place','Neighborhood, map or drive time','A place we placed wrong or a drive that’s off'],['market','Home prices or listings','Market numbers or a listing'],['bug','Something isn’t working','A button, page or result'],['idea','An idea for the Explorer','Something you wish it did']];
+function openSuggest(o){o=o||{};const sel=o.type||(o.sid||o.name?'school':'');const pre=o.sid&&BY[o.sid]?BY[o.sid]:null;
+  $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">Bay Area School Explorer · Beta</div><h3 id="dname">Suggest a change</h3><div>Spotted something wrong or out of date, or have an idea? Tell us. We check every suggestion and update the Explorer.</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
+   <div class="dbody"><form class="sgf" novalidate>
+    <fieldset class="sgt"><legend>What is it about?</legend>${STYPES.map(([k,t,d])=>`<label class="sgc"><input type="radio" name="t" value="${k}"${k===sel?' checked':''}><span><b>${t}</b><small>${d}</small></span></label>`).join('')}</fieldset>
+    <label class="f sg-school">School<input name="school" list="sglist" placeholder="Start typing a school name" value="${esc(pre?pre.n+' · '+pre.c:o.name||'')}"></label>
+    <datalist id="sglist">${S.map(x=>`<option value="${esc(x.n+' · '+x.c)}">`).join('')}</datalist>
+    <label class="f sg-addr">Address or place<input name="addr" placeholder="e.g. 58 Buckeye Ave, Oakland" value="${esc((st.places.find(p=>p.kind==='address')||{}).label||'')}"></label>
+    <label class="f">What should it say, or what happened?<textarea name="d" rows="4" placeholder="e.g. Tuition for 2026-27 is $48,500, not $45,000."></textarea></label>
+    <label class="f sg-src">Where did you see it? (optional)<input name="src" placeholder="A link, the school’s office, a district letter…"></label>
+    <div class="sgme"><div class="row2"><label class="f">Your name (optional)<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label class="f">Email (optional)<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label></div>
+     <label class="check"><input type="checkbox" name="tell" checked><span>Let me know when it’s fixed</span></label></div>
+    <p class="sub">We’ll attach the search you’re looking at (your places and children’s grades) so we can see what you saw.</p>
+    <button type="submit" class="btn">Send suggestion</button><span class="err" role="status"></span></form></div>`;
+  const f=$('drawer').querySelector('.sgf');const vis=()=>{const t=(f.querySelector('[name=t]:checked')||{}).value||'';f.querySelector('.sg-school').hidden=!['school','zone','missing',''].includes(t);f.querySelector('.sg-addr').hidden=!['zone','place','market'].includes(t);f.querySelector('.sg-src').hidden=['bug','idea'].includes(t);
+    const ph={school:'e.g. Tuition for 2026-27 is $48,500, not $45,000.',zone:'e.g. This address is assigned to Glenview, not Crocker Highlands.',missing:'e.g. Name, city and grades of the school we should add.',place:'e.g. Trestle Glen sits farther east than the map shows.',market:'e.g. The median for Albany looks low.',bug:'e.g. The compare table didn’t load on my phone.',idea:'e.g. I’d like to filter schools by start time.'}[t]||'Tell us what to fix or add.';f.elements['d'].placeholder=ph};
+  f.addEventListener('change',vis);vis();
+  f.addEventListener('submit',e=>{e.preventDefault();const v=k=>(f.elements[k]&&f.elements[k].value||'').trim();const t=(f.querySelector('[name=t]:checked')||{}).value||'';const out=f.querySelector('.err');
+    const em=v('e');const err=!t?'Please pick what it’s about.':!v('d')?'Please tell us what to fix or add.':(em&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))?'Please check the email, or leave it blank.':'';out.textContent=err;if(err)return;
+    if(v('n'))lsSet('bx_name',v('n'));if(em)lsSet('bx_email',em);
+    const T=(STYPES.find(x=>x[0]===t)||[])[1]||t;const sch=v('school'),hit=S.find(x=>x.n+' · '+x.c===sch);
+    const ctx=`Places: ${st.places.map(p=>p.label).join('; ')||'none'}; grades: ${st.kids.map(k=>GRADES[k.grade]).join(', ')||'none'}`;
+    const body=['SUGGESTION · '+T,sch?'School: '+sch+(hit?' ('+hit.id+')':''):'',v('addr')?'Place: '+v('addr'):'','Details: '+v('d'),v('src')?'Source: '+v('src'):'',f.elements['tell'].checked&&em?'Wants an update when fixed':'',ctx].filter(Boolean).join(' | ');
+    try{fetch(GF,{method:'POST',mode:'no-cors',body:new URLSearchParams({[GE.name]:v('n'),[GE.email]:em,[GE.phone]:'',[GE.terms]:'Suggestion '+new Date().toISOString(),[GE.consent]:'n/a (suggestion)',[GE.places]:body,[GE.page]:link()+(srcLine()?' | '+srcLine():'')})}).catch(()=>{})}catch(_){}
+    f.innerHTML=`<div class="sgok"><b>Thank you${v('n')?', '+esc(v('n').split(' ')[0]):''}.</b><p>We’ll check it${em&&f.elements?' and let you know when it’s updated':''}. Suggestions like yours keep the Explorer accurate for every family.</p><button type="button" class="btn" data-suggest="">Suggest something else</button></div>`});
+  lastFocus=document.activeElement;$('scrim').hidden=false;$('drawer').hidden=false;$('drawer').scrollTop=0;$('drawer').querySelector('.x').focus()}
 function openAgent(a){const g=agentOf(a);if(!g)return;const first=g.n.split(' ')[0];
   $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">Your agent · The Lederer Team</div><h3 id="dname">${esc(g.n)}</h3><div>${esc(g.t)} · Red Oak Realty${g.dre?' · DRE '+g.dre:''}</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
    <div class="dbody"><div class="agd">${agentPic(a,'agd-p')}<p>${esc(g.bio||(first+' is a member of The Lederer Team at Red Oak Realty, helping East Bay families find the right home and schools.'))}</p></div>
