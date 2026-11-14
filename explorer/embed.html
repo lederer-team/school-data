@@ -893,6 +893,25 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .cmp td.best{background:var(--teal-soft);box-shadow:inset 3px 0 0 var(--teal)}
 .bx .cmp tr.mk td b{font-size:15px}
 .bx .cmp tr.mk{background:var(--sunk)}
+.bx #agchip{position:absolute;right:max(24px,env(safe-area-inset-right,0px));bottom:24px;z-index:3}
+.bx .agchip{border:0;cursor:pointer;font:inherit;font-size:12.5px;padding:4px 6px 4px 4px}
+.bx .agchip .agm{background:var(--teal);color:#fff;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:900;padding:4px 9px;border-radius:999px;margin-left:2px}
+.bx .agchip:hover .agm{background:#0B5549}
+.bx .lv-agl{background:none;border:0;padding:0;cursor:pointer;font:inherit}
+.bx .agd{display:flex;gap:16px;align-items:flex-start}
+.bx .agd p{margin:0}
+.bx .agd-p{width:96px;height:96px;border-radius:50%;object-fit:cover;flex:none}
+.bx .agd-p.ini{font-size:28px}
+.bx .agf{display:grid;gap:10px}
+.bx .agf .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bx .agf .f{display:grid;gap:4px;font-size:12px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+.bx .agf input,.bx .agf textarea{font:inherit;font-size:14px;text-transform:none;letter-spacing:0;font-weight:400;padding:9px 10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink)}
+.bx .agf .btn{justify-self:start}
+.bx .agf .err{color:#B3261E;font-size:13px}
+.bx .fsug,.bx .fsug:hover,.bx .fsug:focus-visible{top:var(--sug-top,104px)!important;bottom:auto!important;transform:none!important;writing-mode:horizontal-tb!important;padding:9px 14px!important;padding-right:max(14px,env(safe-area-inset-right,0px))!important;border-radius:6px 0 0 6px;font-size:10.5px!important}
+.bx .fsug span{transform:none!important}
+@media (max-width:720px){.bx #agchip{position:static;display:flex;justify-content:center;padding:0 16px 12px}
+.bx .agf .row2{grid-template-columns:1fr}}
 .bx .agchip{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);color:var(--ink);padding:4px 12px 4px 4px;font-size:12.5px;border-radius:999px;margin-right:8px;vertical-align:middle}
 .bx .agchip b{font-weight:800}
 .bx .agc-p{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
@@ -1569,7 +1588,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 <div class="bx" id="bx" data-src="https://lederer-team.github.io/school-data/explorer/" data-gkey="AIzaSyDUZsgq9-NRvNonNNHMRMWaPkTkogfv5Q8" data-share="" data-hero="https://images.unsplash.com/photo-1550399105-05c4a7641b02?auto=format&fit=crop&w=1920&q=75" data-gate="1">
 <div class="band dark hero"><div class="in">
-  <div class="htools"><span id="agchip"></span><button type="button" class="hbtn" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span id="shareLbl">Copy family link</span></button><button type="button" class="hbtn" id="reset">Start over</button><span class="ok" id="shareOk" aria-live="polite" hidden></span><span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span></div>
+  <span id="agchip"></span><div class="htools"><button type="button" class="hbtn" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span id="shareLbl">Copy family link</span></button><button type="button" class="hbtn" id="reset">Start over</button><span class="ok" id="shareOk" aria-live="polite" hidden></span><span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span></div>
   <div class="eyebrow">The Lederer Team · Alameda and Contra Costa counties</div>
   <h2 class="title">Bay Area School Explorer<button type="button" class="beta" data-terms="1" title="Beta version: we are still adding and checking data. Click to read the terms of use.">Beta</button></h2>
   <p class="lede">Compare 750 public, charter and private schools by what matters to your family. Add each child with their own grade and priorities, then see ranked schools, a map, family plans that keep everyone's commute in check, and where each school leads for high school.</p>
@@ -1756,7 +1775,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140743').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140811').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2372,7 +2391,7 @@ function openListing(x){LV={x,i:0};try{let a=JSON.parse(lsGet('bx_seen')||'[]');
     ${lvMarket(x)}
     ${lvSchools(x)}
     ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above, with the typical weekday-morning drive from the home. Tap a pin for details.</p><div id="lvmap"></div></section>`:''}
-    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t">${shownAgent()?(g=>`<div class="lv-ag">${agentPic(shownAgent(),'lv-agp')}<div><div class="eyebrow">Your agent</div><h3>${esc(g.n)}</h3><div class="lv-agt">${esc(g.t)} · The Lederer Team · Red Oak Realty${g.dre?' · DRE '+g.dre:''}</div>${g.url?`<a class="lv-agl" href="${g.url}" target="_blank" rel="noopener">View ${esc(g.n.split(' ')[0])}’s profile →</a>`:''}</div></div>`)(agentOf(shownAgent())):'<div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3>'}<p>${shownAgent()?'Ask '+esc(agentOf(shownAgent()).n.split(' ')[0])+' about':'Ask us about'} this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
+    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t">${shownAgent()?(g=>`<div class="lv-ag">${agentPic(shownAgent(),'lv-agp')}<div><div class="eyebrow">Your agent</div><h3>${esc(g.n)}</h3><div class="lv-agt">${esc(g.t)} · The Lederer Team · Red Oak Realty${g.dre?' · DRE '+g.dre:''}</div><button type="button" class="lv-agl" data-agentcard="${esc(shownAgent())}">About ${esc(g.n.split(' ')[0])} →</button></div></div>`)(agentOf(shownAgent())):'<div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3>'}<p>${shownAgent()?'Ask '+esc(agentOf(shownAgent()).n.split(' ')[0])+' about':'Ask us about'} this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
      <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
       <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
       <div class="lv-fa"><button type="submit" class="lvbtn light">Send to our team</button><span class="lv-ferr" role="status"></span></div></form></div>
@@ -2990,10 +3009,10 @@ const bindPhone=el=>{if(!el)return;el.setAttribute('placeholder','(510) 555-0123
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 // Lead attribution. ?agent=derrick routes a sign-up to that agent (ads, an agent's own links); ?ref=jane-smith records who referred
 // the family. UTM tags and Google's gclid are kept too. The latest tagged visit before sign-up wins; after sign-up it's frozen.
-const AG={mark:{n:'Mark Lederer',t:'Principal & Real Estate Advisor',dre:'01345197',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/e1ea4msr5voahthmmerp',url:'/agent/mark-e-lederer'},
-  derrick:{n:'Derrick Tyler',t:'Real Estate Advisor',dre:'01954708',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/ylhhsg9q5jjpk2kdhxsu',url:'/agent/derrick-c-tyler'},
-  mio:{n:'Mio Sullivan',t:'Real Estate Advisor',dre:'02021776',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/dpi4aar49dfnt858l0am',url:'/agent/mio-sullivan'},
-  tracy:{n:'Tracy Klem',t:'Real Estate Advisor',dre:'01975537',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/lnxvtlhvshmnwi7o1bk9',url:'/agent/tracy-klem'},
+const AG={mark:{n:'Mark Lederer',t:'Principal & Real Estate Advisor',dre:'01345197',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/e1ea4msr5voahthmmerp',bio:'Founder and Principal of The Lederer Team, ranked in the top 1% nationally for over 25 years with more than $1 billion in closed sales. A former advertising art director, Mark blends strategy, marketing and negotiation to help clients make confident decisions.',url:'/agent/mark-e-lederer'},
+  derrick:{n:'Derrick Tyler',t:'Real Estate Advisor',dre:'01954708',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/ylhhsg9q5jjpk2kdhxsu',bio:'Known for an unrelenting work ethic, integrity and honesty, backed by deep knowledge of the East Bay market.',url:'/agent/derrick-c-tyler'},
+  mio:{n:'Mio Sullivan',t:'Real Estate Advisor',dre:'02021776',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/dpi4aar49dfnt858l0am',bio:'With 10 years in real estate and a background in global finance and operations, Mio gives clients strategic real estate and financial guidance. She has lived in Japan, Hong Kong, Mexico and Spain, and works in three languages.',url:'/agent/mio-sullivan'},
+  tracy:{n:'Tracy Klem',t:'Real Estate Advisor',dre:'01975537',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/lnxvtlhvshmnwi7o1bk9',bio:"A former home stager and design consultant, Tracy brings a designer's eye and deep knowledge of East Bay neighborhoods. She joined The Lederer Team in 2014.",url:'/agent/tracy-klem'},
   suzy:{n:'Suzy',t:'Real Estate Advisor'},katie:{n:'Katie Lederer',t:'Real Estate Advisor'}};
 const AGENTS=Object.fromEntries(Object.entries(AG).map(([k,v])=>[k,v.n]));
 const agentOf=a=>a?(AG[a]||{n:a,t:'The Lederer Team'}):null;
@@ -3044,7 +3063,24 @@ function lpLead(name,email,phone,places,msg){try{
     setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},400)};
   fr.addEventListener('load',()=>{let n=0;const iv=setInterval(()=>{run();if(done||++n>40)clearInterval(iv)},500)});
   setTimeout(()=>{try{fr.remove()}catch(e){}},45000)}catch(e){}}
-function agentUI(){const a=shownAgent(),g=agentOf(a);const c=$('agchip');if(c)c.innerHTML=g?`<span class="agchip">${agentPic(a,'agc-p')}<span>Your agent: <b>${esc(g.n)}</b></span></span>`:'';
+function openAgent(a){const g=agentOf(a);if(!g)return;const first=g.n.split(' ')[0];
+  $('drawer').innerHTML=`<div class="dhead"><div class="eyebrow">Your agent · The Lederer Team</div><h3 id="dname">${esc(g.n)}</h3><div>${esc(g.t)} · Red Oak Realty${g.dre?' · DRE '+g.dre:''}</div><button type="button" class="x" data-dclose="1" aria-label="Close">×</button></div>
+   <div class="dbody"><div class="agd">${agentPic(a,'agd-p')}<p>${esc(g.bio||(first+' is a member of The Lederer Team at Red Oak Realty, helping East Bay families find the right home and schools.'))}</p></div>
+    ${g.url?`<p><a class="lnk" href="${g.url}" target="_blank" rel="noopener">See ${esc(first)}’s full profile →</a></p>`:''}
+    <section class="dsec"><h4>Message ${esc(first)}</h4><form class="agf" novalidate><div class="row2"><label class="f">Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label class="f">Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label></div>
+     <label class="f">Phone (optional)<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label>
+     <label class="f">Message<textarea name="m" rows="3">Hi ${esc(first)}, I’m using the Bay Area School Explorer and would like to talk about schools and homes for my family.</textarea></label>
+     <button type="submit" class="btn">Send to ${esc(first)}</button><span class="err" role="status"></span></form></section></div>`;
+  const f=$('drawer').querySelector('.agf');bindPhone(f.elements['p']);f.addEventListener('submit',e=>{e.preventDefault();const v=k=>f.elements[k].value.trim(),name=v('n'),email=v('e'),phone=v('p'),msg=v('m'),out=f.querySelector('.err');
+    const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':(phone&&phone.replace(/\D/g,'').length<10)?'Please check the phone number, or leave it blank.':!msg?'Please add a message.':'';out.textContent=err;if(err)return;
+    lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);
+    const tag='To agent: '+g.n+(srcLine()?' · '+srcLine():'');const full=msg+' ['+tag+'] [From the Bay Area School Explorer]';
+    try{fetch(GF,{method:'POST',mode:'no-cors',body:new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Agent message '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:'Message for '+g.n+': '+full,[GE.page]:location.origin+location.pathname+' | '+tag})}).catch(()=>{})}catch(_){}
+    lpLead(name,email,phone||'','',full);
+    f.innerHTML=`<p class="lv-sent"><b>Thanks, ${esc(name.split(' ')[0])}.</b> Your message is on its way to ${esc(first)}.</p>`});
+  lastFocus=document.activeElement;$('scrim').hidden=false;$('drawer').hidden=false;$('drawer').scrollTop=0;$('drawer').querySelector('.x').focus()}
+root.addEventListener('click',e=>{const b=e.target.closest('[data-agentcard]');if(b){e.preventDefault();openAgent(b.dataset.agentcard)}});
+function agentUI(){const a=shownAgent(),g=agentOf(a);const c=$('agchip');if(c)c.innerHTML=g?`<button type="button" class="agchip" data-agentcard="${esc(a)}" title="About ${esc(g.n)}">${agentPic(a,'agc-p')}<span>Your agent: <b>${esc(g.n)}</b></span><span class="agm">Message</span></button>`:'';
   const v=$('ginv');if(v)v.innerHTML=g?`<div class="ginv">${agentPic(a,'gi-p')}<div><b>${esc(g.n)}</b> invited you to the Bay Area School Explorer<small>${esc(g.t)} · The Lederer Team</small></div></div>`:''}
 agentUI();
 function gate(){
