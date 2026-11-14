@@ -1739,7 +1739,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140057').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140105').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2355,7 +2355,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     ${lvMarket(x)}
     ${lvSchools(x)}
     ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above, with the typical weekday-morning drive from the home. Tap a pin for details.</p><div id="lvmap"></div></section>`:''}
-    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
+    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">${srcInfo().agent?'Your agent':'Your agents'}</div><h3>${srcInfo().agent?esc(agentName(srcInfo().agent))+' · The Lederer Team':'The Lederer Team · Red Oak Realty'}</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
      <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
       <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
       <div class="lv-fa"><button type="submit" class="lvbtn light">Send to our team</button><span class="lv-ferr" role="status"></span></div></form></div>
@@ -2366,8 +2366,8 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
   const fm=el.querySelector('.lv-form');bindPhone(fm.elements['p']);fm.addEventListener('submit',e=>{e.preventDefault();const g=k=>fm.elements[k].value.trim(),name=g('n'),email=g('e'),phone=g('p'),msg=g('m'),out=fm.querySelector('.lv-ferr');
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':phone.replace(/\D/g,'').length<10?'Please add a phone number so we can set up the showing.':'';
     out.textContent=err;if(err)return;lsSet('bx_name',name);lsSet('bx_email',email);lsSet('bx_phone',phone);
-    const full=msg+' [Home: '+(x.ad||street)+(x.mls?', MLS '+x.mls:'')+'] [From the Bay Area School Explorer]';
-    try{fetch(GF,{method:'POST',mode:'no-cors',body:new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Showing request '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:'Showing request: '+full,[GE.page]:x.href||''})})}catch(_){}
+    const full=msg+' [Home: '+(x.ad||street)+(x.mls?', MLS '+x.mls:'')+'] [From the Bay Area School Explorer]'+(srcLine()?' ['+srcLine()+']':'');
+    try{fetch(GF,{method:'POST',mode:'no-cors',body:new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Showing request '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:'Showing request: '+full,[GE.page]:(x.href||'')+(srcLine()?' | '+srcLine():'')})})}catch(_){}
     lpLead(name,email,phone,'',full);
     fm.innerHTML='<p class="lv-sent"><b>Thanks, '+esc(name.split(' ')[0])+'.</b> Your note about '+esc(street)+' is on its way to our team. We\'ll be in touch soon.</p>'});
   el.onclick=e=>{const b=e.target.closest('button,[data-lvx]');if(e.target===el||(b&&b.dataset.lvx)){closeListing();return}if(b&&b.dataset.lvask){const f=el.querySelector('#lvAsk');f.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(()=>{const i=[...f.querySelectorAll('input')].find(q=>!q.value)||f.querySelector('textarea');i&&i.focus({preventScroll:true})},450);return}if(b&&b.dataset.lvs){const tb=el.querySelector('.lv-thumbs');tb.scrollLeft+=+b.dataset.lvs*tb.clientWidth*.85;lvTa();return}if(b&&b.dataset.lvn){LV.i+=+b.dataset.lvn;lvGal()}else if(b&&b.dataset.lvt!=null){LV.i=+b.dataset.lvt;lvGal()}};
@@ -2562,7 +2562,10 @@ function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.dp=[10,20,30].includes(o.dp)?o.dp:20;n.tg=TGS.includes(o.tg)?o.tg:4;
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
 const frag=()=>'family='+b64e(JSON.stringify(pack()));
-function link(){const base=CFG.share||location.href.split('#')[0];return base+'#'+frag()}
+function link(){let base=CFG.share||location.href.split('#')[0];
+  // family links sent by a team member carry that agent, never the team pass or the sender's own ad tags
+  try{const u=new URL(base);['team','ref','agent','utm_source','utm_medium','utm_campaign','utm_term','utm_content','gclid','fbclid'].forEach(k=>u.searchParams.delete(k));const me=lsGet('bx_me');if(me)u.searchParams.set('agent',me);base=u.toString()}catch(e){}
+  return base+'#'+frag()}
 let hashT;function syncHash(){clearTimeout(hashT);hashT=setTimeout(()=>{try{history.replaceState(null,'','#'+frag())}catch(e){}},500)}
 function fromHash(){const m=(location.hash||'').match(/family=([\w-]+)/);if(!m)return false;try{const n=unpack(JSON.parse(b64d(m[1])));if(n){st=n;return true}}catch(e){}return false}
 
@@ -2968,6 +2971,23 @@ const GE={name:'entry.1829188186',email:'entry.1868695182',phone:'entry.16242315
 const fmtPhone=v=>{let d=String(v).replace(/\D/g,'');if(d.length===11&&d[0]==='1')d=d.slice(1);d=d.slice(0,10);if(!d)return'';if(d.length<4)return'('+d;if(d.length<7)return'('+d.slice(0,3)+') '+d.slice(3);return'('+d.slice(0,3)+') '+d.slice(3,6)+'-'+d.slice(6)};
 const bindPhone=el=>{if(!el)return;el.setAttribute('placeholder','(510) 555-0123');el.setAttribute('inputmode','tel');el.addEventListener('input',e=>{if(e.inputType&&e.inputType.startsWith('delete'))return;el.value=fmtPhone(el.value)});el.addEventListener('blur',()=>{el.value=fmtPhone(el.value)})};
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
+// Lead attribution. ?agent=derrick routes a sign-up to that agent (ads, an agent's own links); ?ref=jane-smith records who referred
+// the family. UTM tags and Google's gclid are kept too. The latest tagged visit before sign-up wins; after sign-up it's frozen.
+const AGENTS={mark:'Mark Lederer',derrick:'Derrick Tyler',mio:'Mio Sullivan',suzy:'Suzy',katie:'Katie Lederer',tracy:'Tracy Klem'};
+const slug=v=>String(v||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40);
+function captureSource(){try{const q=new URLSearchParams(location.search);const team=/[?&#]team=lederer\b/.test(location.search+location.hash)||lsGet('bx_team')==='1';
+  if(team&&q.get('agent')){lsSet('bx_me',slug(q.get('agent')));return}   // a team member's own device: remember who they are for the links they share
+  if(team||lsGet('bx_signed'))return;
+  const keys=['agent','ref','utm_source','utm_medium','utm_campaign','utm_term','gclid'];if(!keys.some(k=>q.get(k)))return;
+  const o={};keys.forEach(k=>{const v=q.get(k);if(v)o[k]=k==='gclid'?v.slice(0,120):(k==='agent'||k==='ref'?slug(v):v.slice(0,80))});o.at=new Date().toISOString();o.land=location.pathname;
+  const prev=JSON.parse(lsGet('bx_src')||'null');if(prev&&!o.agent&&prev.agent)o.agent=prev.agent;if(prev&&!o.ref&&prev.ref)o.ref=prev.ref;
+  lsSet('bx_src',JSON.stringify(o))}catch(e){}}
+function srcInfo(){try{return JSON.parse(lsGet('bx_src')||'null')||{}}catch(e){return{}}}
+const agentName=a=>a?(AGENTS[a]||a):'';
+// one line for the sign-up sheet and the site's lead email
+function srcLine(){const o=srcInfo(),b=[];if(o.agent)b.push('Agent: '+agentName(o.agent));if(o.ref)b.push('Referred by: '+o.ref);
+  const src=[o.utm_source,o.utm_medium].filter(Boolean).join('/');if(src)b.push('Source: '+src);if(o.utm_campaign)b.push('Campaign: '+o.utm_campaign);if(o.gclid)b.push('Google Ads click');return b.join(' · ')}
+captureSource();
 function teamBypass(){if(/[?&#]team=lederer\b/.test(location.search+location.hash)){lsSet('bx_team','1');return true}return lsGet('bx_team')==='1'}
 // Send a lead through the site's own contact form. It runs inside a hidden frame of the home page,
 // because the form sends its page to the home page after submitting; the visitor stays in the Explorer.
@@ -2993,9 +3013,9 @@ function gate(){
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':(phone&&phone.replace(/\D/g,'').length<10)?'Please check the phone number, or leave it blank.':!$('gterms').checked?'Please agree to the terms of use.':!$('gconsent').checked?'Please agree to be contacted to use the Explorer.':'';
     $('gerr').textContent=err;if(err)return;
     const places=st.places.map(p=>p.label).join('; ');
-    const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:places,[GE.page]:location.origin+location.pathname});
+    const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:places,[GE.page]:location.origin+location.pathname+(srcLine()?' | '+srcLine():'')});
     try{fetch(GF,{method:'POST',mode:'no-cors',body})}catch(_){}
-    if(phone)lpLead(name,email,phone,places);
+    if(phone)lpLead(name,email,phone,places,'Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.'+(srcLine()?' ['+srcLine()+']':''));
     lsSet('bx_signed',new Date().toISOString());lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);g.hidden=true;root.classList.remove('gated');document.documentElement.style.overflow='';setTimeout(()=>{try{map&&map.invalidate&&map.invalidate()}catch(_){}window.dispatchEvent(new Event('resize'))},50)})}
 root.addEventListener('keydown',e=>{if(e.key==='Tab'&&!$('gate').hidden&&!root.classList.contains('gated')){const f=[...$('gform').querySelectorAll('input,button,a')];const i=f.indexOf(document.activeElement);if(e.shiftKey&&i<=0){e.preventDefault();f[f.length-1].focus()}else if(!e.shiftKey&&i===f.length-1){e.preventDefault();f[0].focus()}}});
 
