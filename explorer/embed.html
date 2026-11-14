@@ -908,8 +908,9 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .agf input,.bx .agf textarea{font:inherit;font-size:14px;text-transform:none;letter-spacing:0;font-weight:400;padding:9px 10px;border:1px solid var(--line2);background:var(--surface);color:var(--ink)}
 .bx .agf .btn{justify-self:start}
 .bx .agf .err{color:#B3261E;font-size:13px}
-.bx .fsug,.bx .fsug:hover,.bx .fsug:focus-visible{top:var(--sug-top,104px)!important;bottom:auto!important;transform:none!important;writing-mode:horizontal-tb!important;padding:9px 14px!important;padding-right:max(14px,env(safe-area-inset-right,0px))!important;border-radius:6px 0 0 6px;font-size:10.5px!important}
-.bx .fsug span{transform:none!important}
+.bx .fsug,.bx .fsug:hover,.bx .fsug:focus-visible{top:var(--sug-top,104px)!important;bottom:auto!important;transform:none!important;writing-mode:vertical-rl!important;padding:14px 8px!important;padding-right:max(8px,env(safe-area-inset-right,0px))!important;border-radius:6px 0 0 6px;font-size:11px!important}
+.bx .fsug:hover,.bx .fsug:focus-visible{padding-left:11px!important}
+.bx .fsug span{transform:rotate(180deg)!important}
 @media (max-width:720px){.bx #agchip{position:static;display:flex;justify-content:center;padding:0 16px 12px}
 .bx .agf .row2{grid-template-columns:1fr}}
 .bx .agchip{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);color:var(--ink);padding:4px 12px 4px 4px;font-size:12.5px;border-radius:999px;margin-right:8px;vertical-align:middle}
@@ -1718,7 +1719,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
      <li>Program data (sports, arts, STEM and clubs) currently covers 102 high schools in Alameda and Contra Costa counties. Other counties are coming.</li>
      <li>Club and team counts come from what schools publish, which varies in detail. Estimates are flagged on each card.</li>
      <li>Test results describe one year of students and don't measure teaching quality, school culture or fit for an individual child.</li>
-     <li>Visit schools, talk with families there and confirm enrollment rules before deciding. Spot something out of date? Use Suggest a school or edit and we'll correct it.</li>
+     <li>Visit schools, talk with families there and confirm enrollment rules before deciding. Spot something out of date? Use Suggest a change and we'll correct it.</li>
     </ul>
    </section>
   </div>
@@ -1735,7 +1736,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   <p><b>Don’t see a school, or spot something out of date?</b> Tell us and we’ll research it and add it.</p>
   <a class="sbtn" href="#" data-type="CONTACT_US" data-suggest="">Suggest a school</a>
 </div></div>
-<a class="fsug" href="#" data-type="CONTACT_US" data-suggest="" title="Suggest a school, or tell us about something out of date"><span>Suggest a school or edit</span></a>
+<a class="fsug" href="#" data-type="CONTACT_US" data-suggest="" title="Suggest a school or a change, or tell us about something out of date"><span>Suggest a change</span></a>
 
 <div class="band dark cta"><div class="in">
   <div class="eyebrow">Moving to the East Bay?</div>
@@ -1775,7 +1776,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140811').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140826').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
