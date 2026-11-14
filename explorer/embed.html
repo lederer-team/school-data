@@ -1739,7 +1739,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140105').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140120').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2355,7 +2355,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     ${lvMarket(x)}
     ${lvSchools(x)}
     ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above, with the typical weekday-morning drive from the home. Tap a pin for details.</p><div id="lvmap"></div></section>`:''}
-    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">${srcInfo().agent?'Your agent':'Your agents'}</div><h3>${srcInfo().agent?esc(agentName(srcInfo().agent))+' · The Lederer Team':'The Lederer Team · Red Oak Realty'}</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
+    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">${shownAgent()?'Your agent':'Your agents'}</div><h3>${shownAgent()?esc(agentName(shownAgent()))+' · The Lederer Team':'The Lederer Team · Red Oak Realty'}</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
      <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
       <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
       <div class="lv-fa"><button type="submit" class="lvbtn light">Send to our team</button><span class="lv-ferr" role="status"></span></div></form></div>
@@ -2975,14 +2975,17 @@ const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=
 // the family. UTM tags and Google's gclid are kept too. The latest tagged visit before sign-up wins; after sign-up it's frozen.
 const AGENTS={mark:'Mark Lederer',derrick:'Derrick Tyler',mio:'Mio Sullivan',suzy:'Suzy',katie:'Katie Lederer',tracy:'Tracy Klem'};
 const slug=v=>String(v||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40);
-function captureSource(){try{const q=new URLSearchParams(location.search);const team=/[?&#]team=lederer\b/.test(location.search+location.hash)||lsGet('bx_team')==='1';
-  if(team&&q.get('agent')){lsSet('bx_me',slug(q.get('agent')));return}   // a team member's own device: remember who they are for the links they share
+function captureSource(){try{const q=new URLSearchParams(location.search);const urlTeam=/[?&#]team=lederer\b/.test(location.search+location.hash),team=urlTeam||lsGet('bx_team')==='1';
+  if(urlTeam&&q.get('agent')){lsSet('bx_me',slug(q.get('agent')));return}   // ?team=lederer&agent=x: a team member's own device, remember who they are for the links they share
+  // a team device or a signed-up visitor opening someone's agent link: show that agent (preview) but don't record anything
   if(team||lsGet('bx_signed'))return;
   const keys=['agent','ref','utm_source','utm_medium','utm_campaign','utm_term','gclid'];if(!keys.some(k=>q.get(k)))return;
   const o={};keys.forEach(k=>{const v=q.get(k);if(v)o[k]=k==='gclid'?v.slice(0,120):(k==='agent'||k==='ref'?slug(v):v.slice(0,80))});o.at=new Date().toISOString();o.land=location.pathname;
   const prev=JSON.parse(lsGet('bx_src')||'null');if(prev&&!o.agent&&prev.agent)o.agent=prev.agent;if(prev&&!o.ref&&prev.ref)o.ref=prev.ref;
   lsSet('bx_src',JSON.stringify(o))}catch(e){}}
 function srcInfo(){try{return JSON.parse(lsGet('bx_src')||'null')||{}}catch(e){return{}}}
+// the agent to show: the link being viewed right now, else the one recorded for this visitor
+function shownAgent(){try{const a=slug(new URLSearchParams(location.search).get('agent'));if(a&&!/[?&#]team=lederer\b/.test(location.search+location.hash))return a}catch(e){}return srcInfo().agent||''}
 const agentName=a=>a?(AGENTS[a]||a):'';
 // one line for the sign-up sheet and the site's lead email
 function srcLine(){const o=srcInfo(),b=[];if(o.agent)b.push('Agent: '+agentName(o.agent));if(o.ref)b.push('Referred by: '+o.ref);
