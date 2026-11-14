@@ -1706,7 +1706,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
    <section id="m-cats"><h3>What each category measures</h3>
     <div class="twrap"><table class="mtab"><thead><tr><th>Category</th><th>How it's measured</th></tr></thead><tbody>
      <tr><td>Academics</td><td>Public and charter schools: the average share of students meeting the state standard in English and math (CAASPP, spring 2025), ranked as a percentile against every California school at the same level. For high schools this is 79% of the score and college outcomes are the other 21%. Private high schools don't take state tests, so their academic score is their College Outcomes Index. Private elementary and middle schools don't publish comparable results, so most aren't scored on academics yet.</td></tr>
-     <tr><td>College outcomes</td><td>Our College Outcomes Index. 60% is the share of graduates who enroll at four-year colleges (state-measured for public schools, school-reported for private schools, with a 9-point adjustment because state tracking runs lower than school reports). 40% is selective placement: the share of graduates enrolling at colleges that admit under 40% of applicants, using U.S. College Scorecard admission rates. Selective placement is only possible where a school publishes enrollment counts by college. Where it doesn't, that 40% is held at the midpoint.</td></tr>
+     <tr><td>College outcomes</td><td>Our College Outcomes Index. 60% is the share of graduates who enroll at four-year colleges (state-measured for public schools, school-reported for private schools, with a 9-point adjustment because state tracking runs lower than school reports). 40% is selective placement: the share of graduates enrolling at colleges that admit under 40% of applicants, using U.S. College Scorecard admission rates. Selective placement is only possible where a school publishes enrollment counts by college. Where it doesn't, that 40% is held at the midpoint. Families can also turn on “Count career and community college paths” for a high schooler: for public high schools, half of the college score then becomes the state’s college and career readiness rate (2026 California School Dashboard), which also credits career pathways, community college credit and dual enrollment.</td></tr>
      <tr><td>Sports</td><td>Half is the number of varsity teams per gender, compared with the largest program in the two counties. Half is section and state championships since 2016 (North Coast Section results, and CIF state titles for Oakland Section schools). Titles use a square root so a few championships count, but one dynasty program can't outweigh everything else.</td></tr>
      <tr><td>Arts</td><td>35% theater, musical, dance and film programs; 30% performing ensembles such as bands, orchestras and choirs (8 or more earns full credit); 20% advanced arts courses on the school's official UC course list (20 or more earns full credit); 15% outside recognition such as festival results.</td></tr>
      <tr><td>STEM</td><td>Half is the number of AP math, science and computer science courses on the school's official UC course list. Half is competitive STEM teams and clubs such as robotics, Science Olympiad and math team (5 or more earns full credit). Schools without AP courses are measured by their advanced course catalog instead.</td></tr>
@@ -1823,7 +1823,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140904').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611141047').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2042,7 +2042,7 @@ function sizeScore(s,kid){
   const cls=s.e<T[0]?'small':s.e>T[1]?'large':'medium';const ord={small:0,medium:1,large:2};
   return 10-5*Math.abs(ord[cls]-ord[kid.sizePref])}
 function hsFit(s,kid){if(!s)return null;let tw=0,t=0;
-  for(const c of HSCATS){const w=kid.w[c]||0;let v=c==='interest'?interestScore(s,kid,true)?.v:s.s[c];if(!w||v==null)continue;tw+=w;t+=w*v}
+  for(const c of HSCATS){const w=kid.w[c]||0;let v=c==='interest'?interestScore(s,kid,true)?.v:c==='college'?colOf(s,kid):s.s[c];if(!w||v==null)continue;tw+=w;t+=w*v}
   return tw?t/tw:null}
 function pathInfo(s,kid){
   if(kid.grade>=9)return null;
@@ -2544,8 +2544,10 @@ function baseOk(s,kid){
   if(kid.sector!=='all'&&s.sec!==kid.sector)return false;
   if(kid.k12&&kid.grade<9&&!throughHS(s))return false;return true}
 function eligible(s,kid){if(!baseOk(s,kid)||!st.places.length)return false;if(s.sec==='Public'&&st.pub!=='radius')return st.places.some(p=>pubOk(s,p));return homeFor(s).d<=st.radius}
+// College outcomes with the family's "career and community college paths" choice: half our four-year index, half the state's college/career readiness rate
+function colOf(s,kid){const c=s.s.college;if(c==null||!kid||!kid.cc||!s.d||s.d.cci==null)return c;return 0.5*c+0.5*Math.max(0,Math.min(10,(s.d.cci-30)/6.5))}
 function scoreFor(s,kid,home){
-  const v={...s.s};if(level(kid.grade)!=='H'){delete v.college;const x=s.k8||{};for(const c of ['sports','arts','stem','clubs','lang','care','small'])v[c]=x[c]??null}
+  const v={...s.s};v.college=colOf(s,kid);if(level(kid.grade)!=='H'){delete v.college;const x=s.k8||{};for(const c of ['sports','arts','stem','clubs','lang','care','small'])v[c]=x[c]??null}
   const p=pathInfo(s,kid);v.path=p?.v??null;
   // Young children: sports and arts also count the high school the school leads to (60% now, 40% the high school years)
   v.hsb={};if(level(kid.grade)!=='H'&&p&&p.to&&p.to.length){for(const c of ['sports','arts']){const hv=p.to.map(h=>h.s&&h.s[c]).filter(x=>x!=null);if(v[c]!=null&&hv.length){const h=hv.reduce((a,b)=>a+b,0)/hv.length;v.hsb[c]=h;v[c]=0.6*v[c]+0.4*h}}}
@@ -2641,13 +2643,13 @@ const b64e=s=>btoa(unescape(encodeURIComponent(s))).replace(/\+/g,'-').replace(/
 const b64d=s=>decodeURIComponent(escape(atob(s.replace(/-/g,'+').replace(/_/g,'/'))));
 function pack(){return{v:1,p:st.places.map(p=>[p.label,+(+p.lat).toFixed(5),+(+p.lng).toFixed(5),p.city,p.kind==='address'?1:0,p.approx?1:0]),r:st.radius,b:st.budget,m:st.mode==='avg'?1:0,g:st.together?1:0,u:['zone','dist','radius'].indexOf(st.pub),a:st.active,
   h:(()=>{const f=HF();return[f.pmin,f.pmax,f.bd,f.ba,f.sf,f.ty]})(),dp:st.dp||20,tg:st.tg||4,
-  k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||'',k.k12?1:0])}}
+  k:st.kids.map(k=>[k.name,k.grade,CK.map(c=>k.w[c]||0),[...k.ints],k.sector,k.sizePref,k.support?1:0,k.preset||'',k.k12?1:0,k.cc?1:0])}}
 function unpack(o){if(!o||o.v!==1)return null;const n=fresh();
   n.places=(o.p||[]).map(([label,lat,lng,city,a,ap])=>({n:label,label,lat,lng,city,kind:a?'address':'city',approx:!!ap}));
   n.radius=o.r||10;n.budget=o.b||0;n.mode=o.m?'avg':'protect';n.together=o.g===1;n.pub=['zone','dist','radius'][o.u|0]||'zone';
-  n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset,k12])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
+  n.kids=(o.k||[]).slice(0,4).map(([name,grade,w,ints,sector,size,sup,preset,k12,cc])=>({name:String(name||'').slice(0,20),grade:Math.max(0,Math.min(12,grade|0)),preset:PRESETS[preset]?preset:null,
     w:Object.fromEntries(CK.map((c,i)=>[c,Math.max(0,Math.min(10,+w[i]||0))])),ints:new Set((ints||[]).filter(x=>LABEL[x])),sector:['all','Public','Charter','Private'].includes(sector)?sector:'all',
-    sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12}));
+    sizePref:['any','small','medium','large'].includes(size)?size:'any',support:!!sup,k12:!!k12,cc:!!cc}));
   if(Array.isArray(o.h)){const[a,b,c,d,e,t]=o.h;n.hf={pmin:+a||0,pmax:+b||0,bd:+c||0,ba:+d||0,sf:+e||0,ty:['sf','condo'].includes(t)?t:''}}
   n.dp=[10,20,30].includes(o.dp)?o.dp:20;n.tg=TGS.includes(o.tg)?o.tg:4;
   if(!n.kids.length)n.kids=fresh().kids;n.active=Math.min(o.a|0,n.kids.length-1);return n}
@@ -2803,7 +2805,7 @@ function openDetail(id){
     ${sec('How to get in',`<p><span class="tbadge t-${admitOf(s).k}">${admitOf(s).t}</span></p><p>${esc(admitOf(s).d)}</p>`)}
     ${sec('School scores (0 to 10)',rows)}
     ${sec('Academics',acad)}
-    ${sec('College outcomes',col)}
+    ${sec('College outcomes',col+(d.cci!=null?`<p>College and career ready: <b>${pct(d.cci)}</b> of graduates, by the state\u2019s 2026 measure, which also credits career pathways and community college credit. It counts toward this school\u2019s score when a family turns on \u201cCount career and community college paths.\u201d</p>`:''))}
     ${s.lo<=8?sec(s.hi>=9?'Elementary and middle school programs':'Programs',k8):''}
     ${sec(s.lo<=8&&s.hi>=9?'High school programs':'Sports, arts, STEM and clubs',prog)}
     ${L2!=='H'?sec('Potential school path as '+esc(nm)+' grows',`${pathView(s,inGrade?k:null)}${s.sec==='Public'?`<p class="sub">${DPOL[s.dist]?esc(DPOL[s.dist].head):'Middle and high schools are assigned by the district from its attendance maps.'} <button type="button" class="lnk" data-dguide="${esc(s.dist)}">How ${esc(s.dist)} works</button></p>`:''}`)+sec('Path to high school',path):''}
@@ -2849,6 +2851,7 @@ function renderKidControls(){
      <div class="prow"><label for="kpreset">Start from</label><select id="kpreset">${k.preset?'':'<option value="" selected>Custom</option>'}${Object.keys(PRESETS).map(p=>`<option value="${p}" ${k.preset===p?'selected':''}>${p}</option>`).join('')}</select></div>
      <div class="mix">${show.filter(c=>w[c]).map(c=>`<span style="width:${w[c]/tot*100}%;background:${css(CATS[c][1])}"></span>`).join('')}</div>
      ${show.map(c=>{const off=(c==='interest'&&!hasInt)||(c==='size'&&k.sizePref==='any');return`<div class="sl${off?' off':''}"><span class="sw" style="background:${css(CATS[c][1])}"></span><label for="w-${c}">${CATS[c][0]}</label><span class="pct">${w[c]?Math.round(w[c]/tot*100)+'%':'off'}</span><input type="range" id="w-${c}" min="0" max="10" step="1" value="${k.w[c]||0}" style="--p:${(k.w[c]||0)*10}%" aria-label="${CATS[c][0]} weight" ${off?'disabled':''}></div>`}).join('')}
+     ${L2==='H'?`<label class="check" style="font-size:13px;margin-top:6px"><input type="checkbox" id="kcc" ${k.cc?'checked':''}><span>Count career and community college paths<br><span class="sub">Off: college outcomes measure four-year college going. On: half of it becomes the state\u2019s college and career readiness rate, which also credits career pathways (CTE), community college credit and dual enrollment.</span></span></label>`:''}
      ${L2!=='H'?`<span class="sub">Path to high school scores where each school leads, using ${esc(k.name||'this child')}'s own priorities.</span>`:''}
    </div>
    <div class="sec"><div class="lab">Preferred school size</div><div class="seg" id="ksize">${['any','small','medium','large'].map(v=>`<button type="button" data-size="${v}" aria-pressed="${k.sizePref===v}">${v==='any'?'Any':v[0].toUpperCase()+v.slice(1)}</button>`).join('')}</div></div>
@@ -2982,6 +2985,7 @@ root.addEventListener('change',e=>{const k=st.kids[st.active];
   if(e.target.id==='kgrade'){k.grade=+e.target.value;st.showN[st.active]=10;soft()}
   if(e.target.id==='kk12'){k.k12=e.target.checked;soft();return}
   if(e.target.id==='ksupport'){k.support=e.target.checked;renderPlans();renderList();renderMap();syncHash()}
+  if(e.target.id==='kcc'){k.cc=e.target.checked;renderPlans();renderList();renderMap();syncHash()}
   if(e.target.id==='radius'){st.radius=+e.target.value;soft()}
   if(e.target.id==='pub'){st.pub=e.target.value;st.mapPlan=null;render();syncHash()}
   if(e.target.id==='budget'){st.budget=+e.target.value;renderPlans();renderMap();syncHash()}});
