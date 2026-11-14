@@ -1723,7 +1723,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611130957').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140018').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -1767,6 +1767,8 @@ function mapped(s){const z=(G.zmap||{})[s.dist]||'';return [...levels(s)].some(l
 // Livermore: the district publishes a street guide instead of a map. Match the address's street and house number.
 const LVD='Livermore Valley Joint Unified',LVC=new Map();
 function lvLookup(p){if(!G.lvsg||p.kind!=='address')return null;const k=p.lat+'|'+p.lng;if(LVC.has(k))return LVC.get(k);let r=null;
+  // only addresses inside Livermore Valley Joint Unified use its street guide (street names repeat across cities, e.g. Buckeye Ave in Oakland)
+  if(!placeDists(p).has(LVD)){LVC.set(k,null);return null}
   const m=String(p.label||'').match(/^\s*(\d+)\s+([^,]+)/);
   if(m){const num=+m[1];const SUF=/\b(street|st|avenue|ave|road|rd|drive|dr|way|court|ct|lane|ln|place|pl|boulevard|blvd|terrace|ter|circle|cir|common|cmn|parkway|pkwy|loop|trail|tr|square|sq|highway|hwy)\.?$/;
     let nm=m[2].toLowerCase().replace(/[^a-z0-9 ]/g,'').trim();const tries=[nm,nm.replace(SUF,'').trim(),nm.replace(/^(n|s|e|w|north|south|east|west) /,'').replace(SUF,'').trim()];
