@@ -893,6 +893,22 @@ svg.leaflet-image-layer.leaflet-interactive path {
 .bx .cmp td.best{background:var(--teal-soft);box-shadow:inset 3px 0 0 var(--teal)}
 .bx .cmp tr.mk td b{font-size:15px}
 .bx .cmp tr.mk{background:var(--sunk)}
+.bx .agchip{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.92);color:var(--ink);padding:4px 12px 4px 4px;font-size:12.5px;border-radius:999px;margin-right:8px;vertical-align:middle}
+.bx .agchip b{font-weight:800}
+.bx .agc-p{width:26px;height:26px;border-radius:50%;object-fit:cover;flex:none}
+.bx .ini{display:inline-grid;place-items:center;background:var(--teal);color:#fff;font-weight:800;font-size:11px}
+.bx .ginv{display:flex;gap:12px;align-items:center;background:var(--teal-soft);border:1px solid color-mix(in srgb,var(--teal) 30%,transparent);padding:10px 12px;margin-bottom:14px;font-size:14px;color:var(--ink2)}
+.bx .ginv b{color:var(--ink)}
+.bx .ginv small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.bx .gi-p{width:48px;height:48px;border-radius:50%;object-fit:cover;flex:none}
+.bx .gi-p.ini{font-size:16px}
+.bx .lv-ag{display:flex;gap:16px;align-items:center;margin-bottom:10px}
+.bx .lv-agp{width:84px;height:84px;border-radius:50%;object-fit:cover;flex:none;border:2px solid rgba(255,255,255,.3)}
+.bx .lv-agp.ini{font-size:26px}
+.bx .lv-ag h3{margin:2px 0 4px}
+.bx .lv-agt{font-size:13px;color:rgba(255,255,255,.72)}
+.bx .lv-agl{display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:#9fe3d3;text-decoration:none}
+.bx .lv-agl:hover{text-decoration:underline}
 .bx .mk-bars{display:grid;gap:4px;margin-top:6px}
 .bx .mk-br{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:6px;align-items:center;font-size:11px;color:var(--muted)}
 .bx .mk-br span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -1553,7 +1569,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 <div class="bx" id="bx" data-src="https://lederer-team.github.io/school-data/explorer/" data-gkey="AIzaSyDUZsgq9-NRvNonNNHMRMWaPkTkogfv5Q8" data-share="" data-hero="https://images.unsplash.com/photo-1550399105-05c4a7641b02?auto=format&fit=crop&w=1920&q=75" data-gate="1">
 <div class="band dark hero"><div class="in">
-  <div class="htools"><button type="button" class="hbtn" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span id="shareLbl">Copy family link</span></button><button type="button" class="hbtn" id="reset">Start over</button><span class="ok" id="shareOk" aria-live="polite" hidden></span><span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span></div>
+  <div class="htools"><span id="agchip"></span><button type="button" class="hbtn" id="share"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg><span id="shareLbl">Copy family link</span></button><button type="button" class="hbtn" id="reset">Start over</button><span class="ok" id="shareOk" aria-live="polite" hidden></span><span class="sharebox" id="sharebox" hidden><input type="text" id="shareUrl" readonly aria-label="Family link"></span></div>
   <div class="eyebrow">The Lederer Team · Alameda and Contra Costa counties</div>
   <h2 class="title">Bay Area School Explorer<button type="button" class="beta" data-terms="1" title="Beta version: we are still adding and checking data. Click to read the terms of use.">Beta</button></h2>
   <p class="lede">Compare 750 public, charter and private schools by what matters to your family. Add each child with their own grade and priorities, then see ranked schools, a map, family plans that keep everyone's commute in check, and where each school leads for high school.</p>
@@ -1712,12 +1728,13 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 
 <div class="gate" id="gate" hidden role="dialog" aria-modal="true" aria-labelledby="gtitle"><form class="gbox" id="gform" novalidate>
+  <div id="ginv"></div>
   <div class="eyebrow">The Lederer Team</div>
   <h3 id="gtitle">Get free access to the Explorer</h3>
   <p>Compare every public, charter and private school in Alameda and Contra Costa counties, build a plan for each child, and see homes for sale near the schools that fit. Enter your name and email and accept the terms to open it.</p>
   <div class="row2"><label class="f">Name<input type="text" id="gname" autocomplete="name" required></label><label class="f">Email<input type="email" id="gemail" autocomplete="email" required></label></div>
   <label class="f">Phone (optional, for a call or text from our team)<input type="tel" id="gphone" autocomplete="tel"></label>
-  <div class="terms"><b>Terms of use.</b> The Explorer is a beta version: we are still adding and checking schools, boundaries and features, so errors and gaps are more likely, and things may change without notice. It is for research only. Attendance areas, district boundaries, programs, tuition and scores change, and the information here can be incomplete or wrong. Do not act on anything here, including buying, selling or renting a home, without first confirming school assignment and eligibility directly with the school district and the city. The Lederer Team does not guarantee school assignment, admission or enrollment, and does not recommend specific schools. Scores are our own calculation from public data. See the full <a href="/terms-and-conditions" target="_blank" rel="noopener">terms and conditions</a>.</div>
+  <div class="terms"><b>Terms of use.</b> The Explorer is a beta version: we are still adding and checking schools, boundaries and features, so errors and gaps are more likely, and things may change without notice. It is for research only. Attendance areas, district boundaries, programs, tuition and scores change, and the information here can be incomplete or wrong. Do not act on anything here, including buying, selling or renting a home, without first confirming school assignment and eligibility directly with the school district and the city. The Lederer Team does not guarantee school assignment, admission or enrollment, and does not recommend specific schools. Scores are our own calculation from public data. <b>What we save.</b> When you sign up, we keep what you enter here (your name, email and phone, your children’s first names and grades, school preferences, the places and price range you search, and homes you open) so our team can follow up and tailor the Explorer to your family. We don’t sell it. To see or delete it, contact us through this site. See the full <a href="/terms-and-conditions" target="_blank" rel="noopener">terms and conditions</a>.</div>
   <label class="check"><input type="checkbox" id="gterms" required><span>I agree to the terms of use, and I’ll confirm school information with the district and city before acting on it.</span></label>
   <label class="check"><input type="checkbox" id="gconsent" required><span>I agree to be contacted by The Lederer Team via call, email, and text for real estate services. To opt out, reply ‘stop’ at any time or click the unsubscribe link in emails. Message and data rates may apply. Message frequency may vary. <a href="/terms-and-conditions" target="_blank" rel="noopener">Privacy Policy</a>.</span></label>
   <div class="err" id="gerr" aria-live="polite"></div>
@@ -1739,7 +1756,7 @@ if(CFG.hero)root.style.setProperty('--hero','url("'+CFG.hero.replace(/["()\\]/g,
 function bleed(){const r=root.getBoundingClientRect(),w=document.documentElement.clientWidth;root.style.setProperty('--bl',Math.max(0,r.left)+'px');root.style.setProperty('--br',Math.max(0,w-r.right)+'px')}
 bleed();window.addEventListener('resize',bleed);
 function load(){if(window.BX_DATA)return Promise.resolve(window.BX_DATA);
-  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140120').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
+  const get=b=>Promise.all(['schools.json','geo.json'].map(f=>fetch(b+f+'?v=202611140743').then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}))).then(([S,G])=>({S,G}));
   return get(CFG.src).catch(()=>get('data/'))}
 load().then(d=>boot(d.S,d.G)).catch(err=>{console.error(err);$('list').innerHTML='<div class="empty">The school data could not load. Please refresh the page.</div>'});
 
@@ -2335,7 +2352,7 @@ function lvMarket(x){const c=x.city;const m=pmStat(c);const v=pmVs(x);if(!m&&!v)
   return`<section class="lvsec lvmk"><div class="mk-hd"><h3 class="lvh">${esc(c)} market snapshot</h3><a href="${PMURL}" target="_blank" rel="noopener">Check out our quarterly data for the entire Bay Area →</a></div>
     <div class="mk-row">${tiles.join('')}</div>${strip||rank?`<div class="mk-cs">${strip}${rank}</div>`:''}
     <p class="sub">${m?`${m.n.toLocaleString()} house sales in ${esc(c)}, `:''}${G.med.per?esc(G.med.per)+'. ':''}Bay Area figures are the typical city among ${(G.med.N||106)} we measure. Bay Area MLS data, compiled by The Lederer Team.</p></section>`}
-function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
+function openListing(x){LV={x,i:0};try{let a=JSON.parse(lsGet('bx_seen')||'[]');const k=(x.ad||'').split(',')[0]+(x.price?' ('+fM(x.price)+')':'');a=a.filter(z=>z!==k);a.push(k);lsSet('bx_seen',JSON.stringify(a.slice(-20)));setTimeout(()=>profileSync(false),1000)}catch(e){}let el=document.getElementById('lview');if(!el){el=document.createElement('div');el.id='lview';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');root.appendChild(el)}
   const t=v=>v==null||v===''?null:v;const sqm=x.price&&x.sf?Math.round(x.price/x.sf):null;
   const rowsI=[['Bedrooms',t(x.bd)],['Bathrooms',t(x.ba)],['Living area',x.sf?x.sf.toLocaleString()+' sq ft':null]];
   const rowsE=[['Stories',t(x.sto)],['Garage spaces',t(x.gar)],['Lot size',x.lot?x.lot.toLocaleString()+' sq ft':null],['Style',t(x.style)]];
@@ -2355,7 +2372,7 @@ function openListing(x){LV={x,i:0};let el=document.getElementById('lview');if(!e
     ${lvMarket(x)}
     ${lvSchools(x)}
     ${x.lat&&x.lng?`<section class="lvsec lvmapsec"><h3 class="lvh">On the map</h3><p class="sub">This home and each child’s schools from the list above, with the typical weekday-morning drive from the home. Tap a pin for details.</p><div id="lvmap"></div></section>`:''}
-    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t"><div class="eyebrow">${shownAgent()?'Your agent':'Your agents'}</div><h3>${shownAgent()?esc(agentName(shownAgent()))+' · The Lederer Team':'The Lederer Team · Red Oak Realty'}</h3><p>Ask us about this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
+    <div class="lv-agent" id="lvAsk"><div class="lv-agent-t">${shownAgent()?(g=>`<div class="lv-ag">${agentPic(shownAgent(),'lv-agp')}<div><div class="eyebrow">Your agent</div><h3>${esc(g.n)}</h3><div class="lv-agt">${esc(g.t)} · The Lederer Team · Red Oak Realty${g.dre?' · DRE '+g.dre:''}</div>${g.url?`<a class="lv-agl" href="${g.url}" target="_blank" rel="noopener">View ${esc(g.n.split(' ')[0])}’s profile →</a>`:''}</div></div>`)(agentOf(shownAgent())):'<div class="eyebrow">Your agents</div><h3>The Lederer Team · Red Oak Realty</h3>'}<p>${shownAgent()?'Ask '+esc(agentOf(shownAgent()).n.split(' ')[0])+' about':'Ask us about'} this home, its schools and the neighborhood, or pick a time to see it. We'll get back to you.</p></div>
      <form class="lv-form" novalidate><div class="lv-fr"><label>Name<input name="n" autocomplete="name" value="${esc(lsGet('bx_name')||'')}"></label><label>Email<input name="e" type="email" autocomplete="email" value="${esc(lsGet('bx_email')||'')}"></label><label>Phone<input name="p" type="tel" autocomplete="tel" value="${esc(lsGet('bx_phone')||'')}"></label></div>
       <label>Message<textarea name="m" rows="2">I'd like to see ${esc(street)}, ${esc(x.city||'')}${x.mls?' (MLS '+esc(x.mls)+')':''}. </textarea></label>
       <div class="lv-fa"><button type="submit" class="lvbtn light">Send to our team</button><span class="lv-ferr" role="status"></span></div></form></div>
@@ -2835,7 +2852,7 @@ function renderList(){
    (scored.length>n?`<button class="more" data-more="1">Show ${Math.min(10,scored.length-n)} more</button>`:'')+
    (un.length?`<details class="note"><summary style="cursor:pointer">Also in range, not yet scored (${un.length})</summary><p>${un.map(r=>`<button type="button" class="lnk" data-detail="${r.s.id}">${esc(r.s.n)}</button> (${esc(r.s.c)}, ${r.s.sec})`).join(' · ')}</p><p>These schools don't take state tests or publish outcomes we can use yet.</p></details>`:'');
 }
-function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();renderHomes();renderMoney();syncHash()}
+function render(){renderFamily();renderKidControls();renderPlans();renderList();renderMap();renderHomes();renderMoney();syncHash();clearTimeout(window.__bxps);window.__bxps=setTimeout(()=>profileSync(false),4000)}
 function soft(){renderKidControls();renderPlans();renderList();renderMap();renderMoney();syncHash()}
 function setView(v){const m=v==='method';$('v-plan').hidden=m;$('v-method').hidden=!m;root.querySelectorAll('.views [data-view]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.view===v)));
   if(!m&&map)setTimeout(()=>map.resize(),0);root.querySelector('.views').scrollIntoView({behavior:'smooth',block:'start'})}
@@ -2973,7 +2990,14 @@ const bindPhone=el=>{if(!el)return;el.setAttribute('placeholder','(510) 555-0123
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}};
 // Lead attribution. ?agent=derrick routes a sign-up to that agent (ads, an agent's own links); ?ref=jane-smith records who referred
 // the family. UTM tags and Google's gclid are kept too. The latest tagged visit before sign-up wins; after sign-up it's frozen.
-const AGENTS={mark:'Mark Lederer',derrick:'Derrick Tyler',mio:'Mio Sullivan',suzy:'Suzy',katie:'Katie Lederer',tracy:'Tracy Klem'};
+const AG={mark:{n:'Mark Lederer',t:'Principal & Real Estate Advisor',dre:'01345197',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/e1ea4msr5voahthmmerp',url:'/agent/mark-e-lederer'},
+  derrick:{n:'Derrick Tyler',t:'Real Estate Advisor',dre:'01954708',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/ylhhsg9q5jjpk2kdhxsu',url:'/agent/derrick-c-tyler'},
+  mio:{n:'Mio Sullivan',t:'Real Estate Advisor',dre:'02021776',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/dpi4aar49dfnt858l0am',url:'/agent/mio-sullivan'},
+  tracy:{n:'Tracy Klem',t:'Real Estate Advisor',dre:'01975537',img:'https://media-production.lp-cdn.com/cdn-cgi/image/format=auto,quality=85,fit=crop,width=240,height=240/https://media-production.lp-cdn.com/media/lnxvtlhvshmnwi7o1bk9',url:'/agent/tracy-klem'},
+  suzy:{n:'Suzy',t:'Real Estate Advisor'},katie:{n:'Katie Lederer',t:'Real Estate Advisor'}};
+const AGENTS=Object.fromEntries(Object.entries(AG).map(([k,v])=>[k,v.n]));
+const agentOf=a=>a?(AG[a]||{n:a,t:'The Lederer Team'}):null;
+const agentPic=(a,cls)=>{const g=agentOf(a);if(!g)return'';return g.img?`<img class="${cls}" src="${g.img}" alt="" loading="lazy">`:`<span class="${cls} ini">${esc(g.n.split(' ').map(w=>w[0]).join('').slice(0,2))}</span>`};
 const slug=v=>String(v||'').toLowerCase().replace(/[^a-z0-9_-]/g,'').slice(0,40);
 function captureSource(){try{const q=new URLSearchParams(location.search);const urlTeam=/[?&#]team=lederer\b/.test(location.search+location.hash),team=urlTeam||lsGet('bx_team')==='1';
   if(urlTeam&&q.get('agent')){lsSet('bx_me',slug(q.get('agent')));return}   // ?team=lederer&agent=x: a team member's own device, remember who they are for the links they share
@@ -2987,6 +3011,19 @@ function srcInfo(){try{return JSON.parse(lsGet('bx_src')||'null')||{}}catch(e){r
 // the agent to show: the link being viewed right now, else the one recorded for this visitor
 function shownAgent(){try{const a=slug(new URLSearchParams(location.search).get('agent'));if(a&&!/[?&#]team=lederer\b/.test(location.search+location.hash))return a}catch(e){}return srcInfo().agent||''}
 const agentName=a=>a?(AGENTS[a]||a):'';
+// The family's setup, in plain words, for the sign-up sheet. Sent at sign-up and again (at most every 10 minutes) when it changes.
+function profileText(){try{const top=k=>CK.map(c=>[c,k.w[c]||0]).filter(x=>x[1]>=6).sort((a,b)=>b[1]-a[1]).slice(0,4).map(x=>CATS[x[0]][0].toLowerCase());
+  const kids=st.kids.map((k,i)=>`${kname(k,i)} (${GRADES[k.grade]}${GRADES[k.grade]==='K'?'':' grade'} next fall, ${k.sector==='all'?'any school type':k.sector.toLowerCase()}${k.support?', learning support':''}${top(k).length?', cares most about '+top(k).join(', '):''}${k.ints&&k.ints.size?', interests: '+[...k.ints].map(x=>LABEL[x]||x).join(', '):''})`).join('; ');
+  const f=HF(),pr=f.pmin||f.pmax?`${f.pmin?fM(f.pmin):'any'} to ${f.pmax?fM(f.pmax):'any'}`:'any price';
+  const home=[pr,f.bd?f.bd+'+ bd':'',f.ba?f.ba+'+ ba':'',f.sf?f.sf.toLocaleString()+'+ sq ft':'',f.ty==='sf'?'houses':f.ty==='cd'?'condos':''].filter(Boolean).join(', ');
+  let seen=[];try{seen=JSON.parse(lsGet('bx_seen')||'[]')}catch(e){}
+  return[`Places: ${st.places.map(p=>p.label).join('; ')||'none yet'}`,`Children: ${kids||'none yet'}`,`Homes: ${home}`,st.budget?`Tuition budget: ${fD(st.budget)}`:'',`Radius: ${st.radius} mi`,seen.length?`Homes viewed: ${seen.slice(-8).join('; ')}`:'',`Family link: ${link()}`].filter(Boolean).join(' | ')}catch(e){return''}}
+let PSENT=lsGet('bx_psent')||'',PTIMER=null;
+function profileSync(force){if(!lsGet('bx_signed')||lsGet('bx_team')==='1')return;const t=profileText();if(!t||t===PSENT)return;
+  const last=+(lsGet('bx_ptime')||0);if(!force&&Date.now()-last<10*60*1000){clearTimeout(PTIMER);PTIMER=setTimeout(()=>profileSync(true),10*60*1000-(Date.now()-last)+500);return}
+  try{fetch(GF,{method:'POST',mode:'no-cors',keepalive:true,body:new URLSearchParams({[GE.name]:lsGet('bx_name')||'',[GE.email]:lsGet('bx_email')||'',[GE.phone]:lsGet('bx_phone')||'',[GE.terms]:'Profile update '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:t,[GE.page]:location.origin+location.pathname+(srcLine()?' | '+srcLine():'')})}).catch(()=>{})}catch(e){}
+  PSENT=t;lsSet('bx_psent',t);lsSet('bx_ptime',String(Date.now()))}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')profileSync(true)});
 // one line for the sign-up sheet and the site's lead email
 function srcLine(){const o=srcInfo(),b=[];if(o.agent)b.push('Agent: '+agentName(o.agent));if(o.ref)b.push('Referred by: '+o.ref);
   const src=[o.utm_source,o.utm_medium].filter(Boolean).join('/');if(src)b.push('Source: '+src);if(o.utm_campaign)b.push('Campaign: '+o.utm_campaign);if(o.gclid)b.push('Google Ads click');return b.join(' · ')}
@@ -3007,6 +3044,9 @@ function lpLead(name,email,phone,places,msg){try{
     setTimeout(()=>{try{f.requestSubmit?f.requestSubmit():f.submit()}catch(e){}},400)};
   fr.addEventListener('load',()=>{let n=0;const iv=setInterval(()=>{run();if(done||++n>40)clearInterval(iv)},500)});
   setTimeout(()=>{try{fr.remove()}catch(e){}},45000)}catch(e){}}
+function agentUI(){const a=shownAgent(),g=agentOf(a);const c=$('agchip');if(c)c.innerHTML=g?`<span class="agchip">${agentPic(a,'agc-p')}<span>Your agent: <b>${esc(g.n)}</b></span></span>`:'';
+  const v=$('ginv');if(v)v.innerHTML=g?`<div class="ginv">${agentPic(a,'gi-p')}<div><b>${esc(g.n)}</b> invited you to the Bay Area School Explorer<small>${esc(g.t)} · The Lederer Team</small></div></div>`:''}
+agentUI();
 function gate(){
   if(!CFG.gate||/luxurypresence|localhost/.test(location.hostname)||teamBypass()||lsGet('bx_signed'))return;
   const g=$('gate');g.hidden=false;const gsync=()=>{const ok=$('gterms').checked&&$('gconsent').checked;$('gbtn').disabled=!ok;$('ghint').hidden=ok};['gterms','gconsent'].forEach(id=>$(id).addEventListener('change',gsync));gsync();bindPhone($('gphone'));g.removeAttribute('role');g.removeAttribute('aria-modal');root.classList.add('gated');
@@ -3015,8 +3055,8 @@ function gate(){
     const name=$('gname').value.trim(),email=$('gemail').value.trim(),phone=$('gphone').value.trim();
     const err=!name?'Please add your name.':!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)?'Please add a valid email.':(phone&&phone.replace(/\D/g,'').length<10)?'Please check the phone number, or leave it blank.':!$('gterms').checked?'Please agree to the terms of use.':!$('gconsent').checked?'Please agree to be contacted to use the Explorer.':'';
     $('gerr').textContent=err;if(err)return;
-    const places=st.places.map(p=>p.label).join('; ');
-    const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:places,[GE.page]:location.origin+location.pathname+(srcLine()?' | '+srcLine():'')});
+    const places=st.places.map(p=>p.label).join('; ');lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);const prof=profileText();lsSet('bx_psent',prof);PSENT=prof;lsSet('bx_ptime',String(Date.now()));
+    const body=new URLSearchParams({[GE.name]:name,[GE.email]:email,[GE.phone]:phone,[GE.terms]:'Yes '+new Date().toISOString(),[GE.consent]:'Yes',[GE.places]:prof||places,[GE.page]:location.origin+location.pathname+(srcLine()?' | '+srcLine():'')});
     try{fetch(GF,{method:'POST',mode:'no-cors',body})}catch(_){}
     if(phone)lpLead(name,email,phone,places,'Signed up for the Bay Area School Explorer'+(places?'. Searching: '+places:'')+'.'+(srcLine()?' ['+srcLine()+']':''));
     lsSet('bx_signed',new Date().toISOString());lsSet('bx_name',name);lsSet('bx_email',email);if(phone)lsSet('bx_phone',phone);g.hidden=true;root.classList.remove('gated');document.documentElement.style.overflow='';setTimeout(()=>{try{map&&map.invalidate&&map.invalidate()}catch(_){}window.dispatchEvent(new Event('resize'))},50)})}
